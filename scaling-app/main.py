@@ -1,13 +1,24 @@
 import wx
 import tkinter
+import csv
 from tkinter.filedialog import askopenfilename
 
 
 def loadData(e):
     tkinter.Tk().withdraw()
-    filename = askopenfilename()
-    print(filename)
-    print("Load Data")
+    filePath = askopenfilename()
+    print(filePath)
+    with open(filePath) as csvfile:
+
+        values = csv.reader(csvfile, delimiter=',')
+
+        for row in values:
+
+            if values.line_num == 1:
+                print(', '.join(row).upper())
+            else:
+                print(', '.join(row))
+                frame.listbox.Append(str(row))
 
 
 def saveData(e):
@@ -76,9 +87,6 @@ def buildUI(frame):
     frame.csvbox = wx.BoxSizer(wx.VERTICAL)
     frame.listbox = wx.ListBox(frame.panelTop)
 
-    frame.listbox.Append("Value A")
-    frame.listbox.Append("Value B")
-    frame.listbox.Append("Value C")
     frame.csvbox.Add(frame.listbox, wx.ID_ANY, wx.EXPAND | wx.ALL, 20)
     frame.panelTop.SetSizer(frame.csvbox)
 
