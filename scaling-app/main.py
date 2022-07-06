@@ -1,6 +1,12 @@
 import wx
+import tkinter
+from tkinter.filedialog import askopenfilename
+
 
 def loadData(e):
+    tkinter.Tk().withdraw()
+    filename = askopenfilename()
+    print(filename)
     print("Load Data")
 
 
