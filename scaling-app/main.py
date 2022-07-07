@@ -1,25 +1,37 @@
 import wx
+import wx.grid as grid
 import tkinter
 import csv
 from tkinter.filedialog import askopenfilename
 
 
 def loadData(e):
+
     tkinter.Tk().withdraw()
     filePath = askopenfilename()
     print(filePath)
     with open(filePath) as csvfile:
 
-        values = csv.reader(csvfile, delimiter=',')
+        values = csv.reader(csvfile, delimiter=',', quotechar='"', escapechar='\\', quoting=csv.QUOTE_ALL)
+
+        frame.grid.DeleteRows(0, frame.grid.GetNumberRows())
+        frame.grid.DeleteCols(0, frame.grid.GetNumberCols())
+        frame.grid.AppendRows(values.line_num)
 
         for row in values:
 
             if values.line_num == 1:
-                print(', '.join(row).upper())
+                frame.grid.AppendCols(len(row))
+                i = 0
+                for entry in row:
+                    frame.grid.SetColLabelValue(i, entry)
+                    i += 1
             else:
-                print(', '.join(row))
-                frame.listbox.Append(str(row))
-
+                frame.grid.AppendRows(1)
+                j = 0
+                for entry in row:
+                    frame.grid.SetCellValue(values.line_num - 2, j, entry)
+                    j += 1
 
 def saveData(e):
     print("Save Data")
@@ -85,10 +97,14 @@ def buildUI(frame):
     frame.vsplitter.SetSashPosition(400)
 
     frame.csvbox = wx.BoxSizer(wx.VERTICAL)
-    frame.listbox = wx.ListBox(frame.panelTop)
+    frame.grid = grid.Grid(frame.panelTop)
+    frame.grid.CreateGrid(16, 8)
+    frame.grid.EnableDragCell()
+    frame.grid.EnableDragColMove()
 
-    frame.csvbox.Add(frame.listbox, wx.ID_ANY, wx.EXPAND | wx.ALL, 20)
+    frame.csvbox.Add(frame.grid, wx.ID_ANY, wx.EXPAND | wx.ALL, 20)
     frame.panelTop.SetSizer(frame.csvbox)
+
 
 
 app = wx.App()
