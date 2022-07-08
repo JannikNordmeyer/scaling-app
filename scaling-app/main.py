@@ -2,134 +2,18 @@ import wx
 import wx.grid as grid
 import csv
 import tkinter.filedialog
-
-
-def loadData(e):
-
-    tkinter.Tk().withdraw()
-    filePath = tkinter.filedialog.askopenfilename()
-    if filePath == "":
-        return
-    with open(filePath) as csvfile:
-
-        values = csv.reader(csvfile, delimiter=',', quotechar='"', escapechar='\\', quoting=csv.QUOTE_ALL)
-
-        frame.grid.DeleteRows(0, frame.grid.GetNumberRows())
-        frame.grid.DeleteCols(0, frame.grid.GetNumberCols())
-        frame.grid.AppendRows(values.line_num)
-
-        for row in values:
-
-            if values.line_num == 1:
-                frame.grid.AppendCols(len(row))
-                i = 0
-                for entry in row:
-                    frame.grid.SetColLabelValue(i, entry)
-                    i += 1
-            else:
-                frame.grid.AppendRows(1)
-                j = 0
-                for entry in row:
-                    frame.grid.SetCellValue(values.line_num - 2, j, entry)
-                    j += 1
-
-def saveData(e):
-
-    tkinter.Tk().withdraw()
-    filePath = tkinter.filedialog.asksaveasfilename(defaultextension=".csv")
-    if filePath == "":
-        return
-
-    content = ""
-    rowCount = frame.grid.GetNumberRows()
-    rowLen = frame.grid.GetNumberCols()
-
-    for labels in range(rowLen):
-        value = frame.grid.GetColLabelValue(labels)
-        value = value.replace(",", "\,")
-        content += value
-        if labels < rowLen-1:
-            content += ","
-    content += "\n"
-
-    for i in range(rowCount):
-        for j in range(rowLen):
-
-            value = frame.grid.GetCellValue(i, j)
-            value = value.replace(",", "\,")
-            content += value
-            if j < rowLen-1:
-                content += ","
-        content += "\n"
-
-    f = open(filePath, "w")
-    f.seek(0)
-    f.write(content)
-    f.truncate()
-    f.close()
-
-
-
-
-def emptyFrame(e):
-    print("Empty Frame")
-
-
-def manual(e):
-    print("Manual")
-
-
-def about(e):
-    print("About")
-
-
-def quitScaling(e):
-    exit(0)
-
-def deleteCol(evt, col):
-    print("DeleteCol")
-
-def getDeleteRow(labelEvent):
-    def deleteRow(evt):
-        frame.grid.DeleteRows(pos=labelEvent.GetRow(), updateLabels=False)
-    return deleteRow
-
-def getCleareRow(labelEvent):
-    def clearRow(evt):
-        for i in range(frame.grid.GetNumberCols()):
-            frame.grid.SetCellValue(labelEvent.GetRow(), i, "")
-    return clearRow
-
-def getDeleteCol(labelEvent):
-    def deleteCol(evt):
-        frame.grid.DeleteCols(pos=labelEvent.GetCol(), updateLabels=False)
-    return deleteCol
-
-def getCleareCol(labelEvent):
-    def clearCol(evt):
-        for i in range(frame.grid.GetNumberRows()):
-            frame.grid.SetCellValue(i, labelEvent.GetCol(), "")
-    return clearCol
-
-def getEditLabel(labelevent):
-    def editLabel(evt):
-        dialog = wx.TextEntryDialog(None, "Column name:", caption="New Column", value="", style=wx.TextEntryDialogStyle, pos=wx.DefaultPosition)
-        dialog.ShowModal()
-        name = dialog.GetValue()
-        dialog.Destroy()
-        frame.grid.SetColLabelValue(labelevent.GetCol(), name)
-
-    return editLabel
-
+import menuservice
 
 def RowMenu(evt):
 
     menu = wx.Menu()
     delrow = menu.Append(wx.ID_ANY, "Delete Row")
     clearrow = menu.Append(wx.ID_ANY, "Clear Row")
+    new = menu.Append(wx.ID_ANY, "Add Row")
 
-    frame.Bind(wx.EVT_MENU, getDeleteRow(evt), delrow)
-    frame.Bind(wx.EVT_MENU, getCleareRow(evt), clearrow)
+    frame.Bind(wx.EVT_MENU, service.getDeleteRow(evt), delrow)
+    frame.Bind(wx.EVT_MENU, service.getCleareRow(evt), clearrow)
+    frame.Bind(wx.EVT_MENU, service.getAddRow(evt), new)
 
     frame.PopupMenu(menu)
     menu.Destroy()
@@ -140,10 +24,12 @@ def ColMenu(evt):
     delcol = menu.Append(wx.ID_ANY, "Delete Column")
     clearcol = menu.Append(wx.ID_ANY, "Clear Column")
     edit = menu.Append(wx.ID_ANY, "Edit Label")
+    new = menu.Append(wx.ID_ANY, "Add Column")
 
-    frame.Bind(wx.EVT_MENU, getDeleteCol(evt), delcol)
-    frame.Bind(wx.EVT_MENU, getCleareCol(evt), clearcol)
-    frame.Bind(wx.EVT_MENU, getEditLabel(evt), edit)
+    frame.Bind(wx.EVT_MENU, service.getDeleteCol(evt), delcol)
+    frame.Bind(wx.EVT_MENU, service.getCleareCol(evt), clearcol)
+    frame.Bind(wx.EVT_MENU, service.getEditLabel(evt), edit)
+    frame.Bind(wx.EVT_MENU, service.getAddCol(evt), new)
 
     frame.PopupMenu(menu)
     menu.Destroy()
@@ -166,21 +52,21 @@ def buildUI(frame):
     fileMenu.AppendSeparator()
     fileQuit = fileMenu.Append(wx.ID_ANY, 'Empty Frame', 'Empty Frame')
     MenuBar.Append(fileMenu, 'Data')
-    frame.Bind(wx.EVT_MENU, loadData, fileLoad)
-    frame.Bind(wx.EVT_MENU, saveData, fileSave)
-    frame.Bind(wx.EVT_MENU, emptyFrame, fileQuit)
+    frame.Bind(wx.EVT_MENU, service.loadData, fileLoad)
+    frame.Bind(wx.EVT_MENU, service.saveData, fileSave)
+    frame.Bind(wx.EVT_MENU, service.emptyFrame, fileQuit)
 
     helpMenu = wx.Menu()
     helpAbout = helpMenu.Append(wx.ID_ANY, 'About', 'About')
     helpManual = helpMenu.Append(wx.ID_ANY, 'Manual', 'Manual')
     MenuBar.Append(helpMenu, 'Help')
-    frame.Bind(wx.EVT_MENU, about, helpAbout)
-    frame.Bind(wx.EVT_MENU, manual, helpManual)
+    frame.Bind(wx.EVT_MENU, service.about, helpAbout)
+    frame.Bind(wx.EVT_MENU, service.manual, helpManual)
 
     quitMenu = wx.Menu()
     quitQuitScaling = quitMenu.Append(wx.ID_EXIT, 'Quit Scaling', 'Quit Scaling')
     MenuBar.Append(quitMenu, 'Quit Scaling')
-    frame.Bind(wx.EVT_MENU, quitScaling, quitQuitScaling)
+    frame.Bind(wx.EVT_MENU, service.quitScaling, quitQuitScaling)
 
     frame.SetMenuBar(MenuBar)
 
@@ -210,10 +96,10 @@ def buildUI(frame):
     frame.csvbox.Add(frame.grid, wx.ID_ANY, wx.EXPAND)
     frame.panelTop.SetSizer(frame.csvbox)
 
-
 app = wx.App()
 frame = wx.Frame(None, title='FCA', size=(1200, 750))
 frame.Center()
+service = menuservice.menuService(frame)
 buildUI(frame)
 frame.Show()
 app.MainLoop()
