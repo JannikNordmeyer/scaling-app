@@ -102,7 +102,7 @@ def buildUI(frame):
     frame.grid.EnableDragCell()
     frame.grid.EnableDragColMove()
 
-    frame.csvbox.Add(frame.grid, wx.ID_ANY, wx.EXPAND | wx.ALL, 20)
+    frame.csvbox.Add(frame.grid, wx.ID_ANY, wx.EXPAND)
     frame.panelTop.SetSizer(frame.csvbox)
 
 
