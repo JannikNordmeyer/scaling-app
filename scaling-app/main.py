@@ -111,6 +111,17 @@ def getCleareCol(labelEvent):
             frame.grid.SetCellValue(i, labelEvent.GetCol(), "")
     return clearCol
 
+def getEditLabel(labelevent):
+    def editLabel(evt):
+        dialog = wx.TextEntryDialog(None, "Column name:", caption="New Column", value="", style=wx.TextEntryDialogStyle, pos=wx.DefaultPosition)
+        dialog.ShowModal()
+        name = dialog.GetValue()
+        dialog.Destroy()
+        frame.grid.SetColLabelValue(labelevent.GetCol(), name)
+
+    return editLabel
+
+
 def RowMenu(evt):
 
     menu = wx.Menu()
@@ -128,9 +139,11 @@ def ColMenu(evt):
     menu = wx.Menu()
     delcol = menu.Append(wx.ID_ANY, "Delete Column")
     clearcol = menu.Append(wx.ID_ANY, "Clear Column")
+    edit = menu.Append(wx.ID_ANY, "Edit Label")
 
     frame.Bind(wx.EVT_MENU, getDeleteCol(evt), delcol)
     frame.Bind(wx.EVT_MENU, getCleareCol(evt), clearcol)
+    frame.Bind(wx.EVT_MENU, getEditLabel(evt), edit)
 
     frame.PopupMenu(menu)
     menu.Destroy()
@@ -196,6 +209,7 @@ def buildUI(frame):
 
     frame.csvbox.Add(frame.grid, wx.ID_ANY, wx.EXPAND)
     frame.panelTop.SetSizer(frame.csvbox)
+
 
 app = wx.App()
 frame = wx.Frame(None, title='FCA', size=(1200, 750))
