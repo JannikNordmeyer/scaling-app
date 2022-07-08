@@ -91,12 +91,25 @@ def deleteCol(evt, col):
 
 def getDeleteRow(labelEvent):
     def deleteRow(evt):
-        print(labelEvent.GetRow())
         frame.grid.DeleteRows(pos=labelEvent.GetRow(), updateLabels=False)
     return deleteRow
 
-def clearRow(evt):
-    frame.grid.DeleteRows(pos=evt.GetRow())
+def getCleareRow(labelEvent):
+    def clearRow(evt):
+        for i in range(frame.grid.GetNumberCols()):
+            frame.grid.SetCellValue(labelEvent.GetRow(), i, "")
+    return clearRow
+
+def getDeleteCol(labelEvent):
+    def deleteCol(evt):
+        frame.grid.DeleteCols(pos=labelEvent.GetCol(), updateLabels=False)
+    return deleteCol
+
+def getCleareCol(labelEvent):
+    def clearCol(evt):
+        for i in range(frame.grid.GetNumberRows()):
+            frame.grid.SetCellValue(i, labelEvent.GetCol(), "")
+    return clearCol
 
 def RowMenu(evt):
 
@@ -105,14 +118,22 @@ def RowMenu(evt):
     clearrow = menu.Append(wx.ID_ANY, "Clear Row")
 
     frame.Bind(wx.EVT_MENU, getDeleteRow(evt), delrow)
-    frame.Bind(wx.EVT_MENU, clearRow, clearrow)
+    frame.Bind(wx.EVT_MENU, getCleareRow(evt), clearrow)
 
     frame.PopupMenu(menu)
     menu.Destroy()
 
 def ColMenu(evt):
 
-    print("ColMenu")
+    menu = wx.Menu()
+    delcol = menu.Append(wx.ID_ANY, "Delete Column")
+    clearcol = menu.Append(wx.ID_ANY, "Clear Column")
+
+    frame.Bind(wx.EVT_MENU, getDeleteCol(evt), delcol)
+    frame.Bind(wx.EVT_MENU, getCleareCol(evt), clearcol)
+
+    frame.PopupMenu(menu)
+    menu.Destroy()
 
 def LabelMenu(evt):
 
