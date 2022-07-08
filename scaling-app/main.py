@@ -43,13 +43,22 @@ def saveData(e):
     content = ""
     rowCount = frame.grid.GetNumberRows()
     rowLen = frame.grid.GetNumberCols()
+
+    for labels in range(rowLen):
+        value = frame.grid.GetColLabelValue(labels)
+        value = value.replace(",", "\,")
+        content += value
+        if labels < rowLen-1:
+            content += ","
+    content += "\n"
+
     for i in range(rowCount):
         for j in range(rowLen):
 
             value = frame.grid.GetCellValue(i, j)
             value = value.replace(",", "\,")
             content += value
-            if j < rowLen:
+            if j < rowLen-1:
                 content += ","
         content += "\n"
 
@@ -77,24 +86,59 @@ def about(e):
 def quitScaling(e):
     exit(0)
 
+def deleteCol(evt, col):
+    print("DeleteCol")
+
+def getDeleteRow(labelEvent):
+    def deleteRow(evt):
+        print(labelEvent.GetRow())
+        frame.grid.DeleteRows(pos=labelEvent.GetRow(), updateLabels=False)
+    return deleteRow
+
+def clearRow(evt):
+    frame.grid.DeleteRows(pos=evt.GetRow())
+
+def RowMenu(evt):
+
+    menu = wx.Menu()
+    delrow = menu.Append(wx.ID_ANY, "Delete Row")
+    clearrow = menu.Append(wx.ID_ANY, "Clear Row")
+
+    frame.Bind(wx.EVT_MENU, getDeleteRow(evt), delrow)
+    frame.Bind(wx.EVT_MENU, clearRow, clearrow)
+
+    frame.PopupMenu(menu)
+    menu.Destroy()
+
+def ColMenu(evt):
+
+    print("ColMenu")
+
+def LabelMenu(evt):
+
+    evt.Skip()
+    if evt.GetCol() == -1:
+        RowMenu(evt)
+    else:
+        ColMenu(evt)
 
 def buildUI(frame):
 
     MenuBar = wx.MenuBar()
 
     fileMenu = wx.Menu()
-    fileLoad = fileMenu.Append(wx.ID_FILE1, 'Load Data', 'Load Data')
-    fileSave = fileMenu.Append(wx.ID_FILE2, 'Save Data', 'Save Data')
+    fileLoad = fileMenu.Append(wx.ID_ANY, 'Load Data', 'Load Data')
+    fileSave = fileMenu.Append(wx.ID_ANY, 'Save Data', 'Save Data')
     fileMenu.AppendSeparator()
-    fileQuit = fileMenu.Append(wx.ID_FILE3, 'Empty Frame', 'Empty Frame')
+    fileQuit = fileMenu.Append(wx.ID_ANY, 'Empty Frame', 'Empty Frame')
     MenuBar.Append(fileMenu, 'Data')
     frame.Bind(wx.EVT_MENU, loadData, fileLoad)
     frame.Bind(wx.EVT_MENU, saveData, fileSave)
     frame.Bind(wx.EVT_MENU, emptyFrame, fileQuit)
 
     helpMenu = wx.Menu()
-    helpAbout = helpMenu.Append(wx.ID_ABOUT, 'About', 'About')
-    helpManual = helpMenu.Append(wx.ID_HELP, 'Manual', 'Manual')
+    helpAbout = helpMenu.Append(wx.ID_ANY, 'About', 'About')
+    helpManual = helpMenu.Append(wx.ID_ANY, 'Manual', 'Manual')
     MenuBar.Append(helpMenu, 'Help')
     frame.Bind(wx.EVT_MENU, about, helpAbout)
     frame.Bind(wx.EVT_MENU, manual, helpManual)
@@ -127,10 +171,10 @@ def buildUI(frame):
     frame.grid.EnableDragCell()
     frame.grid.EnableDragColMove()
 
+    frame.grid.Bind(grid.EVT_GRID_LABEL_RIGHT_CLICK, LabelMenu)
+
     frame.csvbox.Add(frame.grid, wx.ID_ANY, wx.EXPAND)
     frame.panelTop.SetSizer(frame.csvbox)
-
-
 
 app = wx.App()
 frame = wx.Frame(None, title='FCA', size=(1200, 750))
