@@ -1,15 +1,15 @@
 import wx
 import wx.grid as grid
-import tkinter
 import csv
-from tkinter.filedialog import askopenfilename
+import tkinter.filedialog
 
 
 def loadData(e):
 
     tkinter.Tk().withdraw()
-    filePath = askopenfilename()
-    print(filePath)
+    filePath = tkinter.filedialog.askopenfilename()
+    if filePath == "":
+        return
     with open(filePath) as csvfile:
 
         values = csv.reader(csvfile, delimiter=',', quotechar='"', escapechar='\\', quoting=csv.QUOTE_ALL)
@@ -34,7 +34,32 @@ def loadData(e):
                     j += 1
 
 def saveData(e):
-    print("Save Data")
+
+    tkinter.Tk().withdraw()
+    filePath = tkinter.filedialog.asksaveasfilename(defaultextension=".csv")
+    if filePath == "":
+        return
+
+    content = ""
+    rowCount = frame.grid.GetNumberRows()
+    rowLen = frame.grid.GetNumberCols()
+    for i in range(rowCount):
+        for j in range(rowLen):
+
+            value = frame.grid.GetCellValue(i, j)
+            value = value.replace(",", "\,")
+            content += value
+            if j < rowLen:
+                content += ","
+        content += "\n"
+
+    f = open(filePath, "w")
+    f.seek(0)
+    f.write(content)
+    f.truncate()
+    f.close()
+
+
 
 
 def emptyFrame(e):
