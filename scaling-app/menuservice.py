@@ -102,6 +102,7 @@ class menuService:
     def getAddRow(self, labelevent):
         def addRow(evt):
             self.frame.grid.AppendRows()
+            self.cascadeRow(labelevent.GetRow())
 
         return addRow
 
@@ -140,5 +141,43 @@ class menuService:
             if name != "":
                 self.frame.grid.AppendCols()
                 self.frame.grid.SetColLabelValue(self.frame.grid.GetNumberCols()-1, name)
+                self.cascadeCol(labelevent.GetCol())
 
         return addCol
+
+
+    def cascadeRow(self, pos):
+        numberRows = self.frame.grid.GetNumberRows()
+        i = 0
+        while i < numberRows - pos - 2:
+            self.swapRow(numberRows-2 - i, numberRows-1 - i)
+            i += 1
+
+    def swapRow(self, a, b):
+        for i in range(self.frame.grid.GetNumberCols()):
+
+            temp = self.frame.grid.GetCellValue(a, i)
+            self.frame.grid.SetCellValue(a, i, self.frame.grid.GetCellValue(b, i))
+            self.frame.grid.SetCellValue(b, i, temp)
+
+    def cascadeCol(self, pos):
+        numberCols = self.frame.grid.GetNumberCols()
+        i = 0
+        while i < numberCols - pos - 2:
+            self.swapCol(numberCols-2 - i, numberCols-1 - i)
+            i += 1
+
+    def swapCol(self, a, b):
+
+        temp = self.frame.grid.GetColLabelValue(a)
+        self.frame.grid.SetColLabelValue(a, self.frame.grid.GetColLabelValue(b))
+        self.frame.grid.SetColLabelValue(b, temp)
+        print(a)
+        print(b)
+        print("\n")
+        for i in range(self.frame.grid.GetNumberRows()):
+
+            temp = self.frame.grid.GetCellValue(i, a)
+            self.frame.grid.SetCellValue(i, a, self.frame.grid.GetCellValue(i, b))
+            self.frame.grid.SetCellValue(i, b, temp)
+
