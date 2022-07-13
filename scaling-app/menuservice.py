@@ -84,7 +84,14 @@ class menuService:
     def quitScaling(self, e):
         exit(0)
 
+    def compConcepts(self, e):
+        print("Compute Concepts")
 
+    def compImplications(self, e):
+        print("Compute Implications")
+
+    def compRules(self, e):
+        print("Compute Rules")
 
     def getDeleteRow(self, labelEvent):
         def deleteRow(evt):

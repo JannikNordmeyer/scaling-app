@@ -66,6 +66,15 @@ def buildUI(frame):
     frame.Bind(wx.EVT_MENU, service.about, helpAbout)
     frame.Bind(wx.EVT_MENU, service.manual, helpManual)
 
+    compMenu = wx.Menu()
+    compConcepts = compMenu.Append(wx.ID_ANY, 'Compute Concepts', 'Compute Concepts')
+    compImplications = compMenu.Append(wx.ID_ANY, 'Compute Implications', 'Compute Implications')
+    compRules = compMenu.Append(wx.ID_ANY, 'Compute Rules', 'Compute Rules')
+    MenuBar.Append(compMenu, 'Compute')
+    frame.Bind(wx.EVT_MENU, service.compConcepts, compConcepts)
+    frame.Bind(wx.EVT_MENU, service.compImplications, compImplications)
+    frame.Bind(wx.EVT_MENU, service.compRules, compRules)
+
     quitMenu = wx.Menu()
     quitQuitScaling = quitMenu.Append(wx.ID_EXIT, 'Quit Scaling', 'Quit Scaling')
     MenuBar.Append(quitMenu, 'Quit Scaling')
