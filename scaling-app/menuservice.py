@@ -72,16 +72,16 @@ class menuService:
         f.truncate()
         f.close()
 
-    def emptyFrame(e):
+    def emptyFrame(self, e):
         print("Empty Frame")
 
-    def manual(e):
+    def manual(self, e):
         print("Manual")
 
-    def about(e):
+    def about(self, e):
         print("About")
 
-    def quitScaling(e):
+    def quitScaling(self, e):
         exit(0)
 
 
@@ -172,9 +172,6 @@ class menuService:
         temp = self.frame.grid.GetColLabelValue(a)
         self.frame.grid.SetColLabelValue(a, self.frame.grid.GetColLabelValue(b))
         self.frame.grid.SetColLabelValue(b, temp)
-        print(a)
-        print(b)
-        print("\n")
         for i in range(self.frame.grid.GetNumberRows()):
 
             temp = self.frame.grid.GetCellValue(i, a)

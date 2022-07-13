@@ -1,8 +1,9 @@
 import wx
 import wx.grid as grid
-import csv
-import tkinter.filedialog
 import menuservice
+import concepts
+import implications
+import rules
 
 def RowMenu(evt):
 
@@ -34,6 +35,7 @@ def ColMenu(evt):
     frame.PopupMenu(menu)
     menu.Destroy()
 
+
 def LabelMenu(evt):
 
     evt.Skip()
@@ -41,6 +43,7 @@ def LabelMenu(evt):
         RowMenu(evt)
     else:
         ColMenu(evt)
+
 
 def buildUI(frame):
 
@@ -91,10 +94,22 @@ def buildUI(frame):
     frame.grid.EnableDragCell()
     frame.grid.EnableDragColMove()
 
+    frame.tabpane = wx.BoxSizer()
+    frame.tabs = wx.Notebook(frame.panelBottom)
+    tab1 = concepts.Concepts(frame.tabs)
+    tab2 = implications.Implications(frame.tabs)
+    tab3 = rules.Rules(frame.tabs)
+    frame.tabs.AddPage(tab1, "Concepts")
+    frame.tabs.AddPage(tab2, "Implications")
+    frame.tabs.AddPage(tab3, "Rules")
+
     frame.grid.Bind(grid.EVT_GRID_LABEL_RIGHT_CLICK, LabelMenu)
 
     frame.csvbox.Add(frame.grid, wx.ID_ANY, wx.EXPAND)
     frame.panelTop.SetSizer(frame.csvbox)
+
+    frame.tabpane.Add(frame.tabs, wx.ID_ANY, wx.EXPAND)
+    frame.panelBottom.SetSizer(frame.tabpane)
 
 app = wx.App()
 frame = wx.Frame(None, title='FCA', size=(1200, 750))
