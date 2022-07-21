@@ -1,3 +1,5 @@
+import json
+
 import wx
 import wx.grid as grid
 import csv
@@ -36,6 +38,17 @@ class menuService:
                     for entry in row:
                         self.frame.grid.SetCellValue(values.line_num - 2, j, entry)
                         j += 1
+
+    def loadContext(self, e):
+
+        tkinter.Tk().withdraw()
+        filePath = tkinter.filedialog.askopenfilename()
+        if filePath == "":
+            return
+        file = open(filePath)
+        data = json.load(file)
+        print(data)
+
 
     def saveData(self, e):
 
@@ -94,6 +107,7 @@ class menuService:
         print("Compute Rules")
 
     def getDeleteRow(self, labelEvent):
+        print(type(labelEvent))
         def deleteRow(evt):
             self.frame.grid.DeleteRows(pos=labelEvent.GetRow(), updateLabels=False)
 
@@ -184,4 +198,3 @@ class menuService:
             temp = self.frame.grid.GetCellValue(i, a)
             self.frame.grid.SetCellValue(i, a, self.frame.grid.GetCellValue(i, b))
             self.frame.grid.SetCellValue(i, b, temp)
-
