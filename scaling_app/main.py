@@ -47,6 +47,18 @@ def label_menu(evt):
         show_col_menu(evt)
 
 
+def graph_menu(evt):
+    menu = wx.Menu()
+    redraw = menu.Append(wx.ID_ANY, "Redraw Lattice")
+    clear = menu.Append(wx.ID_ANY, "Clear Lattice")
+
+    frame.Bind(wx.EVT_MENU, gservice.redraw_lattice, redraw)
+    frame.Bind(wx.EVT_MENU, gservice.clear, clear)
+
+    frame.PopupMenu(menu)
+    menu.Destroy()
+
+
 def build_ui():
 
     menu_bar = wx.MenuBar()
@@ -94,7 +106,6 @@ def build_ui():
     frame.panelBottom = wx.Panel(frame.vsplitter, wx.ID_ANY, style=wx.BORDER_SUNKEN)
 
     frame.vsplitter.SplitHorizontally(frame.panelTop, frame.panelBottom)
-
     frame.hsplitter.SplitVertically(frame.panelLeft, frame.vsplitter)
     frame.hsplitter.SetMinimumPaneSize(100)
     frame.hsplitter.SetSashPosition(400)
@@ -118,6 +129,7 @@ def build_ui():
     frame.tabs.AddPage(tab3, "Rules")
 
     frame.grid.Bind(grid.EVT_GRID_LABEL_RIGHT_CLICK, label_menu)
+    frame.panelLeft.Bind(wx.EVT_RIGHT_UP, graph_menu)
 
     frame.csvbox.Add(frame.grid, wx.ID_ANY, wx.EXPAND)
     frame.panelTop.SetSizer(frame.csvbox)

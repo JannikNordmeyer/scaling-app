@@ -9,6 +9,9 @@ class GraphService:
 
     def draw_lattice(self):
 
+        if self.datastorage.context is None:
+            return
+
         maxwidth = 1
         maxdepth = 1
 
@@ -38,3 +41,14 @@ class GraphService:
                 dc.DrawCircle(coords[0]*(width/(2*maxwidth)) + width/2, coords[1]*(height/maxdepth)*0.9 + height*0.04, 8)
                 dc.DrawText(name, coords[0]*(width/(2*maxwidth)) + width/2 + 10, coords[1]*(height/maxdepth)*0.9 + height*0.04 - 7)
         dc.Destroy()
+
+    def redraw_lattice(self, evt=None):
+        dc = wx.ClientDC(self.frame.panelLeft)
+        dc.Clear()
+        self.draw_lattice()
+
+    def clear(self, evt=None):
+        dc = wx.ClientDC(self.frame.panelLeft)
+        dc.Clear()
+        self.datastorage.context = None
+
