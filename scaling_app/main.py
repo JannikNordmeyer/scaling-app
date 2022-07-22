@@ -41,7 +41,7 @@ def build_ui():
     quit_menu = wx.Menu()
     quit_quit_scaling = quit_menu.Append(wx.ID_EXIT, 'Quit Scaling', 'Quit Scaling')
     menu_bar.Append(quit_menu, 'Quit Scaling')
-    frame.Bind(wx.EVT_MENU, menuservice.quit_scaling, quit_quit_scaling)
+    frame.Bind(wx.EVT_MENU, mservice.quit_scaling, quit_quit_scaling)
 
     frame.SetMenuBar(menu_bar)
 
@@ -65,6 +65,7 @@ def build_ui():
     frame.grid.CreateGrid(16, 8)
     frame.grid.EnableDragCell()
     frame.grid.EnableDragColMove()
+    frame.grid.Bind(grid.EVT_GRID_CELL_CHANGED, storage.set_edited)
 
     frame.tabpane = wx.BoxSizer()
     frame.tabs = wx.Notebook(frame.panelBottom)
@@ -97,4 +98,5 @@ build_ui()
 frame.Show()
 frame.Bind(wx.EVT_SIZE, mservice.redraw)
 frame.Bind(wx.EVT_MOVE_END, mservice.redraw)
+frame.Bind(wx.EVT_CLOSE, mservice.quit_scaling)
 app.MainLoop()

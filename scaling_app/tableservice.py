@@ -34,11 +34,14 @@ class TableService:
     def get_delete_row(self, labelevent):
         def delete_row(evt):
             self.frame.grid.DeleteRows(pos=labelevent.GetRow(), updateLabels=False)
+            self.datastorage.edited = True
 
         return delete_row
 
     def get_clear_row(self, labelevent):
         def clear_row(evt):
+            if not self.is_empty():
+                self.datastorage.edited = True
             for i in range(self.frame.grid.GetNumberCols()):
                 self.frame.grid.SetCellValue(labelevent.GetRow(), i, "")
 
@@ -48,17 +51,21 @@ class TableService:
         def add_row(evt):
             self.frame.grid.AppendRows()
             self.cascade_row(labelevent.GetRow())
+            self.datastorage.set_edited()
 
         return add_row
 
     def get_delete_col(self, labelevent):
         def delete_col(evt):
             self.frame.grid.DeleteCols(pos=labelevent.GetCol(), updateLabels=False)
+            self.datastorage.set_edited()
 
         return delete_col
 
     def get_clear_col(self, labelevent):
         def clear_col(evt):
+            if not self.is_empty():
+                self.datastorage.set_edited()
             for i in range(self.frame.grid.GetNumberRows()):
                 self.frame.grid.SetCellValue(i, labelevent.GetCol(), "")
 
@@ -73,6 +80,7 @@ class TableService:
             dialog.Destroy()
             if name != "":
                 self.frame.grid.SetColLabelValue(labelevent.GetCol(), name)
+                self.datastorage.set_edited()
 
         return edit_label
 
@@ -87,6 +95,7 @@ class TableService:
                 self.frame.grid.AppendCols()
                 self.frame.grid.SetColLabelValue(self.frame.grid.GetNumberCols()-1, name)
                 self.cascade_col(labelevent.GetCol())
+                self.datastorage.set_edited()
 
         return add_col
 
@@ -123,6 +132,8 @@ class TableService:
             self.frame.grid.SetCellValue(i, b, temp)
 
     def clear_table(self, evt):
+        if not self.is_empty():
+            self.datastorage.set_edited()
         for i in range(self.frame.grid.GetNumberRows()):
             for j in range(self.frame.grid.GetNumberCols()):
                 self.frame.grid.SetCellValue(i, j, "")
@@ -132,3 +143,11 @@ class TableService:
         self.frame.grid.DeleteCols(0, self.frame.grid.GetNumberCols())
         self.frame.grid.AppendRows(16)
         self.frame.grid.AppendCols(8)
+
+    def is_empty(self):
+        for i in range(self.frame.grid.GetNumberRows()):
+            for j in range(self.frame.grid.GetNumberCols()):
+                if self.frame.grid.GetCellValue(i, j) != "":
+                    return False
+        return True
+

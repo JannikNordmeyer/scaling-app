@@ -3,10 +3,6 @@ import wx
 import tkinter.filedialog
 
 
-def quit_scaling(e):
-    exit(0)
-
-
 class MenuService:
 
     def __init__(self, frame, datastorage, tableservice, graphservice):
@@ -152,6 +148,7 @@ class MenuService:
         f.write(content)
         f.truncate()
         f.close()
+        self.datastorage.clear_edited()
 
     def empty_frame(self, e):
         print("Empty Frame")
@@ -170,3 +167,14 @@ class MenuService:
 
     def comp_rules(self, e):
         print("Compute Rules")
+
+    def quit_scaling(self, e=None):
+        if not self.datastorage.edited:
+            exit(0)
+        else:
+            errortext = 'You have unsaved changes. Do you want to close the application regardless?'
+            dialog = wx.MessageDialog(None, errortext, 'Data Loss Warning', wx.ICON_WARNING | wx.YES_NO)
+            answer = dialog.ShowModal()
+            if answer == wx.ID_YES:
+                dialog.Destroy()
+                exit(0)
