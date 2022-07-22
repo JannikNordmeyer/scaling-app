@@ -3,7 +3,11 @@ import wx
 import tkinter.filedialog
 
 
-class menuService:
+def quit_scaling(e):
+    exit(0)
+
+
+class MenuService:
 
     def __init__(self, frame, datastorage, tableservice, graphservice):
         self.frame = frame
@@ -15,81 +19,81 @@ class menuService:
         dc = wx.ClientDC(self.frame.panelLeft)
         dc.Clear()
         if self.datastorage.context is not None:
-            self.graphservice.drawLattice()
+            self.graphservice.draw_lattice()
         event.Skip()
 
-    def loadData(self, e):
+    def load_data(self, e):
 
         tkinter.Tk().withdraw()
-        filePath = tkinter.filedialog.askopenfilename(filetypes=[("CSV files", "*.csv")])
-        if filePath == "":
+        filepath = tkinter.filedialog.askopenfilename(filetypes=[("CSV files", "*.csv")])
+        if filepath == "":
             return
-        csvfile = open(filePath)
-        storagebackup = self.datastorage.data
+        csvfile = open(filepath)
+        storage_backup = self.datastorage.data
         self.datastorage.data = csvfile
         try:
-            self.tableservice.fillTable()
+            self.tableservice.fill_table()
         except:
             errortext = 'An error has occurred loading the context from the selected file. The file may be poorly formatted.'
             dialog = wx.MessageDialog(None, errortext, 'Error Loading Context', wx.OK)
             dialog.ShowModal()
             dialog.Destroy()
-            self.datastorage.data = storagebackup
+            self.datastorage.data = storage_backup
 
-    def loadLattice(self, e):
+    def load_lattice(self, e):
 
         tkinter.Tk().withdraw()
-        filePath = tkinter.filedialog.askopenfilename(filetypes=[("JSON files", "*.json")])
-        if filePath == "":
+        filepath = tkinter.filedialog.askopenfilename(filetypes=[("JSON files", "*.json")])
+        if filepath == "":
             return
-        file = open(filePath)
-        storagebackup = self.datastorage.context
+        file = open(filepath)
+        storage_backup = self.datastorage.context
         self.datastorage.context = json.load(file)
         try:
-            self.graphservice.drawLattice()
+            self.graphservice.draw_lattice()
         except:
             errortext = 'An error has occurred loading the context from the selected file. The file may be poorly formatted, or not contain a formal context lattice.'
             dialog = wx.MessageDialog(None, errortext, 'Error Loading Context', wx.OK)
             dialog.ShowModal()
             dialog.Destroy()
-            self.datastorage.context = storagebackup
+            self.datastorage.context = storage_backup
 
-    def saveData(self, e):
+    def save_data(self, e):
 
         tkinter.Tk().withdraw()
-        filePath = tkinter.filedialog.asksaveasfilename(defaultextension=".csv")
-        if filePath == "":
+        filepath = tkinter.filedialog.asksaveasfilename(defaultextension=".csv")
+        if filepath == "":
             return
 
         content = ""
-        rowCount = self.frame.grid.GetNumberRows()
-        rowLen = self.frame.grid.GetNumberCols()
+        row_count = self.frame.grid.GetNumberRows()
+        row_len = self.frame.grid.GetNumberCols()
 
-        for labels in range(rowLen):
+        for labels in range(row_len):
             value = self.frame.grid.GetColLabelValue(labels)
             value = value.replace(",", "\,")
             content += value
-            if labels < rowLen - 1:
+            if labels < row_len - 1:
                 content += ","
         content += "\n"
 
-        for i in range(rowCount):
-            for j in range(rowLen):
+        for i in range(row_count):
+            for j in range(row_len):
 
                 value = self.frame.grid.GetCellValue(i, j)
                 value = value.replace(",", "\,")
                 content += value
-                if j < rowLen - 1:
+                if j < row_len - 1:
                     content += ","
             content += "\n"
 
-        f = open(filePath, "w")
+        f = open(filepath, "w")
         f.seek(0)
         f.write(content)
         f.truncate()
         f.close()
 
-    def emptyFrame(self, e):
+    def empty_frame(self, e):
         print("Empty Frame")
 
     def manual(self, e):
@@ -98,15 +102,11 @@ class menuService:
     def about(self, e):
         print("About")
 
-    def quitScaling(self, e):
-        exit(0)
-
-    def compConcepts(self, e):
+    def comp_concepts(self, e):
         print("Compute Concepts")
 
-    def compImplications(self, e):
+    def comp_implications(self, e):
         print("Compute Implications")
 
-    def compRules(self, e):
+    def comp_rules(self, e):
         print("Compute Rules")
-

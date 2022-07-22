@@ -1,10 +1,10 @@
 import unittest
 import wx
-from scaling_app.main import buildUI
+from scaling_app.main import build_ui
 from scaling_app import menuservice
 import wx.grid as grid
 
-
+#nonfunctional test
 class TableTest(unittest.TestCase):
 
     def test_getDeleteRow(self):

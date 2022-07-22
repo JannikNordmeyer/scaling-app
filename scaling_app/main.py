@@ -6,22 +6,22 @@ from scaling_app import implications
 from scaling_app import rules
 
 
-def RowMenu(evt):
+def show_row_menu(evt):
 
     menu = wx.Menu()
     delrow = menu.Append(wx.ID_ANY, "Delete Row")
     clearrow = menu.Append(wx.ID_ANY, "Clear Row")
     new = menu.Append(wx.ID_ANY, "Add Row")
 
-    frame.Bind(wx.EVT_MENU, tservice.getDeleteRow(evt), delrow)
-    frame.Bind(wx.EVT_MENU, tservice.getCleareRow(evt), clearrow)
-    frame.Bind(wx.EVT_MENU, tservice.getAddRow(evt), new)
+    frame.Bind(wx.EVT_MENU, tservice.get_delete_row(evt), delrow)
+    frame.Bind(wx.EVT_MENU, tservice.get_clear_row(evt), clearrow)
+    frame.Bind(wx.EVT_MENU, tservice.get_add_row(evt), new)
 
     frame.PopupMenu(menu)
     menu.Destroy()
 
 
-def ColMenu(evt):
+def show_col_menu(evt):
 
     menu = wx.Menu()
     delcol = menu.Append(wx.ID_ANY, "Delete Column")
@@ -29,62 +29,62 @@ def ColMenu(evt):
     edit = menu.Append(wx.ID_ANY, "Edit Label")
     new = menu.Append(wx.ID_ANY, "Add Column")
 
-    frame.Bind(wx.EVT_MENU, tservice.getDeleteCol(evt), delcol)
-    frame.Bind(wx.EVT_MENU, tservice.getCleareCol(evt), clearcol)
-    frame.Bind(wx.EVT_MENU, tservice.getEditLabel(evt), edit)
-    frame.Bind(wx.EVT_MENU, tservice.getAddCol(evt), new)
+    frame.Bind(wx.EVT_MENU, tservice.get_delete_col(evt), delcol)
+    frame.Bind(wx.EVT_MENU, tservice.get_clear_col(evt), clearcol)
+    frame.Bind(wx.EVT_MENU, tservice.get_edit_label(evt), edit)
+    frame.Bind(wx.EVT_MENU, tservice.get_add_col(evt), new)
 
     frame.PopupMenu(menu)
     menu.Destroy()
 
 
-def LabelMenu(evt):
+def label_menu(evt):
 
     evt.Skip()
     if evt.GetCol() == -1:
-        RowMenu(evt)
+        show_row_menu(evt)
     else:
-        ColMenu(evt)
+        show_col_menu(evt)
 
 
-def buildUI(frame):
+def build_ui():
 
-    MenuBar = wx.MenuBar()
+    menu_bar = wx.MenuBar()
 
-    fileMenu = wx.Menu()
-    fileLoad = fileMenu.Append(wx.ID_ANY, 'Load Data', 'Load Data')
-    graphLoad = fileMenu.Append(wx.ID_ANY, 'Load Lattice', 'Load Lattice')
-    fileSave = fileMenu.Append(wx.ID_ANY, 'Save Data', 'Save Data')
-    fileMenu.AppendSeparator()
-    fileQuit = fileMenu.Append(wx.ID_ANY, 'Empty Frame', 'Empty Frame')
-    MenuBar.Append(fileMenu, 'Data')
-    frame.Bind(wx.EVT_MENU, mservice.loadData, fileLoad)
-    frame.Bind(wx.EVT_MENU, mservice.loadLattice, graphLoad)
-    frame.Bind(wx.EVT_MENU, mservice.saveData, fileSave)
-    frame.Bind(wx.EVT_MENU, mservice.emptyFrame, fileQuit)
+    file_menu = wx.Menu()
+    file_load = file_menu.Append(wx.ID_ANY, 'Load Data', 'Load Data')
+    graph_load = file_menu.Append(wx.ID_ANY, 'Load Lattice', 'Load Lattice')
+    file_save = file_menu.Append(wx.ID_ANY, 'Save Data', 'Save Data')
+    file_menu.AppendSeparator()
+    file_quit = file_menu.Append(wx.ID_ANY, 'Empty Frame', 'Empty Frame')
+    menu_bar.Append(file_menu, 'Data')
+    frame.Bind(wx.EVT_MENU, mservice.load_data, file_load)
+    frame.Bind(wx.EVT_MENU, mservice.load_lattice, graph_load)
+    frame.Bind(wx.EVT_MENU, mservice.save_data, file_save)
+    frame.Bind(wx.EVT_MENU, mservice.empty_frame, file_quit)
 
-    helpMenu = wx.Menu()
-    helpAbout = helpMenu.Append(wx.ID_ANY, 'About', 'About')
-    helpManual = helpMenu.Append(wx.ID_ANY, 'Manual', 'Manual')
-    MenuBar.Append(helpMenu, 'Help')
-    frame.Bind(wx.EVT_MENU, mservice.about, helpAbout)
-    frame.Bind(wx.EVT_MENU, mservice.manual, helpManual)
+    help_menu = wx.Menu()
+    help_about = help_menu.Append(wx.ID_ANY, 'About', 'About')
+    help_manual = help_menu.Append(wx.ID_ANY, 'Manual', 'Manual')
+    menu_bar.Append(help_menu, 'Help')
+    frame.Bind(wx.EVT_MENU, mservice.about, help_about)
+    frame.Bind(wx.EVT_MENU, mservice.manual, help_manual)
 
-    compMenu = wx.Menu()
-    compConcepts = compMenu.Append(wx.ID_ANY, 'Compute Concepts', 'Compute Concepts')
-    compImplications = compMenu.Append(wx.ID_ANY, 'Compute Implications', 'Compute Implications')
-    compRules = compMenu.Append(wx.ID_ANY, 'Compute Rules', 'Compute Rules')
-    MenuBar.Append(compMenu, 'Compute')
-    frame.Bind(wx.EVT_MENU, mservice.compConcepts, compConcepts)
-    frame.Bind(wx.EVT_MENU, mservice.compImplications, compImplications)
-    frame.Bind(wx.EVT_MENU, mservice.compRules, compRules)
+    comp_menu = wx.Menu()
+    comp_concepts = comp_menu.Append(wx.ID_ANY, 'Compute Concepts', 'Compute Concepts')
+    comp_implications = comp_menu.Append(wx.ID_ANY, 'Compute Implications', 'Compute Implications')
+    comp_rules = comp_menu.Append(wx.ID_ANY, 'Compute Rules', 'Compute Rules')
+    menu_bar.Append(comp_menu, 'Compute')
+    frame.Bind(wx.EVT_MENU, mservice.comp_concepts, comp_concepts)
+    frame.Bind(wx.EVT_MENU, mservice.comp_implications, comp_implications)
+    frame.Bind(wx.EVT_MENU, mservice.comp_rules, comp_rules)
 
-    quitMenu = wx.Menu()
-    quitQuitScaling = quitMenu.Append(wx.ID_EXIT, 'Quit Scaling', 'Quit Scaling')
-    MenuBar.Append(quitMenu, 'Quit Scaling')
-    frame.Bind(wx.EVT_MENU, mservice.quitScaling, quitQuitScaling)
+    quit_menu = wx.Menu()
+    quit_quit_scaling = quit_menu.Append(wx.ID_EXIT, 'Quit Scaling', 'Quit Scaling')
+    menu_bar.Append(quit_menu, 'Quit Scaling')
+    frame.Bind(wx.EVT_MENU, menuservice.quit_scaling, quit_quit_scaling)
 
-    frame.SetMenuBar(MenuBar)
+    frame.SetMenuBar(menu_bar)
 
     frame.hsplitter = wx.SplitterWindow(frame, style = wx.SP_LIVE_UPDATE)
     frame.vsplitter = wx.SplitterWindow(frame.hsplitter, style = wx.SP_LIVE_UPDATE)
@@ -117,7 +117,7 @@ def buildUI(frame):
     frame.tabs.AddPage(tab2, "Implications")
     frame.tabs.AddPage(tab3, "Rules")
 
-    frame.grid.Bind(grid.EVT_GRID_LABEL_RIGHT_CLICK, LabelMenu)
+    frame.grid.Bind(grid.EVT_GRID_LABEL_RIGHT_CLICK, label_menu)
 
     frame.csvbox.Add(frame.grid, wx.ID_ANY, wx.EXPAND)
     frame.panelTop.SetSizer(frame.csvbox)
@@ -130,10 +130,10 @@ app = wx.App()
 frame = wx.Frame(None, title='FCA', size=(1200, 750))
 frame.Center()
 storage = datastorage.datastorage()
-tservice = tableservice.tableservice(frame, storage)
-gservice = graphservice.graphservice(frame, storage)
-mservice = menuservice.menuService(frame, storage, tservice, gservice)
-buildUI(frame)
+tservice = tableservice.TableService(frame, storage)
+gservice = graphservice.GraphService(frame, storage)
+mservice = menuservice.MenuService(frame, storage, tservice, gservice)
+build_ui()
 frame.Show()
 frame.Bind(wx.EVT_SIZE, mservice.redraw)
 frame.Bind(wx.EVT_MOVE_END, mservice.redraw)

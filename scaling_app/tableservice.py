@@ -2,13 +2,13 @@ import csv
 import wx
 
 
-class tableservice:
+class TableService:
 
     def __init__(self, frame, datastorage):
         self.frame = frame
         self.datastorage = datastorage
 
-    def fillTable(self):
+    def fill_table(self):
 
         values = csv.reader(self.datastorage.data, delimiter=',', quotechar='"', escapechar='\\', quoting=csv.QUOTE_ALL)
 
@@ -31,41 +31,41 @@ class tableservice:
                     self.frame.grid.SetCellValue(values.line_num - 2, j, entry)
                     j += 1
 
-    def getDeleteRow(self, labelEvent):
-        def deleteRow(evt):
-            self.frame.grid.DeleteRows(pos=labelEvent.GetRow(), updateLabels=False)
+    def get_delete_row(self, labelevent):
+        def delete_row(evt):
+            self.frame.grid.DeleteRows(pos=labelevent.GetRow(), updateLabels=False)
 
-        return deleteRow
+        return delete_row
 
-    def getCleareRow(self, labelEvent):
-        def clearRow(evt):
+    def get_clear_row(self, labelevent):
+        def clear_row(evt):
             for i in range(self.frame.grid.GetNumberCols()):
-                self.frame.grid.SetCellValue(labelEvent.GetRow(), i, "")
+                self.frame.grid.SetCellValue(labelevent.GetRow(), i, "")
 
-        return clearRow
+        return clear_row
 
-    def getAddRow(self, labelevent):
-        def addRow(evt):
+    def get_add_row(self, labelevent):
+        def add_row(evt):
             self.frame.grid.AppendRows()
-            self.cascadeRow(labelevent.GetRow())
+            self.cascade_row(labelevent.GetRow())
 
-        return addRow
+        return add_row
 
-    def getDeleteCol(self, labelEvent):
-        def deleteCol(evt):
-            self.frame.grid.DeleteCols(pos=labelEvent.GetCol(), updateLabels=False)
+    def get_delete_col(self, labelevent):
+        def delete_col(evt):
+            self.frame.grid.DeleteCols(pos=labelevent.GetCol(), updateLabels=False)
 
-        return deleteCol
+        return delete_col
 
-    def getCleareCol(self, labelEvent):
-        def clearCol(evt):
+    def get_clear_col(self, labelevent):
+        def clear_col(evt):
             for i in range(self.frame.grid.GetNumberRows()):
-                self.frame.grid.SetCellValue(i, labelEvent.GetCol(), "")
+                self.frame.grid.SetCellValue(i, labelevent.GetCol(), "")
 
-        return clearCol
+        return clear_col
 
-    def getEditLabel(self, labelevent):
-        def editLabel(evt):
+    def get_edit_label(self, labelevent):
+        def edit_label(evt):
             dialog = wx.TextEntryDialog(None, "Column name:", caption="New Column", value="",
                                         style=wx.TextEntryDialogStyle, pos=wx.DefaultPosition)
             dialog.ShowModal()
@@ -74,10 +74,10 @@ class tableservice:
             if name != "":
                 self.frame.grid.SetColLabelValue(labelevent.GetCol(), name)
 
-        return editLabel
+        return edit_label
 
-    def getAddCol(self, labelevent):
-        def addCol(evt):
+    def get_add_col(self, labelevent):
+        def add_col(evt):
             dialog = wx.TextEntryDialog(None, "Column name:", caption="New Column", value="",
                                         style=wx.TextEntryDialogStyle, pos=wx.DefaultPosition)
             dialog.ShowModal()
@@ -86,33 +86,32 @@ class tableservice:
             if name != "":
                 self.frame.grid.AppendCols()
                 self.frame.grid.SetColLabelValue(self.frame.grid.GetNumberCols()-1, name)
-                self.cascadeCol(labelevent.GetCol())
+                self.cascade_col(labelevent.GetCol())
 
-        return addCol
+        return add_col
 
-
-    def cascadeRow(self, pos):
-        numberRows = self.frame.grid.GetNumberRows()
+    def cascade_row(self, pos):
+        number_rows = self.frame.grid.GetNumberRows()
         i = 0
-        while i < numberRows - pos - 2:
-            self.swapRow(numberRows-2 - i, numberRows-1 - i)
+        while i < number_rows - pos - 2:
+            self.swap_row(number_rows - 2 - i, number_rows - 1 - i)
             i += 1
 
-    def swapRow(self, a, b):
+    def swap_row(self, a, b):
         for i in range(self.frame.grid.GetNumberCols()):
 
             temp = self.frame.grid.GetCellValue(a, i)
             self.frame.grid.SetCellValue(a, i, self.frame.grid.GetCellValue(b, i))
             self.frame.grid.SetCellValue(b, i, temp)
 
-    def cascadeCol(self, pos):
-        numberCols = self.frame.grid.GetNumberCols()
+    def cascade_col(self, pos):
+        number_cols = self.frame.grid.GetNumberCols()
         i = 0
-        while i < numberCols - pos - 2:
-            self.swapCol(numberCols-2 - i, numberCols-1 - i)
+        while i < number_cols - pos - 2:
+            self.swap_col(number_cols - 2 - i, number_cols - 1 - i)
             i += 1
 
-    def swapCol(self, a, b):
+    def swap_col(self, a, b):
 
         temp = self.frame.grid.GetColLabelValue(a)
         self.frame.grid.SetColLabelValue(a, self.frame.grid.GetColLabelValue(b))
