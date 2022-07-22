@@ -7,8 +7,15 @@ import tkinter.filedialog
 
 class menuService:
 
-    def __init__(self, frame):
+    def __init__(self, frame, datastorage):
         self.frame = frame
+        self.datastorage = datastorage
+
+    def redraw(self, event):
+        dc = wx.ClientDC(self.frame.panelLeft)
+        dc.Clear()
+        self.drawLattice()
+        event.Skip()
 
     def loadData(self, e):
 
@@ -46,14 +53,17 @@ class menuService:
         if filePath == "":
             return
         file = open(filePath)
-        data = json.load(file)
+        self.datastorage.context = json.load(file)
+        self.drawLattice()
+
+    def drawLattice(self):
 
         maxwidth = 1
         maxdepth = 1
 
         allnodes = dict()
 
-        for node in data['positions']:
+        for node in self.datastorage.context['positions']:
             for name, coords in node.items():
                 allnodes[name] = coords
                 if abs(coords[0]) > maxwidth:
@@ -65,21 +75,18 @@ class menuService:
 
         width, height =self.frame.panelLeft.GetSize()
 
-        for edges in data['edges']:
+        for edges in self.datastorage.context['edges']:
             for origin in edges:
                 for target in edges[origin]:
-                    print(allnodes[origin][0])
                     dc.DrawLine(allnodes[origin][0]*(width/(2*maxwidth)) + width/2,
                                 allnodes[origin][1]*(height/maxdepth)*0.9 + height*0.04,
                                 allnodes[target][0]*(width/(2*maxwidth)) + width/2,
                                 allnodes[target][1]*(height/maxdepth)*0.9 + height*0.04)
 
-        for node in data['positions']:
+        for node in self.datastorage.context['positions']:
             for name, coords in node.items():
                 dc.DrawCircle(coords[0]*(width/(2*maxwidth)) + width/2, coords[1]*(height/maxdepth)*0.9 + height*0.04, 8)
-                label = wx.StaticText(self.frame.panelLeft, -1, name, (coords[0]*(width/(2*maxwidth)) + width/2 + 10, coords[1]*(height/maxdepth)*0.9 + height*0.04 - 7))
-
-
+                dc.DrawText(name, coords[0]*(width/(2*maxwidth)) + width/2 + 10, coords[1]*(height/maxdepth)*0.9 + height*0.04 - 7)
 
     def saveData(self, e):
 

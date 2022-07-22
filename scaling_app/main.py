@@ -1,6 +1,6 @@
 import wx
 import wx.grid as grid
-from scaling_app import menuservice
+from scaling_app import menuservice, datastorage
 from scaling_app import concepts
 from scaling_app import implications
 from scaling_app import rules
@@ -125,7 +125,9 @@ def buildUI(frame):
 app = wx.App()
 frame = wx.Frame(None, title='FCA', size=(1200, 750))
 frame.Center()
-service = menuservice.menuService(frame)
+storage = datastorage.datastorage()
+service = menuservice.menuService(frame, storage)
 buildUI(frame)
 frame.Show()
+frame.Bind(wx.EVT_SIZE, service.redraw)
 app.MainLoop()
