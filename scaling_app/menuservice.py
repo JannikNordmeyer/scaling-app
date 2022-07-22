@@ -20,11 +20,12 @@ class menuService:
     def loadData(self, e):
 
         tkinter.Tk().withdraw()
-        filePath = tkinter.filedialog.askopenfilename()
+        filePath = tkinter.filedialog.askopenfilename(filetypes=[("CSV files", "*.csv")])
         if filePath == "":
             return
-        with open(filePath) as csvfile:
+        csvfile = open(filePath)
 
+        try:
             values = csv.reader(csvfile, delimiter=',', quotechar='"', escapechar='\\', quoting=csv.QUOTE_ALL)
 
             self.frame.grid.DeleteRows(0, self.frame.grid.GetNumberRows())
@@ -45,16 +46,30 @@ class menuService:
                     for entry in row:
                         self.frame.grid.SetCellValue(values.line_num - 2, j, entry)
                         j += 1
+        except:
+            errortext = 'An error has occurred loading the context from the selected file. The file may be poorly formatted.'
+            dialog = wx.MessageDialog(None, errortext, 'Error Loading Context', wx.OK)
+            dialog.ShowModal()
+            dialog.Destroy()
 
-    def loadContext(self, e):
+
+
+    def loadLattice(self, e):
 
         tkinter.Tk().withdraw()
-        filePath = tkinter.filedialog.askopenfilename()
+        filePath = tkinter.filedialog.askopenfilename(filetypes=[("JSON files", "*.json")])
         if filePath == "":
             return
         file = open(filePath)
         self.datastorage.context = json.load(file)
-        self.drawLattice()
+        try:
+            self.drawLattice()
+        except:
+            errortext = 'An error has occurred loading the context from the selected file. The file may be poorly formatted, or not contain a formal context lattice.'
+            dialog = wx.MessageDialog(None, errortext, 'Error Loading Context', wx.OK)
+            dialog.ShowModal()
+            dialog.Destroy()
+
 
     def drawLattice(self):
 

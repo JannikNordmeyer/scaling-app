@@ -51,13 +51,13 @@ def buildUI(frame):
 
     fileMenu = wx.Menu()
     fileLoad = fileMenu.Append(wx.ID_ANY, 'Load Data', 'Load Data')
-    graphLoad = fileMenu.Append(wx.ID_ANY, 'Load Context', 'Load Context')
+    graphLoad = fileMenu.Append(wx.ID_ANY, 'Load Lattice', 'Load Lattice')
     fileSave = fileMenu.Append(wx.ID_ANY, 'Save Data', 'Save Data')
     fileMenu.AppendSeparator()
     fileQuit = fileMenu.Append(wx.ID_ANY, 'Empty Frame', 'Empty Frame')
     MenuBar.Append(fileMenu, 'Data')
     frame.Bind(wx.EVT_MENU, service.loadData, fileLoad)
-    frame.Bind(wx.EVT_MENU, service.loadContext, graphLoad)
+    frame.Bind(wx.EVT_MENU, service.loadLattice, graphLoad)
     frame.Bind(wx.EVT_MENU, service.saveData, fileSave)
     frame.Bind(wx.EVT_MENU, service.emptyFrame, fileQuit)
 
