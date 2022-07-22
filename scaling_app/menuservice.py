@@ -1,7 +1,6 @@
 import json
 
 import wx
-import wx.grid as grid
 import csv
 import tkinter.filedialog
 
@@ -14,7 +13,8 @@ class menuService:
     def redraw(self, event):
         dc = wx.ClientDC(self.frame.panelLeft)
         dc.Clear()
-        self.drawLattice()
+        if self.datastorage.context != None:
+            self.drawLattice()
         event.Skip()
 
     def loadData(self, e):
@@ -71,22 +71,23 @@ class menuService:
                 if abs(coords[1]) > maxdepth:
                     maxdepth = abs(coords[1])
 
-            dc = wx.ClientDC(self.frame.panelLeft)
-
+        dc = wx.ClientDC(self.frame.panelLeft)
         width, height =self.frame.panelLeft.GetSize()
 
         for edges in self.datastorage.context['edges']:
             for origin in edges:
                 for target in edges[origin]:
-                    dc.DrawLine(allnodes[origin][0]*(width/(2*maxwidth)) + width/2,
-                                allnodes[origin][1]*(height/maxdepth)*0.9 + height*0.04,
-                                allnodes[target][0]*(width/(2*maxwidth)) + width/2,
-                                allnodes[target][1]*(height/maxdepth)*0.9 + height*0.04)
+                    dc.DrawLine(allnodes[origin][0] * (width / (2 * maxwidth)) + width / 2,
+                                allnodes[origin][1] * (height / maxdepth) * 0.9 + height * 0.04,
+                                allnodes[target][0] * (width / (2 * maxwidth)) + width / 2,
+                                allnodes[target][1] * (height / maxdepth) * 0.9 + height * 0.04)
 
         for node in self.datastorage.context['positions']:
             for name, coords in node.items():
                 dc.DrawCircle(coords[0]*(width/(2*maxwidth)) + width/2, coords[1]*(height/maxdepth)*0.9 + height*0.04, 8)
                 dc.DrawText(name, coords[0]*(width/(2*maxwidth)) + width/2 + 10, coords[1]*(height/maxdepth)*0.9 + height*0.04 - 7)
+
+        dc.Destroy()
 
     def saveData(self, e):
 

@@ -84,8 +84,8 @@ def buildUI(frame):
 
     frame.SetMenuBar(MenuBar)
 
-    frame.hsplitter = wx.SplitterWindow(frame)
-    frame.vsplitter = wx.SplitterWindow(frame.hsplitter)
+    frame.hsplitter = wx.SplitterWindow(frame, style = wx.SP_LIVE_UPDATE)
+    frame.vsplitter = wx.SplitterWindow(frame.hsplitter, style = wx.SP_LIVE_UPDATE)
 
     frame.panelLeft = wx.Panel(frame.hsplitter, wx.ID_ANY, style=wx.BORDER_SUNKEN)
     frame.panelTop = wx.Panel(frame.vsplitter, wx.ID_ANY, style=wx.BORDER_SUNKEN)
@@ -96,6 +96,7 @@ def buildUI(frame):
     frame.hsplitter.SplitVertically(frame.panelLeft, frame.vsplitter)
     frame.hsplitter.SetMinimumPaneSize(100)
     frame.hsplitter.SetSashPosition(400)
+    frame.hsplitter.Bind(wx.EVT_SPLITTER_SASH_POS_CHANGED, service.redraw)
     frame.vsplitter.SetMinimumPaneSize(100)
     frame.vsplitter.SetSashPosition(400)
 
@@ -130,4 +131,5 @@ service = menuservice.menuService(frame, storage)
 buildUI(frame)
 frame.Show()
 frame.Bind(wx.EVT_SIZE, service.redraw)
+frame.Bind(wx.EVT_MOVE_END, service.redraw)
 app.MainLoop()
