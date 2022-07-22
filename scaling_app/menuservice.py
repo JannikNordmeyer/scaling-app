@@ -15,6 +15,66 @@ class MenuService:
         self.tableservice = tableservice
         self.graphservice = graphservice
 
+    def show_row_menu(self, evt):
+
+        menu = wx.Menu()
+        delrow = menu.Append(wx.ID_ANY, "Delete Row")
+        clearrow = menu.Append(wx.ID_ANY, "Clear Row")
+        new = menu.Append(wx.ID_ANY, "Add Row")
+
+        self.frame.Bind(wx.EVT_MENU, self.tableservice.get_delete_row(evt), delrow)
+        self.frame.Bind(wx.EVT_MENU, self.tableservice.get_clear_row(evt), clearrow)
+        self.frame.Bind(wx.EVT_MENU, self.tableservice.get_add_row(evt), new)
+
+        self.frame.PopupMenu(menu)
+        menu.Destroy()
+
+    def show_col_menu(self, evt):
+
+        menu = wx.Menu()
+        delcol = menu.Append(wx.ID_ANY, "Delete Column")
+        clearcol = menu.Append(wx.ID_ANY, "Clear Column")
+        edit = menu.Append(wx.ID_ANY, "Edit Label")
+        new = menu.Append(wx.ID_ANY, "Add Column")
+
+        self.frame.Bind(wx.EVT_MENU, self.tableservice.get_delete_col(evt), delcol)
+        self.frame.Bind(wx.EVT_MENU, self.tableservice.get_clear_col(evt), clearcol)
+        self.frame.Bind(wx.EVT_MENU, self.tableservice.get_edit_label(evt), edit)
+        self.frame.Bind(wx.EVT_MENU, self.tableservice.get_add_col(evt), new)
+
+        self.frame.PopupMenu(menu)
+        menu.Destroy()
+
+    def label_menu(self, evt):
+
+        evt.Skip()
+        if evt.GetCol() == -1:
+            self.show_row_menu(evt)
+        else:
+            self.show_col_menu(evt)
+
+    def cell_menu(self, evt):
+        menu = wx.Menu()
+        clear = menu.Append(wx.ID_ANY, "Clear Table")
+        reset = menu.Append(wx.ID_ANY, "Reset Table")
+
+        self.frame.Bind(wx.EVT_MENU, self.tableservice.clear_table, clear)
+        self.frame.Bind(wx.EVT_MENU, self.tableservice.reset_table, reset)
+
+        self.frame.PopupMenu(menu)
+        menu.Destroy()
+
+    def graph_menu(self, evt):
+        menu = wx.Menu()
+        redraw = menu.Append(wx.ID_ANY, "Redraw Lattice")
+        clear = menu.Append(wx.ID_ANY, "Clear Lattice")
+
+        self.frame.Bind(wx.EVT_MENU, self.graphservice.redraw_lattice, redraw)
+        self.frame.Bind(wx.EVT_MENU, self.graphservice.clear, clear)
+
+        self.frame.PopupMenu(menu)
+        menu.Destroy()
+
     def redraw(self, event):
         dc = wx.ClientDC(self.frame.panelLeft)
         dc.Clear()

@@ -6,72 +6,6 @@ from scaling_app import implications
 from scaling_app import rules
 
 
-def show_row_menu(evt):
-
-    menu = wx.Menu()
-    delrow = menu.Append(wx.ID_ANY, "Delete Row")
-    clearrow = menu.Append(wx.ID_ANY, "Clear Row")
-    new = menu.Append(wx.ID_ANY, "Add Row")
-
-    frame.Bind(wx.EVT_MENU, tservice.get_delete_row(evt), delrow)
-    frame.Bind(wx.EVT_MENU, tservice.get_clear_row(evt), clearrow)
-    frame.Bind(wx.EVT_MENU, tservice.get_add_row(evt), new)
-
-    frame.PopupMenu(menu)
-    menu.Destroy()
-
-
-def show_col_menu(evt):
-
-    menu = wx.Menu()
-    delcol = menu.Append(wx.ID_ANY, "Delete Column")
-    clearcol = menu.Append(wx.ID_ANY, "Clear Column")
-    edit = menu.Append(wx.ID_ANY, "Edit Label")
-    new = menu.Append(wx.ID_ANY, "Add Column")
-
-    frame.Bind(wx.EVT_MENU, tservice.get_delete_col(evt), delcol)
-    frame.Bind(wx.EVT_MENU, tservice.get_clear_col(evt), clearcol)
-    frame.Bind(wx.EVT_MENU, tservice.get_edit_label(evt), edit)
-    frame.Bind(wx.EVT_MENU, tservice.get_add_col(evt), new)
-
-    frame.PopupMenu(menu)
-    menu.Destroy()
-
-
-def label_menu(evt):
-
-    evt.Skip()
-    if evt.GetCol() == -1:
-        show_row_menu(evt)
-    else:
-        show_col_menu(evt)
-
-
-def cell_menu(evt):
-    menu = wx.Menu()
-    clear = menu.Append(wx.ID_ANY, "Clear Table")
-    reset = menu.Append(wx.ID_ANY, "Reset Table")
-
-    frame.Bind(wx.EVT_MENU, tservice.clear_table, clear)
-    frame.Bind(wx.EVT_MENU, tservice.reset_table, reset)
-
-    frame.PopupMenu(menu)
-    menu.Destroy()
-
-
-
-def graph_menu(evt):
-    menu = wx.Menu()
-    redraw = menu.Append(wx.ID_ANY, "Redraw Lattice")
-    clear = menu.Append(wx.ID_ANY, "Clear Lattice")
-
-    frame.Bind(wx.EVT_MENU, gservice.redraw_lattice, redraw)
-    frame.Bind(wx.EVT_MENU, gservice.clear, clear)
-
-    frame.PopupMenu(menu)
-    menu.Destroy()
-
-
 def build_ui():
 
     menu_bar = wx.MenuBar()
@@ -141,9 +75,9 @@ def build_ui():
     frame.tabs.AddPage(tab2, "Implications")
     frame.tabs.AddPage(tab3, "Rules")
 
-    frame.grid.Bind(grid.EVT_GRID_LABEL_RIGHT_CLICK, label_menu)
-    frame.grid.Bind(grid.EVT_GRID_CELL_RIGHT_CLICK, cell_menu)
-    frame.panelLeft.Bind(wx.EVT_RIGHT_UP, graph_menu)
+    frame.grid.Bind(grid.EVT_GRID_LABEL_RIGHT_CLICK, mservice.label_menu)
+    frame.grid.Bind(grid.EVT_GRID_CELL_RIGHT_CLICK, mservice.cell_menu)
+    frame.panelLeft.Bind(wx.EVT_RIGHT_UP, mservice.graph_menu)
 
     frame.csvbox.Add(frame.grid, wx.ID_ANY, wx.EXPAND)
     frame.panelTop.SetSizer(frame.csvbox)
