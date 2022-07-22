@@ -47,6 +47,19 @@ def label_menu(evt):
         show_col_menu(evt)
 
 
+def cell_menu(evt):
+    menu = wx.Menu()
+    clear = menu.Append(wx.ID_ANY, "Clear Table")
+    reset = menu.Append(wx.ID_ANY, "Reset Table")
+
+    frame.Bind(wx.EVT_MENU, tservice.clear_table, clear)
+    frame.Bind(wx.EVT_MENU, tservice.reset_table, reset)
+
+    frame.PopupMenu(menu)
+    menu.Destroy()
+
+
+
 def graph_menu(evt):
     menu = wx.Menu()
     redraw = menu.Append(wx.ID_ANY, "Redraw Lattice")
@@ -129,6 +142,7 @@ def build_ui():
     frame.tabs.AddPage(tab3, "Rules")
 
     frame.grid.Bind(grid.EVT_GRID_LABEL_RIGHT_CLICK, label_menu)
+    frame.grid.Bind(grid.EVT_GRID_CELL_RIGHT_CLICK, cell_menu)
     frame.panelLeft.Bind(wx.EVT_RIGHT_UP, graph_menu)
 
     frame.csvbox.Add(frame.grid, wx.ID_ANY, wx.EXPAND)
@@ -141,7 +155,7 @@ def build_ui():
 app = wx.App()
 frame = wx.Frame(None, title='FCA', size=(1200, 750))
 frame.Center()
-storage = datastorage.datastorage()
+storage = datastorage.DataStorage()
 tservice = tableservice.TableService(frame, storage)
 gservice = graphservice.GraphService(frame, storage)
 mservice = menuservice.MenuService(frame, storage, tservice, gservice)

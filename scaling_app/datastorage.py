@@ -1,4 +1,4 @@
-class datastorage:
+class DataStorage:
 
     context = None
     data = None

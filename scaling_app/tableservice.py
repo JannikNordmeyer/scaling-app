@@ -121,3 +121,14 @@ class TableService:
             temp = self.frame.grid.GetCellValue(i, a)
             self.frame.grid.SetCellValue(i, a, self.frame.grid.GetCellValue(i, b))
             self.frame.grid.SetCellValue(i, b, temp)
+
+    def clear_table(self, evt):
+        for i in range(self.frame.grid.GetNumberRows()):
+            for j in range(self.frame.grid.GetNumberCols()):
+                self.frame.grid.SetCellValue(i, j, "")
+
+    def reset_table(self, evt):
+        self.frame.grid.DeleteRows(0, self.frame.grid.GetNumberRows())
+        self.frame.grid.DeleteCols(0, self.frame.grid.GetNumberCols())
+        self.frame.grid.AppendRows(16)
+        self.frame.grid.AppendCols(8)
