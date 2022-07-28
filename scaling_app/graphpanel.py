@@ -1,31 +1,31 @@
 from matplotlib.backends.backend_wxagg import FigureCanvasWxAgg as FigureCanvas
 from matplotlib.backends.backend_wx import NavigationToolbar2Wx
 from matplotlib.figure import Figure
-from matplotlib.backends.backend_wxagg import FigureCanvasWxAgg as FigCanvas, NavigationToolbar2WxAgg as NavigationToolbar
+from matplotlib.backends.backend_wxagg import FigureCanvasWxAgg as FigCanvas
 import matplotlib.pyplot as plt
 import wx
+import networkx as nx
+import netgraph
+import numpy as np
+from netgraph import InteractiveGraph
 import networkx as nx
 
 
 class GraphPanel(wx.Panel):
     def __init__(self, parent):
         wx.Panel.__init__(self, parent)
-        self.fig = plt.figure()
-        self.canvas = FigureCanvas(parent, -1, self.fig)
-        G=nx.house_graph()
-        pos={0:(0,0),
-            1:(1,0),
-            2:(0,1),
-            3:(1,1),
-            4:(0.5,2.0)}
+        self.figure = Figure(figsize=(4, 7), dpi=100)
+        self.axes = self.figure.add_subplot(111)
 
-        nx.draw_networkx_nodes(G,pos,node_size=2000,nodelist=[4])
-        nx.draw_networkx_nodes(G,pos,node_size=3000,nodelist=[0,1,2,3],node_color='r')
-        nx.draw_networkx_edges(G,pos,alpha=0.5,width=6)
-        plt.axis('off')
-        self.vbox = wx.BoxSizer(wx.VERTICAL)
-        self.vbox.Add(self.canvas, 1, wx.LEFT | wx.TOP | wx.GROW)
-        self.toolbar = NavigationToolbar(self.canvas)
-        self.vbox.Add(self.toolbar, 0, wx.EXPAND)
-        parent.SetSizer(self.vbox)
-        self.vbox.Fit(self)
+        G = nx.path_graph(10)
+        pos = nx.spring_layout(G)
+        nx.draw_networkx(G, pos, ax=self.axes)
+        I = netgraph.InteractiveGraph(G)
+
+        self.canvas = FigureCanvas(self, -1, self.figure)
+        self.sizer = wx.BoxSizer(wx.VERTICAL)
+        self.sizer.Add(self.canvas, 1, wx.TOP | wx.LEFT | wx.EXPAND)
+
+        
+
+
