@@ -1,6 +1,6 @@
 import wx
 import wx.grid as grid
-from scaling_app import menuservice, tableservice, graphservice, datastorage
+from scaling_app import menuservice, tableservice, graphservice, datastorage, graphpanel
 from scaling_app import concepts
 from scaling_app import implications
 from scaling_app import rules
@@ -87,6 +87,16 @@ def build_ui():
     frame.panelBottom.SetSizer(frame.tabpane)
 
 
+
+    frame.graphbox = wx.BoxSizer(wx.VERTICAL)
+
+    plotter = graphpanel.GraphPanel(frame.panelLeft)
+
+    frame.graphbox.Add(plotter, wx.ID_ANY, wx.EXPAND)
+    frame.panelLeft.SetSizer(frame.graphbox)
+
+
+
 app = wx.App()
 frame = wx.Frame(None, title='FCA', size=(1200, 750))
 frame.Center()
@@ -100,3 +110,4 @@ frame.Bind(wx.EVT_SIZE, mservice.redraw)
 frame.Bind(wx.EVT_MOVE_END, mservice.redraw)
 frame.Bind(wx.EVT_CLOSE, mservice.quit_scaling)
 app.MainLoop()
+

@@ -1,6 +1,6 @@
 import unittest
 import wx
-from scaling_app.main import build_ui
+from main import build_ui
 from scaling_app import menuservice
 import wx.grid as grid
 
