@@ -1,3 +1,5 @@
+import time
+
 import matplotlib.pyplot as plt
 import netgraph
 import networkx as nx
@@ -11,6 +13,7 @@ from numpy.random import rand
 from pyvis.network import Network
 import scipy.spatial
 import math
+import matplotlib.style as mplstyle
 
 
 class MyNavigationToolbar(NavigationToolbar2WxAgg):
@@ -25,10 +28,12 @@ class GraphPanel(wx.Panel):
 
         self.parent = panel
 
-        self.drag = False
         self.selectednode = None
 
+        plt.rcParams["figure.figsize"] = [1, 3]
         self.figure, self.axes = plt.subplots()
+        mplstyle.use('fast')
+
 
         self.graph = nx.Graph()
         self.graph.add_node(0, pos=(0, 0))
@@ -49,24 +54,12 @@ class GraphPanel(wx.Panel):
 
         self.pos = nx.get_node_attributes(self.graph, 'pos')
         nx.draw(self.graph, self.pos, with_labels=True)
-        plt.ion()
 
         self.canvas = FigureCanvas(self, -1, self.figure)
-
         self.sizer = wx.BoxSizer(wx.VERTICAL)
         self.sizer.Add(self.canvas, 1, wx.TOP | wx.LEFT | wx.EXPAND)
-        self.toolbar = MyNavigationToolbar(self.canvas, True)
-        self.toolbar.Realize()
-        # By adding toolbar in sizer, we are able to put it at the bottom
-        # of the frame - so appearance is closer to GTK version.
-        self.sizer.Add(self.toolbar, 0, wx.LEFT | wx.EXPAND)
-        # update the axes menu on the toolbar
-        self.toolbar.update()
         self.SetSizer(self.sizer)
         self.Fit()
-
-        self.counter = 0
-
 
         def onclick(event):
             if event.inaxes:
@@ -75,21 +68,18 @@ class GraphPanel(wx.Panel):
                     if euclidiandistance(self.graph.nodes[n]["pos"], (event.xdata, event.ydata)) < 0.1:
                         self.selectednode = n
                         break
-                self.drag = True
 
         def ondrag(event):
-            if event.inaxes and self.drag and self.selectednode is not None:
+            if event.inaxes and self.selectednode is not None:
 
                 self.graph.nodes[self.selectednode]["pos"] = (event.xdata, event.ydata)
                 self.pos[self.selectednode] = (event.xdata, event.ydata)
                 plt.clf()
                 nx.draw(self.graph, self.pos, with_labels=True)
-                self.counter += 1
-                print(self.counter)
+                self.figure.canvas.draw()
 
         def onrelease(event):
             self.selectednode = None
-            self.drag = False
 
         self.figure.canvas.mpl_connect('button_press_event', onclick)
         self.figure.canvas.mpl_connect('motion_notify_event', ondrag)
