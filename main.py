@@ -94,7 +94,7 @@ def build_ui():
 
     frame.graphbox.Add(plotter, wx.ID_ANY, wx.EXPAND)
     frame.panelLeft.SetSizer(frame.graphbox)
-    
+
     
 
 
