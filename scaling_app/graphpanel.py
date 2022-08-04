@@ -34,26 +34,9 @@ class GraphPanel(wx.Panel):
         self.figure, self.axes = plt.subplots()
         mplstyle.use('fast')
 
-
         self.graph = nx.Graph()
-        self.graph.add_node(0, pos=(0, 0))
-        self.graph.add_node(1, pos=(0, 1))
-        self.graph.add_node(2, pos=(-0.5, 2))
-        self.graph.add_node(3, pos=(0.5, 2))
-        self.graph.add_node(4, pos=(-0.5, 3))
-        self.graph.add_node(5, pos=(0.5, 3))
-        self.graph.add_node(6, pos=(0, 4))
-        self.graph.add_edge(4, 6)
-        self.graph.add_edge(5, 6)
-        self.graph.add_edge(2, 5)
-        self.graph.add_edge(3, 4)
-        self.graph.add_edge(3, 5)
-        self.graph.add_edge(0, 3)
-        self.graph.add_edge(0, 1)
-        self.graph.add_edge(1, 2)
-
-        self.pos = nx.get_node_attributes(self.graph, 'pos')
-        nx.draw(self.graph, self.pos, with_labels=True)
+        nx.draw(self.graph)
+        self.node_positions = []
 
         self.canvas = FigureCanvas(self, -1, self.figure)
         self.sizer = wx.BoxSizer(wx.VERTICAL)
@@ -73,9 +56,9 @@ class GraphPanel(wx.Panel):
             if event.inaxes and self.selectednode is not None:
 
                 self.graph.nodes[self.selectednode]["pos"] = (event.xdata, event.ydata)
-                self.pos[self.selectednode] = (event.xdata, event.ydata)
+                self.node_positions[self.selectednode] = (event.xdata, event.ydata)
                 plt.clf()
-                nx.draw(self.graph, self.pos, with_labels=True)
+                nx.draw(self.graph, self.node_positions, with_labels=True)
                 self.figure.canvas.draw()
 
         def onrelease(event):
@@ -87,6 +70,13 @@ class GraphPanel(wx.Panel):
 
         def euclidiandistance(a, b):
             return math.sqrt((a[0] -b[0])**2 + (a[1] -b[1])**2)
+
+    def draw_graph(self, graph):
+
+        self.graph = graph
+        self.node_positions = nx.get_node_attributes(self.graph, 'pos')
+        nx.draw(graph, self.node_positions, with_labels=True)
+        self.figure.canvas.draw()
 
 
 

@@ -90,13 +90,10 @@ def build_ui():
 
     frame.graphbox = wx.BoxSizer(wx.VERTICAL)
 
-    plotter = graphpanel.GraphPanel(frame.panelLeft)
+    frame.graph = graphpanel.GraphPanel(frame.panelLeft)
 
-    frame.graphbox.Add(plotter, wx.ID_ANY, wx.EXPAND)
+    frame.graphbox.Add(frame.graph, wx.ID_ANY, wx.EXPAND)
     frame.panelLeft.SetSizer(frame.graphbox)
-
-    
-
 
 
 app = wx.App()

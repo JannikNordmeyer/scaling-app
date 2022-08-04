@@ -105,14 +105,8 @@ class MenuService:
         file = open(filepath)
         storage_backup = self.datastorage.context
         self.datastorage.context = json.load(file)
-        try:
-            self.graphservice.draw_lattice()
-        except:
-            errortext = 'An error has occurred loading the context from the selected file. The file may be poorly formatted, or not contain a formal context lattice.'
-            dialog = wx.MessageDialog(None, errortext, 'Error Loading Context', wx.OK)
-            dialog.ShowModal()
-            dialog.Destroy()
-            self.datastorage.context = storage_backup
+
+        self.graphservice.draw_lattice()
 
     def save_data(self, e):
 
