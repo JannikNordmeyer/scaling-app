@@ -1,19 +1,12 @@
-import time
-import matplotlib.pyplot as plt
-import netgraph
-import networkx as nx
-import numpy as np
-import wx
-from matplotlib.backends.backend_wxagg import FigureCanvasWxAgg as FigureCanvas
-from matplotlib.backends.backend_wxagg import NavigationToolbar2WxAgg
-from  matplotlib.backend_bases import MouseButton
-from matplotlib.figure import Figure
-from numpy import arange, sin, pi
-from numpy.random import rand
-from pyvis.network import Network
-import scipy.spatial
 import math
+import time
+import wx
+import matplotlib.pyplot as plt
 import matplotlib.style as mplstyle
+import networkx as nx
+from matplotlib.backend_bases import MouseButton
+from matplotlib.backends.backend_wxagg import FigureCanvasWxAgg as FigureCanvas
+from matplotlib.figure import Figure
 
 
 class GraphPanel(wx.Panel):
