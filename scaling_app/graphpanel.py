@@ -1,5 +1,4 @@
 import time
-
 import matplotlib.pyplot as plt
 import netgraph
 import networkx as nx
@@ -7,6 +6,7 @@ import numpy as np
 import wx
 from matplotlib.backends.backend_wxagg import FigureCanvasWxAgg as FigureCanvas
 from matplotlib.backends.backend_wxagg import NavigationToolbar2WxAgg
+from  matplotlib.backend_bases import MouseButton
 from matplotlib.figure import Figure
 from numpy import arange, sin, pi
 from numpy.random import rand
@@ -16,17 +16,12 @@ import math
 import matplotlib.style as mplstyle
 
 
-class MyNavigationToolbar(NavigationToolbar2WxAgg):
-
-    def __init__(self, canvas, cankill):
-        NavigationToolbar2WxAgg.__init__(self, canvas)
-
-
 class GraphPanel(wx.Panel):
-    def __init__(self, panel):
+    def __init__(self, panel, menuservice):
         wx.Panel.__init__(self, panel, -1)
 
         self.parent = panel
+        self.mservice = menuservice
 
         self.selectednode = None
 
@@ -45,12 +40,15 @@ class GraphPanel(wx.Panel):
         self.Fit()
 
         def onclick(event):
-            if event.inaxes:
+
+            if event.inaxes and event.button == MouseButton.LEFT:
 
                 for n in self.graph.nodes:
                     if euclidiandistance(self.graph.nodes[n]["pos"], (event.xdata, event.ydata)) < 0.1:
                         self.selectednode = n
                         break
+            elif event.button == MouseButton.RIGHT:
+                self.mservice.graph_menu()
 
         def ondrag(event):
             if event.inaxes and self.selectednode is not None:
@@ -73,13 +71,8 @@ class GraphPanel(wx.Panel):
 
     def draw_graph(self, graph):
 
+        plt.clf()
         self.graph = graph
         self.node_positions = nx.get_node_attributes(self.graph, 'pos')
         nx.draw(graph, self.node_positions, with_labels=True)
         self.figure.canvas.draw()
-
-
-
-        
-
-

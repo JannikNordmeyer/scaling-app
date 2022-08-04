@@ -1,6 +1,6 @@
 class DataStorage:
 
-    context = None
+    lattice = None
     data = None
 
     edited = False

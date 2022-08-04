@@ -60,12 +60,13 @@ class MenuService:
         self.frame.PopupMenu(menu)
         menu.Destroy()
 
-    def graph_menu(self, evt):
+    def graph_menu(self):
+
         menu = wx.Menu()
         redraw = menu.Append(wx.ID_ANY, "Redraw Lattice")
         clear = menu.Append(wx.ID_ANY, "Clear Lattice")
 
-        self.frame.Bind(wx.EVT_MENU, self.graphservice.redraw_lattice, redraw)
+        self.frame.Bind(wx.EVT_MENU, self.graphservice.draw_lattice, redraw)
         self.frame.Bind(wx.EVT_MENU, self.graphservice.clear, clear)
 
         self.frame.PopupMenu(menu)
@@ -103,10 +104,16 @@ class MenuService:
         if filepath == "":
             return
         file = open(filepath)
-        storage_backup = self.datastorage.context
-        self.datastorage.context = json.load(file)
-
-        self.graphservice.draw_lattice()
+        storage_backup = self.datastorage.lattice
+        self.datastorage.lattice = json.load(file)
+        try:
+            self.graphservice.draw_lattice()
+        except:
+            errortext = 'An error has occurred loading the lattice from the selected file. The file may be poorly formatted.'
+            dialog = wx.MessageDialog(None, errortext, 'Error Loading Lattice', wx.OK)
+            dialog.ShowModal()
+            dialog.Destroy()
+            self.datastorage.lattice = storage_backup
 
     def save_data(self, e):
 

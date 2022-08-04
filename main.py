@@ -78,7 +78,6 @@ def build_ui():
 
     frame.grid.Bind(grid.EVT_GRID_LABEL_RIGHT_CLICK, mservice.label_menu)
     frame.grid.Bind(grid.EVT_GRID_CELL_RIGHT_CLICK, mservice.cell_menu)
-    frame.panelLeft.Bind(wx.EVT_RIGHT_UP, mservice.graph_menu)
 
     frame.csvbox.Add(frame.grid, wx.ID_ANY, wx.EXPAND)
     frame.panelTop.SetSizer(frame.csvbox)
@@ -86,11 +85,8 @@ def build_ui():
     frame.tabpane.Add(frame.tabs, wx.ID_ANY, wx.EXPAND)
     frame.panelBottom.SetSizer(frame.tabpane)
 
-
-
     frame.graphbox = wx.BoxSizer(wx.VERTICAL)
-
-    frame.graph = graphpanel.GraphPanel(frame.panelLeft)
+    frame.graph = graphpanel.GraphPanel(frame.panelLeft, mservice)
 
     frame.graphbox.Add(frame.graph, wx.ID_ANY, wx.EXPAND)
     frame.panelLeft.SetSizer(frame.graphbox)
