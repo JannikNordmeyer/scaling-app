@@ -56,7 +56,6 @@ def build_ui():
     frame.hsplitter.SplitVertically(frame.panelLeft, frame.vsplitter)
     frame.hsplitter.SetMinimumPaneSize(100)
     frame.hsplitter.SetSashPosition(400)
-    frame.hsplitter.Bind(wx.EVT_SPLITTER_SASH_POS_CHANGED, mservice.redraw)
     frame.vsplitter.SetMinimumPaneSize(100)
     frame.vsplitter.SetSashPosition(400)
 
@@ -101,8 +100,6 @@ gservice = graphservice.GraphService(frame, storage)
 mservice = menuservice.MenuService(frame, storage, tservice, gservice)
 build_ui()
 frame.Show()
-frame.Bind(wx.EVT_SIZE, mservice.redraw)
-frame.Bind(wx.EVT_MOVE_END, mservice.redraw)
 frame.Bind(wx.EVT_CLOSE, mservice.quit_scaling)
 app.MainLoop()
 

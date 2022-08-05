@@ -1,0 +1,38 @@
+Copies,Types,Mana Cost,Mana Value,Board
+Brainstorm,4,Instant,U,1,Mainboard
+Ponder,4,Sorcery,U,1,Mainboard
+Counterspell,1,Instant,UU,2,Mainboard
+Force of Will,4,Instant,3UU,5,Mainboard
+Swords to Plowshares,4,Instant,W,1,Mainboard
+Prismatic Ending,4,Sorcery,XW,1,Mainboard
+Supreme Verdict,1,Sorcery,1WWU,4,Mainboard
+Stoneforge Mystic,4,Creature,1W,2,Mainboard
+Snapcaster Mage,3,Creature,1U,2,Mainboard
+True-Name Nemesis,1,Creature,1UU,3,Mainboard
+"Narset, Parter of Veils",2,Planeswalker,1UU,3,Mainboard
+"Teferi, Time Raveler",2,Planeswalker,1WU,3,Mainboard
+"Jace, the Mind Sculptor",2,Planeswalker,2UU,4,Mainboard
+Dress Down,2,Enchantment,1U,2,Mainboard
+Batterskull,1,Artifact,5,5,Mainboard
+Kaldra Compleat,1,Artifact,7,7,Mainboard
+Flooded Strand,4,Land,-,0,Mainboard
+Arid Mesa,1,Land,-,0,Mainboard
+Scalding Tarn,1,Land,-,0,Mainboard
+Prismatic Vista,3,Land,-,0,Mainboard
+Tundra,2,Land,-,0,Mainboard
+Volcanic Island,1,Land,-,0,Mainboard
+Island,4,Land,-,0,Mainboard
+Plains,2,Land,-,0,Mainboard
+Mountain,1,Land,-,0,Mainboard
+Karakas,1,Land,-,0,Mainboard
+
+Flusterstorm,2,Instant,U,1,Sideboard
+Pyroblast,1,Instant,R,1,Sideboard
+Red Elemental Blast,2,Instant,R,1,Sideboard
+Meltdown,2,Sorcery,XR,1,Sideboard
+Supreme Verdict,1,Sorcery,1WWU,4,Sideboard
+Umezawa's Jitte,1,Artifact,2,2,Sideboard
+Lion Sash,1,Artifact\, Creature,1W,2,Sideboard
+Meddling Mage,1,Creature,WU,2,Sideboard
+Containbment Priest,2,Creature,1W,2,Sideboard
+Ruination,2,Sorcery,3R,4,Sideboard

@@ -72,13 +72,6 @@ class MenuService:
         self.frame.PopupMenu(menu)
         menu.Destroy()
 
-    def redraw(self, event):
-        dc = wx.ClientDC(self.frame.panelLeft)
-        dc.Clear()
-        if self.datastorage.context is not None:
-            self.graphservice.draw_lattice()
-        event.Skip()
-
     def load_data(self, e):
 
         tkinter.Tk().withdraw()
@@ -135,6 +128,10 @@ class MenuService:
         content += "\n"
 
         for i in range(row_count):
+            value = self.frame.grid.GetRowLabelValue(i)
+            value = value.replace(",", "\,")
+            value += ","
+            content += value
             for j in range(row_len):
 
                 value = self.frame.grid.GetCellValue(i, j)

@@ -1,5 +1,6 @@
 import csv
 import wx
+import wx.grid as grid
 
 
 class TableService:
@@ -16,9 +17,11 @@ class TableService:
         self.frame.grid.DeleteCols(0, self.frame.grid.GetNumberCols())
         self.frame.grid.AppendRows(values.line_num)
 
+        rowlabellength = 0
         for row in values:
 
             if values.line_num == 1:
+                rowlabellength = len(row)
                 self.frame.grid.AppendCols(len(row))
                 i = 0
                 for entry in row:
@@ -26,14 +29,25 @@ class TableService:
                     i += 1
             else:
                 self.frame.grid.AppendRows(1)
+                self.frame.grid.SetRowLabelValue(values.line_num - 2, str(values.line_num - 1))
                 j = 0
+                first = True
                 for entry in row:
+                    if len(row) == rowlabellength + 1 and first:
+                        self.frame.grid.SetRowLabelValue(values.line_num - 2, entry)
+                        first = False
+                        continue
                     self.frame.grid.SetCellValue(values.line_num - 2, j, entry)
                     j += 1
+        self.frame.grid.SetRowLabelSize(grid.GRID_AUTOSIZE)
 
     def get_delete_row(self, labelevent):
         def delete_row(evt):
-            self.frame.grid.DeleteRows(pos=labelevent.GetRow(), updateLabels=False)
+            for i in range(self.frame.grid.GetNumberRows() - labelevent.GetRow()):
+                self.frame.grid.SetRowLabelValue(labelevent.GetRow() + i, self.frame.grid.GetRowLabelValue(labelevent.GetRow() + i + 1))
+            self.frame.grid.DeleteRows(pos=labelevent.GetRow())
+
+
             self.datastorage.edited = True
 
         return delete_row
@@ -51,6 +65,7 @@ class TableService:
         def add_row(evt):
             self.frame.grid.AppendRows()
             self.cascade_row(labelevent.GetRow())
+            self.frame.grid.SetRowLabelValue(labelevent.GetRow()+1, "")
             self.datastorage.set_edited()
 
         return add_row
@@ -107,11 +122,16 @@ class TableService:
             i += 1
 
     def swap_row(self, a, b):
+
+        temp = self.frame.grid.GetRowLabelValue(a)
+        self.frame.grid.SetRowLabelValue(a, self.frame.grid.GetRowLabelValue(b))
+        self.frame.grid.SetRowLabelValue(b, temp)
         for i in range(self.frame.grid.GetNumberCols()):
 
             temp = self.frame.grid.GetCellValue(a, i)
             self.frame.grid.SetCellValue(a, i, self.frame.grid.GetCellValue(b, i))
             self.frame.grid.SetCellValue(b, i, temp)
+
 
     def cascade_col(self, pos):
         number_cols = self.frame.grid.GetNumberCols()
@@ -134,15 +154,17 @@ class TableService:
     def clear_table(self, evt):
         if not self.is_empty():
             self.datastorage.set_edited()
-        for i in range(self.frame.grid.GetNumberRows()):
-            for j in range(self.frame.grid.GetNumberCols()):
-                self.frame.grid.SetCellValue(i, j, "")
+            self.frame.grid.ClearGrid()
+
 
     def reset_table(self, evt):
+
         self.frame.grid.DeleteRows(0, self.frame.grid.GetNumberRows())
         self.frame.grid.DeleteCols(0, self.frame.grid.GetNumberCols())
         self.frame.grid.AppendRows(16)
         self.frame.grid.AppendCols(8)
+        for i in range(self.frame.grid.GetNumberRows()):
+            self.frame.grid.SetRowLabelValue(i, str(i+1))
 
     def is_empty(self):
         for i in range(self.frame.grid.GetNumberRows()):
