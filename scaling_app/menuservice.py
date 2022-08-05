@@ -16,10 +16,12 @@ class MenuService:
         menu = wx.Menu()
         delrow = menu.Append(wx.ID_ANY, "Delete Row")
         clearrow = menu.Append(wx.ID_ANY, "Clear Row")
+        edit = menu.Append(wx.ID_ANY, "Edit Label")
         new = menu.Append(wx.ID_ANY, "Add Row")
 
         self.frame.Bind(wx.EVT_MENU, self.tableservice.get_delete_row(evt), delrow)
         self.frame.Bind(wx.EVT_MENU, self.tableservice.get_clear_row(evt), clearrow)
+        self.frame.Bind(wx.EVT_MENU, self.tableservice.get_edit_row_label(evt), edit)
         self.frame.Bind(wx.EVT_MENU, self.tableservice.get_add_row(evt), new)
 
         self.frame.PopupMenu(menu)
@@ -35,7 +37,7 @@ class MenuService:
 
         self.frame.Bind(wx.EVT_MENU, self.tableservice.get_delete_col(evt), delcol)
         self.frame.Bind(wx.EVT_MENU, self.tableservice.get_clear_col(evt), clearcol)
-        self.frame.Bind(wx.EVT_MENU, self.tableservice.get_edit_label(evt), edit)
+        self.frame.Bind(wx.EVT_MENU, self.tableservice.get_edit_col_label(evt), edit)
         self.frame.Bind(wx.EVT_MENU, self.tableservice.get_add_col(evt), new)
 
         self.frame.PopupMenu(menu)

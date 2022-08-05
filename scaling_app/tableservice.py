@@ -61,6 +61,19 @@ class TableService:
 
         return clear_row
 
+    def get_edit_row_label(self, labelevent):
+        def edit_row_label(evt):
+            dialog = wx.TextEntryDialog(None, "Row name:", caption="New Row", value="",
+                                        style=wx.TextEntryDialogStyle, pos=wx.DefaultPosition)
+            dialog.ShowModal()
+            name = dialog.GetValue()
+            dialog.Destroy()
+            if name != "":
+                self.frame.grid.SetRowLabelValue(labelevent.GetRow(), name)
+                self.datastorage.set_edited()
+
+        return edit_row_label
+
     def get_add_row(self, labelevent):
         def add_row(evt):
             self.frame.grid.AppendRows()
@@ -86,8 +99,8 @@ class TableService:
 
         return clear_col
 
-    def get_edit_label(self, labelevent):
-        def edit_label(evt):
+    def get_edit_col_label(self, labelevent):
+        def edit_col_label(evt):
             dialog = wx.TextEntryDialog(None, "Column name:", caption="New Column", value="",
                                         style=wx.TextEntryDialogStyle, pos=wx.DefaultPosition)
             dialog.ShowModal()
@@ -97,7 +110,7 @@ class TableService:
                 self.frame.grid.SetColLabelValue(labelevent.GetCol(), name)
                 self.datastorage.set_edited()
 
-        return edit_label
+        return edit_col_label
 
     def get_add_col(self, labelevent):
         def add_col(evt):
