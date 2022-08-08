@@ -52,14 +52,14 @@ class TableService:
 
         return delete_row
 
-    def get_clear_row(self, labelevent):
-        def clear_row(evt):
+    def get_purge_row(self, labelevent):
+        def purge_row(evt):
             if not self.is_empty():
                 self.datastorage.edited = True
             for i in range(self.frame.grid.GetNumberCols()):
                 self.frame.grid.SetCellValue(labelevent.GetRow(), i, "")
 
-        return clear_row
+        return purge_row
 
     def get_edit_row_label(self, labelevent):
         def edit_row_label(evt):
@@ -90,14 +90,14 @@ class TableService:
 
         return delete_col
 
-    def get_clear_col(self, labelevent):
-        def clear_col(evt):
+    def get_purge_col(self, labelevent):
+        def purge_col(evt):
             if not self.is_empty():
                 self.datastorage.set_edited()
             for i in range(self.frame.grid.GetNumberRows()):
                 self.frame.grid.SetCellValue(i, labelevent.GetCol(), "")
 
-        return clear_col
+        return purge_col
 
     def get_edit_col_label(self, labelevent):
         def edit_col_label(evt):
@@ -164,7 +164,7 @@ class TableService:
             self.frame.grid.SetCellValue(i, a, self.frame.grid.GetCellValue(i, b))
             self.frame.grid.SetCellValue(i, b, temp)
 
-    def clear_table(self, evt):
+    def purge_table(self, evt):
         if not self.is_empty():
             self.datastorage.set_edited()
             self.frame.grid.ClearGrid()

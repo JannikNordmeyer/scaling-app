@@ -15,12 +15,12 @@ class MenuService:
 
         menu = wx.Menu()
         delrow = menu.Append(wx.ID_ANY, "Delete Row")
-        clearrow = menu.Append(wx.ID_ANY, "Clear Row")
+        purgerow = menu.Append(wx.ID_ANY, "Purge Row")
         edit = menu.Append(wx.ID_ANY, "Edit Label")
         new = menu.Append(wx.ID_ANY, "Add Row")
 
         self.frame.Bind(wx.EVT_MENU, self.tableservice.get_delete_row(evt), delrow)
-        self.frame.Bind(wx.EVT_MENU, self.tableservice.get_clear_row(evt), clearrow)
+        self.frame.Bind(wx.EVT_MENU, self.tableservice.get_purge_row(evt), purgerow)
         self.frame.Bind(wx.EVT_MENU, self.tableservice.get_edit_row_label(evt), edit)
         self.frame.Bind(wx.EVT_MENU, self.tableservice.get_add_row(evt), new)
 
@@ -31,12 +31,12 @@ class MenuService:
 
         menu = wx.Menu()
         delcol = menu.Append(wx.ID_ANY, "Delete Column")
-        clearcol = menu.Append(wx.ID_ANY, "Clear Column")
+        purgecol = menu.Append(wx.ID_ANY, "Purge Column")
         edit = menu.Append(wx.ID_ANY, "Edit Label")
         new = menu.Append(wx.ID_ANY, "Add Column")
 
         self.frame.Bind(wx.EVT_MENU, self.tableservice.get_delete_col(evt), delcol)
-        self.frame.Bind(wx.EVT_MENU, self.tableservice.get_clear_col(evt), clearcol)
+        self.frame.Bind(wx.EVT_MENU, self.tableservice.get_purge_col(evt), purgecol)
         self.frame.Bind(wx.EVT_MENU, self.tableservice.get_edit_col_label(evt), edit)
         self.frame.Bind(wx.EVT_MENU, self.tableservice.get_add_col(evt), new)
 
@@ -53,10 +53,10 @@ class MenuService:
 
     def cell_menu(self, evt):
         menu = wx.Menu()
-        clear = menu.Append(wx.ID_ANY, "Clear Table")
+        purge = menu.Append(wx.ID_ANY, "Purge Table")
         reset = menu.Append(wx.ID_ANY, "Reset Table")
 
-        self.frame.Bind(wx.EVT_MENU, self.tableservice.clear_table, clear)
+        self.frame.Bind(wx.EVT_MENU, self.tableservice.purge_table, purge)
         self.frame.Bind(wx.EVT_MENU, self.tableservice.reset_table, reset)
 
         self.frame.PopupMenu(menu)
