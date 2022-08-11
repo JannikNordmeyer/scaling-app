@@ -1,6 +1,7 @@
 import csv
 import wx
 import wx.grid as grid
+from scaling_app import constants
 
 
 class TableService:
@@ -45,18 +46,39 @@ class TableService:
         def to_scaling(evt):
 
             self.save_to_storage()
-            self.reset_table()
+            self.frame.grid.DeleteCols(0, self.frame.grid.GetNumberCols())
+
+            if type == constants.EMPTY:
+                self.frame.grid.AppendCols(1)
+                self.frame.grid.SetColLabelValue(0, self.datastorage.table.col_labels[labelevent.GetCol()])
+                for i in range(self.frame.grid.GetNumberRows()):
+                    self.frame.grid.SetCellValue(i, 0, self.datastorage.table.original[i, labelevent.GetCol()])
+
+            self.datastorage.table_state = constants.SCALING
+
         return to_scaling
+
+    def return_to_original(self, evt=None):
+        print("Return")
 
     def save_to_storage(self):
 
-        print(self.frame.grid.GetNumberCols())
-        print(self.frame.grid.GetNumberRows())
-        for i in range(self.frame.grid.GetNumberRows()):
-            for j in range(self.frame.grid.GetNumberCols()):
-                print((i, j))
-                self.datastorage.table.original[(i, j)] = self.frame.grid.GetCellValue(i, j)
-        print(self.datastorage.table.original)
+        if self.datastorage.table_state == constants.ORIGINAL:
+            self.datastorage.table.col_labels.clear()
+            self.datastorage.table.row_labels.clear()
+            self.datastorage.table.original.clear()
+
+            for a in range(self.frame.grid.GetNumberCols()):
+                self.datastorage.table.col_labels.append(self.frame.grid.GetColLabelValue(a))
+            for b in range(self.frame.grid.GetNumberRows()):
+                self.datastorage.table.row_labels.append(self.frame.grid.GetRowLabelValue(b))
+
+            for i in range(self.frame.grid.GetNumberRows()):
+                for j in range(self.frame.grid.GetNumberCols()):
+                    self.datastorage.table.original[(i, j)] = self.frame.grid.GetCellValue(i, j)
+
+        #if self.datastorage.table_state == constants.SCALING:
+            #self.datastorage.table.set_scaling()
 
     def get_delete_row(self, labelevent):
         def delete_row(evt):

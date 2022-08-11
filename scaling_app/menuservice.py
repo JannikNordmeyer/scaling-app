@@ -35,17 +35,17 @@ class MenuService:
         purgecol = menu.Append(wx.ID_ANY, "Purge Column")
         edit = menu.Append(wx.ID_ANY, "Edit Label")
         new = menu.Append(wx.ID_ANY, "Add Column")
-        menu.AppendSeparator()
 
-        scaling = wx.Menu()
-        empty = scaling.Append(wx.ID_ANY, "Empty Scaling")
-        diagonal = scaling.Append(wx.ID_ANY, "Diagonal Scaling")
-        ordinal = scaling.Append(wx.ID_ANY, "Ordinal Scaling")
-        interordinal = scaling.Append(wx.ID_ANY, "Interordinal Scaling")
-        dichotom = scaling.Append(wx.ID_ANY, "Dichotomy Scaling")
-        self.frame.Bind(wx.EVT_MENU, self.tableservice.get_to_scaling(evt, constants.EMPTY), empty)
-
-        menu.Append(wx.ID_ANY, "Scale Column", scaling)
+        if self.datastorage.table_state == constants.ORIGINAL:
+            menu.AppendSeparator()
+            scaling = wx.Menu()
+            empty = scaling.Append(wx.ID_ANY, "Empty Scaling")
+            diagonal = scaling.Append(wx.ID_ANY, "Diagonal Scaling")
+            ordinal = scaling.Append(wx.ID_ANY, "Ordinal Scaling")
+            interordinal = scaling.Append(wx.ID_ANY, "Interordinal Scaling")
+            dichotom = scaling.Append(wx.ID_ANY, "Dichotomy Scaling")
+            self.frame.Bind(wx.EVT_MENU, self.tableservice.get_to_scaling(evt, constants.EMPTY), empty)
+            menu.Append(wx.ID_ANY, "Scale Column", scaling)
 
         self.frame.Bind(wx.EVT_MENU, self.tableservice.get_delete_col(evt), delcol)
         self.frame.Bind(wx.EVT_MENU, self.tableservice.get_purge_col(evt), purgecol)
@@ -64,9 +64,14 @@ class MenuService:
             self.show_col_menu(evt)
 
     def cell_menu(self, evt):
+
         menu = wx.Menu()
         purge = menu.Append(wx.ID_ANY, "Purge Table")
         reset = menu.Append(wx.ID_ANY, "Reset Table")
+        if self.datastorage.table_state == constants.SCALING:
+            menu.AppendSeparator()
+            original = menu.Append(wx.ID_ANY, "Return to Original")
+            self.frame.Bind(wx.EVT_MENU, self.tableservice.return_to_original, original)
 
         self.frame.Bind(wx.EVT_MENU, self.tableservice.purge_table, purge)
         self.frame.Bind(wx.EVT_MENU, self.tableservice.reset_table, reset)
@@ -97,6 +102,7 @@ class MenuService:
         self.datastorage.data = csvfile
         try:
             self.tableservice.fill_table()
+            self.datastorage.table_state = constants.ORIGINAL
         except:
             errortext = 'An error has occurred loading the context from the selected file. The file may be poorly formatted.'
             dialog = wx.MessageDialog(None, errortext, 'Error Loading Context', wx.OK)
