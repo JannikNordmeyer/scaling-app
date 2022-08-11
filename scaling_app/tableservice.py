@@ -41,13 +41,28 @@ class TableService:
                     j += 1
         self.frame.grid.SetRowLabelSize(grid.GRID_AUTOSIZE)
 
+    def get_to_scaling(self, labelevent, type):
+        def to_scaling(evt):
+
+            self.save_to_storage()
+            self.reset_table()
+        return to_scaling
+
+    def save_to_storage(self):
+
+        print(self.frame.grid.GetNumberCols())
+        print(self.frame.grid.GetNumberRows())
+        for i in range(self.frame.grid.GetNumberRows()):
+            for j in range(self.frame.grid.GetNumberCols()):
+                print((i, j))
+                self.datastorage.table.original[(i, j)] = self.frame.grid.GetCellValue(i, j)
+        print(self.datastorage.table.original)
+
     def get_delete_row(self, labelevent):
         def delete_row(evt):
             for i in range(self.frame.grid.GetNumberRows() - labelevent.GetRow()):
                 self.frame.grid.SetRowLabelValue(labelevent.GetRow() + i, self.frame.grid.GetRowLabelValue(labelevent.GetRow() + i + 1))
             self.frame.grid.DeleteRows(pos=labelevent.GetRow())
-
-
             self.datastorage.edited = True
 
         return delete_row
@@ -145,7 +160,6 @@ class TableService:
             self.frame.grid.SetCellValue(a, i, self.frame.grid.GetCellValue(b, i))
             self.frame.grid.SetCellValue(b, i, temp)
 
-
     def cascade_col(self, pos):
         number_cols = self.frame.grid.GetNumberCols()
         i = 0
@@ -169,8 +183,7 @@ class TableService:
             self.datastorage.set_edited()
             self.frame.grid.ClearGrid()
 
-
-    def reset_table(self, evt):
+    def reset_table(self, evt=None):
 
         self.frame.grid.DeleteRows(0, self.frame.grid.GetNumberRows())
         self.frame.grid.DeleteCols(0, self.frame.grid.GetNumberCols())

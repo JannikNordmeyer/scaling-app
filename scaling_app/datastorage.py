@@ -1,7 +1,15 @@
+class Table:
+
+    original = dict()
+    scalings = list()
+
+
 class DataStorage:
 
     lattice = None
+
     data = None
+    table = Table()
 
     edited = False
 
@@ -10,3 +18,5 @@ class DataStorage:
 
     def clear_edited(self, evt=None):
         self.edited = False
+
+

@@ -1,6 +1,7 @@
 import json
 import wx
 import tkinter.filedialog
+from scaling_app import constants
 
 
 class MenuService:
@@ -34,6 +35,17 @@ class MenuService:
         purgecol = menu.Append(wx.ID_ANY, "Purge Column")
         edit = menu.Append(wx.ID_ANY, "Edit Label")
         new = menu.Append(wx.ID_ANY, "Add Column")
+        menu.AppendSeparator()
+
+        scaling = wx.Menu()
+        empty = scaling.Append(wx.ID_ANY, "Empty Scaling")
+        diagonal = scaling.Append(wx.ID_ANY, "Diagonal Scaling")
+        ordinal = scaling.Append(wx.ID_ANY, "Ordinal Scaling")
+        interordinal = scaling.Append(wx.ID_ANY, "Interordinal Scaling")
+        dichotom = scaling.Append(wx.ID_ANY, "Dichotomy Scaling")
+        self.frame.Bind(wx.EVT_MENU, self.tableservice.get_to_scaling(evt, constants.EMPTY), empty)
+
+        menu.Append(wx.ID_ANY, "Scale Column", scaling)
 
         self.frame.Bind(wx.EVT_MENU, self.tableservice.get_delete_col(evt), delcol)
         self.frame.Bind(wx.EVT_MENU, self.tableservice.get_purge_col(evt), purgecol)
