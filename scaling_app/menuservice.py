@@ -76,10 +76,13 @@ class MenuService:
         menu = wx.Menu()
         purge = menu.Append(wx.ID_ANY, "Purge Table")
         reset = menu.Append(wx.ID_ANY, "Reset Table")
-        if self.datastorage.table_state == constants.SCALING:
-            menu.AppendSeparator()
+        menu.AppendSeparator()
+        if self.datastorage.table_state == constants.SCALING or self.datastorage.table_state == constants.EXPANDED:
             original = menu.Append(wx.ID_ANY, "Return to Original")
             self.frame.Bind(wx.EVT_MENU, self.tableservice.return_to_original, original)
+        if self.datastorage.table_state == constants.ORIGINAL:
+            expand = menu.Append(wx.ID_ANY, "Expand View")
+            self.frame.Bind(wx.EVT_MENU, self.tableservice.load_expanded, expand)
 
         self.frame.Bind(wx.EVT_MENU, self.tableservice.purge_table, purge)
         self.frame.Bind(wx.EVT_MENU, self.tableservice.reset_table, reset)

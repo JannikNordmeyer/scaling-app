@@ -43,6 +43,38 @@ class TableService:
         self.frame.grid.SetRowLabelSize(grid.GRID_AUTOSIZE)
         self.frame.grid.SetCornerLabelValue("")
 
+    def load_expanded(self, evt=None):
+
+        self.save_to_storage()
+        self.frame.grid.DeleteCols(0, self.frame.grid.GetNumberCols())
+        originalcolcounter = -1
+        colcounter = -1
+        for col in self.datastorage.table.col_labels:
+            originalcolcounter += 1
+            if col in self.datastorage.table.scalings:
+                scaling = self.datastorage.table.scalings[col]
+                col_labels = scaling[1]
+                table = scaling[2]
+                self.frame.grid.AppendCols(len(col_labels))
+                for a in range(len(col_labels)):
+                    colcounter += 1
+                    self.frame.grid.SetColLabelValue(colcounter, col + "\n" + col_labels[a])
+                    for i in range(self.frame.grid.GetNumberRows()):
+                        self.frame.grid.SetCellValue(i, colcounter, table[(i, a)])
+            else:
+                self.frame.grid.AppendCols(1)
+                colcounter += 1
+                self.frame.grid.SetColLabelValue(colcounter, col)
+                for i in range(self.frame.grid.GetNumberRows()):
+                    self.frame.grid.SetCellValue(i, colcounter, self.datastorage.table.original[(i, originalcolcounter)])
+
+        self.datastorage.table_state = constants.EXPANDED
+
+
+
+
+
+
     def get_to_scaling(self, labelevent, type):
         def to_scaling(evt):
 
@@ -88,8 +120,6 @@ class TableService:
                     if value != "":
                         for j in range((max+1)+1):
                             self.frame.grid.SetCellValue(i, int(value)+j, "✘")
-
-
 
             self.datastorage.table_state = constants.SCALING
 
