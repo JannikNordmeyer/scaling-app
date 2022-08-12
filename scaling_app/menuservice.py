@@ -46,6 +46,10 @@ class MenuService:
                 interordinal = scaling.Append(wx.ID_ANY, "Interordinal Scaling")
                 dichotom = scaling.Append(wx.ID_ANY, "Dichotomy Scaling")
                 self.frame.Bind(wx.EVT_MENU, self.tableservice.get_to_scaling(evt, constants.EMPTY), empty)
+                self.frame.Bind(wx.EVT_MENU, self.tableservice.get_to_scaling(evt, constants.DIAGONAL), diagonal)
+                self.frame.Bind(wx.EVT_MENU, self.tableservice.get_to_scaling(evt, constants.ORDINAL), ordinal)
+                self.frame.Bind(wx.EVT_MENU, self.tableservice.get_to_scaling(evt, constants.INTERORDINAL), interordinal)
+                self.frame.Bind(wx.EVT_MENU, self.tableservice.get_to_scaling(evt, constants.DICHOTOM), dichotom)
                 menu.Append(wx.ID_ANY, "Scale Column", scaling)
             else:
                 to_scaling = menu.Append(wx.ID_ANY, "Go to Scaling")

@@ -51,14 +51,30 @@ class TableService:
                 return
 
             self.save_to_storage(labelevent)
-            self.frame.grid.DeleteCols(0, self.frame.grid.GetNumberCols())
             self.frame.grid.SetCornerLabelValue(self.datastorage.table.col_labels[labelevent.GetCol()])
 
             if type == constants.EMPTY:
+                self.frame.grid.DeleteCols(0, self.frame.grid.GetNumberCols())
                 self.frame.grid.AppendCols(1)
                 self.frame.grid.SetColLabelValue(0, self.datastorage.table.col_labels[labelevent.GetCol()])
                 for i in range(self.frame.grid.GetNumberRows()):
                     self.frame.grid.SetCellValue(i, 0, self.datastorage.table.original[i, labelevent.GetCol()])
+
+            if type == constants.DIAGONAL or type == constants.ORDINAL:
+                max = self.check_int_col(labelevent.GetCol())
+                self.frame.grid.DeleteCols(0, self.frame.grid.GetNumberCols())
+                self.frame.grid.AppendCols(max+1)
+                for a in range(max+1):
+                    self.frame.grid.SetColLabelValue(a, str(a))
+                for i in range(self.frame.grid.GetNumberRows()):
+                    value = self.datastorage.table.original[(i, labelevent.GetCol())]
+                    if value != "":
+                        self.frame.grid.SetCellValue(i, int(value), "✘")
+                        if type == constants.ORDINAL:
+                            for j in range(int(value)):
+                                self.frame.grid.SetCellValue(i, j, "✘")
+
+
 
             self.datastorage.table_state = constants.SCALING
 
@@ -138,8 +154,16 @@ class TableService:
         self.frame.grid.SetCornerLabelValue(target)
         self.datastorage.table_state = constants.SCALING
 
+    def check_int_col(self, col):
 
-
+        maxvalue = 0
+        for i in range(self.frame.grid.GetNumberRows()):
+            value = self.frame.grid.GetCellValue(i, col)
+            if not (value.isnumeric() or value == ""):
+                return None
+            if value.isnumeric():
+                maxvalue = max(maxvalue, int(value))
+        return maxvalue
 
     def get_delete_row(self, labelevent):
         def delete_row(evt):
