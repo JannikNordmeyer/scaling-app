@@ -74,6 +74,21 @@ class TableService:
                             for j in range(int(value)):
                                 self.frame.grid.SetCellValue(i, j, "✘")
 
+            if type == constants.INTERORDINAL:
+                max = self.check_int_col(labelevent.GetCol())
+                self.frame.grid.DeleteCols(0, self.frame.grid.GetNumberCols())
+                self.frame.grid.AppendCols(2*(max+1))
+                for a in range(2*(max+1)):
+                    if a < max+1:
+                        self.frame.grid.SetColLabelValue(a, "≤" + str(a))
+                    else:
+                        self.frame.grid.SetColLabelValue(a, "≥" + str(a - (max+1)))
+                for i in range(self.frame.grid.GetNumberRows()):
+                    value = self.datastorage.table.original[(i, labelevent.GetCol())]
+                    if value != "":
+                        for j in range((max+1)+1):
+                            self.frame.grid.SetCellValue(i, int(value)+j, "✘")
+
 
 
             self.datastorage.table_state = constants.SCALING
