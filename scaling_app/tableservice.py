@@ -70,11 +70,6 @@ class TableService:
 
         self.datastorage.table_state = constants.EXPANDED
 
-
-
-
-
-
     def get_to_scaling(self, labelevent, type):
         def to_scaling(evt):
 
@@ -273,6 +268,12 @@ class TableService:
             dialog.ShowModal()
             name = dialog.GetValue()
             dialog.Destroy()
+
+            if self.col_name_taken(name):
+                errortext = 'Attribute Names Must be Unique.'
+                dialog = wx.MessageDialog(None, errortext, '', wx.ICON_WARNING | wx.OK)
+                dialog.ShowModal()
+                return
             if name != "":
                 self.frame.grid.SetColLabelValue(labelevent.GetCol(), name)
                 self.datastorage.set_edited()
@@ -286,6 +287,12 @@ class TableService:
             dialog.ShowModal()
             name = dialog.GetValue()
             dialog.Destroy()
+
+            if self.col_name_taken(name):
+                errortext = 'Attribute Names Must be Unique.'
+                dialog = wx.MessageDialog(None, errortext, '', wx.ICON_WARNING | wx.OK)
+                dialog.ShowModal()
+                return
             if name != "":
                 self.frame.grid.AppendCols()
                 self.frame.grid.SetColLabelValue(self.frame.grid.GetNumberCols()-1, name)
@@ -293,6 +300,12 @@ class TableService:
                 self.datastorage.set_edited()
 
         return add_col
+
+    def col_name_taken(self, string):
+        for i in range(self.frame.grid.GetNumberCols()):
+            if self.frame.grid.GetColLabelValue(i) == string:
+                return True
+        return False
 
     def cascade_row(self, pos):
         number_rows = self.frame.grid.GetNumberRows()
