@@ -38,14 +38,18 @@ class MenuService:
 
         if self.datastorage.table_state == constants.ORIGINAL:
             menu.AppendSeparator()
-            scaling = wx.Menu()
-            empty = scaling.Append(wx.ID_ANY, "Empty Scaling")
-            diagonal = scaling.Append(wx.ID_ANY, "Diagonal Scaling")
-            ordinal = scaling.Append(wx.ID_ANY, "Ordinal Scaling")
-            interordinal = scaling.Append(wx.ID_ANY, "Interordinal Scaling")
-            dichotom = scaling.Append(wx.ID_ANY, "Dichotomy Scaling")
-            self.frame.Bind(wx.EVT_MENU, self.tableservice.get_to_scaling(evt, constants.EMPTY), empty)
-            menu.Append(wx.ID_ANY, "Scale Column", scaling)
+            if self.frame.grid.GetColLabelValue(evt.GetCol()) not in self.datastorage.table.scalings:
+                scaling = wx.Menu()
+                empty = scaling.Append(wx.ID_ANY, "Empty Scaling")
+                diagonal = scaling.Append(wx.ID_ANY, "Diagonal Scaling")
+                ordinal = scaling.Append(wx.ID_ANY, "Ordinal Scaling")
+                interordinal = scaling.Append(wx.ID_ANY, "Interordinal Scaling")
+                dichotom = scaling.Append(wx.ID_ANY, "Dichotomy Scaling")
+                self.frame.Bind(wx.EVT_MENU, self.tableservice.get_to_scaling(evt, constants.EMPTY), empty)
+                menu.Append(wx.ID_ANY, "Scale Column", scaling)
+            else:
+                to_scaling = menu.Append(wx.ID_ANY, "Go to Scaling")
+                self.frame.Bind(wx.EVT_MENU, self.tableservice.get_to_scaling(evt, None), to_scaling)
 
         self.frame.Bind(wx.EVT_MENU, self.tableservice.get_delete_col(evt), delcol)
         self.frame.Bind(wx.EVT_MENU, self.tableservice.get_purge_col(evt), purgecol)

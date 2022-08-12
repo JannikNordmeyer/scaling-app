@@ -41,12 +41,18 @@ class TableService:
                     self.frame.grid.SetCellValue(values.line_num - 2, j, entry)
                     j += 1
         self.frame.grid.SetRowLabelSize(grid.GRID_AUTOSIZE)
+        self.frame.grid.SetCornerLabelValue("")
 
     def get_to_scaling(self, labelevent, type):
         def to_scaling(evt):
 
-            self.save_to_storage()
+            if self.frame.grid.GetColLabelValue(labelevent.GetCol()) in self.datastorage.table.scalings:
+                self.load_from_storage(self.frame.grid.GetColLabelValue(labelevent.GetCol()))
+                return
+
+            self.save_to_storage(labelevent)
             self.frame.grid.DeleteCols(0, self.frame.grid.GetNumberCols())
+            self.frame.grid.SetCornerLabelValue(self.datastorage.table.col_labels[labelevent.GetCol()])
 
             if type == constants.EMPTY:
                 self.frame.grid.AppendCols(1)
@@ -59,10 +65,11 @@ class TableService:
         return to_scaling
 
     def return_to_original(self, evt=None):
-        print("Return")
+        self.save_to_storage()
+        self.load_from_storage(constants.ORIGINAL)
 
-    def save_to_storage(self):
-
+    def save_to_storage(self, evt=None):
+        # Save Original Table
         if self.datastorage.table_state == constants.ORIGINAL:
             self.datastorage.table.col_labels.clear()
             self.datastorage.table.row_labels.clear()
@@ -77,8 +84,62 @@ class TableService:
                 for j in range(self.frame.grid.GetNumberCols()):
                     self.datastorage.table.original[(i, j)] = self.frame.grid.GetCellValue(i, j)
 
-        #if self.datastorage.table_state == constants.SCALING:
-            #self.datastorage.table.set_scaling()
+        # Save Current Scaling
+        if self.datastorage.table_state == constants.SCALING:
+
+            row_labels = list()
+            col_labels = list()
+            for a in range(self.frame.grid.GetNumberRows()):
+                row_labels.append(self.frame.grid.GetRowLabelValue(a))
+            for b in range(self.frame.grid.GetNumberCols()):
+                col_labels.append(self.frame.grid.GetColLabelValue(b))
+
+            table = dict()
+            for i in range(self.frame.grid.GetNumberRows()):
+                for j in range(self.frame.grid.GetNumberCols()):
+                    table[(i, j)] = self.frame.grid.GetCellValue(i, j)
+
+            self.datastorage.table.set_scaling(self.frame.grid.GetCornerLabelValue(), row_labels, col_labels, table)
+
+    def load_from_storage(self, target):
+
+        self.frame.grid.DeleteRows(0, self.frame.grid.GetNumberRows())
+        self.frame.grid.DeleteCols(0, self.frame.grid.GetNumberCols())
+
+        # Load Original
+        if target == constants.ORIGINAL:
+
+            self.frame.grid.AppendCols(len(self.datastorage.table.col_labels))
+            for a in range(len(self.datastorage.table.col_labels)):
+                self.frame.grid.SetColLabelValue(a, self.datastorage.table.col_labels[a])
+            self.frame.grid.AppendRows(len(self.datastorage.table.row_labels))
+            for b in range(len(self.datastorage.table.row_labels)):
+                self.frame.grid.SetRowLabelValue(b, self.datastorage.table.row_labels[b])
+            for coords, value in self.datastorage.table.original.items():
+                self.frame.grid.SetCellValue(coords[0], coords[1], value)
+            self.frame.grid.SetCornerLabelValue("")
+            self.datastorage.table_state = constants.ORIGINAL
+            return
+
+        # Load Existing Scaling
+        scaling = self.datastorage.table.scalings[target]
+        row_labels = scaling[0]
+        col_labels = scaling[1]
+        table = scaling[2]
+
+        self.frame.grid.AppendCols(len(col_labels))
+        for a in range(len(col_labels)):
+            self.frame.grid.SetColLabelValue(a, col_labels[a])
+        self.frame.grid.AppendRows(len(row_labels))
+        for a in range(len(row_labels)):
+            self.frame.grid.SetRowLabelValue(a, row_labels[a])
+        for coords, value in table.items():
+            self.frame.grid.SetCellValue(coords[0], coords[1], value)
+        self.frame.grid.SetCornerLabelValue(target)
+        self.datastorage.table_state = constants.SCALING
+
+
+
 
     def get_delete_row(self, labelevent):
         def delete_row(evt):

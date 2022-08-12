@@ -8,7 +8,7 @@ class Table:
     scalings = dict()
 
     def set_scaling(self, attribute, row_labels, col_labels, table):
-        self.scalings.append[attribute] = (row_labels, col_labels, table)
+        self.scalings[attribute] = (row_labels, col_labels, table)
 
     def get_scaling(self, attribute):
         return self.scalings[attribute]
