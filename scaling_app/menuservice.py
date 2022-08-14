@@ -114,12 +114,14 @@ class MenuService:
         try:
             self.tableservice.fill_table()
             self.datastorage.table_state = constants.ORIGINAL
+            self.datastorage.clear_table()
         except:
             errortext = 'An error has occurred loading the context from the selected file. The file may be poorly formatted.'
             dialog = wx.MessageDialog(None, errortext, 'Error Loading Context', wx.OK)
             dialog.ShowModal()
             dialog.Destroy()
             self.datastorage.data = storage_backup
+
 
     def load_lattice(self, e):
 

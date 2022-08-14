@@ -29,3 +29,10 @@ class DataStorage:
 
     def clear_edited(self, evt=None):
         self.edited = False
+
+    def clear_table(self):
+        self.table.original.clear()
+        self.table.col_labels.clear()
+        self.table.row_labels.clear()
+        self.table.scalings.clear()
+
