@@ -54,7 +54,8 @@ class MenuService:
             else:
                 to_scaling = menu.Append(wx.ID_ANY, "Go to Scaling")
                 self.frame.Bind(wx.EVT_MENU, self.tableservice.get_to_scaling(evt, None), to_scaling)
-
+        expand = menu.Append(wx.ID_ANY, "ExpandColumn")
+        self.frame.Bind(wx.EVT_MENU, self.tableservice.get_expand_column(evt.GetCol()), expand)
         self.frame.Bind(wx.EVT_MENU, self.tableservice.get_delete_col(evt), delcol)
         self.frame.Bind(wx.EVT_MENU, self.tableservice.get_purge_col(evt), purgecol)
         self.frame.Bind(wx.EVT_MENU, self.tableservice.get_edit_col_label(evt), edit)

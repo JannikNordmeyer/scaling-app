@@ -70,6 +70,31 @@ class TableService:
 
         self.datastorage.table_state = constants.EXPANDED
 
+    def get_expand_column(self, col):
+        def expand_column(evt):
+            if self.frame.grid.GetColLabelValue(col) not in self.datastorage.table.scalings:
+                return
+            scaling = self.datastorage.table.scalings[self.frame.grid.GetColLabelValue(col)]
+            row_labels = scaling[0]
+            col_labels = scaling[1]
+            scaling_table = scaling[2]
+
+            col_offset = self.frame.grid.GetNumberCols()
+            self.frame.grid.AppendCols(len(col_labels))
+            for new_col in range(len(col_labels)):
+                self.frame.grid.SetColLabelValue(col_offset + new_col, self.frame.grid.GetColLabelValue(col) + "\n" + col_labels[new_col])
+            for i in range(self.frame.grid.GetNumberRows()):
+                if self.frame.grid.GetCellValue(i, col) != "":
+                    value = int(self.frame.grid.GetCellValue(i, col))
+                    for j in range(len(col_labels)):
+                        self.frame.grid.SetCellValue(i, col_offset+j, scaling_table[(value, j)])
+            for i in range(len(col_labels)):
+                self.cascade_col(col)
+            self.frame.grid.DeleteCols(col)
+            self.datastorage.table_state = constants.EXPANDED
+
+        return expand_column
+
     def get_to_scaling(self, labelevent, type):
         def to_scaling(evt):
 
