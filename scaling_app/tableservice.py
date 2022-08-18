@@ -76,6 +76,9 @@ class TableService:
             if self.frame.grid.GetColLabelValue(labelevent.GetCol()) in self.datastorage.table.scalings:
                 self.load_from_storage(self.frame.grid.GetColLabelValue(labelevent.GetCol()))
                 return
+            if self.frame.grid.GetCornerLabelValue() in self.datastorage.table.scalings:
+                self.load_from_storage(self.frame.grid.GetCornerLabelValue())
+                return
 
             self.save_to_storage(labelevent)
             self.frame.grid.SetCornerLabelValue(self.datastorage.table.col_labels[labelevent.GetCol()])
@@ -127,6 +130,28 @@ class TableService:
             self.datastorage.table_state = constants.SCALING
 
         return to_scaling
+
+    def view_result(self, evt=None):
+        self.save_to_storage()
+        self.frame.grid.DeleteRows(0, self.frame.grid.GetNumberRows())
+        if not self.frame.grid.GetCornerLabelValue() == "":
+            scaling = self.datastorage.table.scalings[self.frame.grid.GetCornerLabelValue()]
+            scaling_col_labels = scaling[1]
+            scaling_table = scaling[2]
+        col_numer = 0
+        for col in range(len(self.datastorage.table.col_labels)):
+            if self.datastorage.table.col_labels[col] == self.frame.grid.GetCornerLabelValue():
+                col_numer = col
+                break
+        for i in range(len(self.datastorage.table.row_labels)):
+            self.frame.grid.AppendRows(1)
+            self.frame.grid.SetRowLabelValue(i, self.datastorage.table.row_labels[i])
+            if self.datastorage.table.original[(i, col_numer)] != "":
+                value = int(self.datastorage.table.original[(i, col_numer)])
+                for j in range(len(scaling_col_labels)):
+                    self.frame.grid.SetCellValue(i, j, scaling_table[value, j])
+
+        self.datastorage.table_state = constants.RESULT
 
     def return_to_original(self, evt=None):
         self.save_to_storage()
