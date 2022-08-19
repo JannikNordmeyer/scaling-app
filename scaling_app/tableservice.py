@@ -77,6 +77,9 @@ class TableService:
     def get_to_scaling(self, labelevent, type):
         def to_scaling(evt):
 
+            if self.datastorage.table_state == constants.ORIGINAL:
+                self.save_to_storage()
+
             if self.frame.grid.GetColLabelValue(labelevent.GetCol()) in self.datastorage.table.scalings:
                 self.load_from_storage(self.frame.grid.GetColLabelValue(labelevent.GetCol()))
                 return
@@ -87,7 +90,7 @@ class TableService:
             self.save_to_storage(labelevent)
             self.frame.grid.SetCornerLabelValue(self.datastorage.table.col_labels[labelevent.GetCol()])
 
-            if type == constants.EMPTY:
+            if type == constants.EMPTY or type == constants.DICHOTOM:
                 values = list()
                 for i in range(self.frame.grid.GetNumberRows()):
                     if self.frame.grid.GetCellValue(i, labelevent.GetCol()) not in values:
@@ -100,6 +103,9 @@ class TableService:
                 for i in range(self.frame.grid.GetNumberRows()):
                     self.frame.grid.SetColLabelValue(i, values[i])
                     self.frame.grid.SetRowLabelValue(i, values[i])
+                    if type == constants.DICHOTOM:
+                        self.frame.grid.SetCellValue(i, i, "✘")
+                self.datastorage.scaling_type = constants.GENERIC
 
             if type == constants.DIAGONAL or type == constants.ORDINAL:
                 max_value = self.check_int_col(labelevent.GetCol())
@@ -118,6 +124,7 @@ class TableService:
                             self.frame.grid.SetCellValue(i, j, "✘")
                         if int(row_value) == int(col_value):
                             self.frame.grid.SetCellValue(i, j, "✘")
+                self.datastorage.scaling_type = constants.INT
 
             if type == constants.INTERORDINAL:
                 max_value = self.check_int_col(labelevent.GetCol())
@@ -135,6 +142,7 @@ class TableService:
                     self.frame.grid.SetRowLabelValue(i, str(i))
                     for j in range(i, i+(max_value+1)+1):
                         self.frame.grid.SetCellValue(i, j, "✘")
+                self.datastorage.scaling_type = constants.INT
 
             self.datastorage.table_state = constants.SCALING
 
@@ -147,6 +155,8 @@ class TableService:
             scaling = self.datastorage.table.scalings[self.frame.grid.GetCornerLabelValue()]
             scaling_col_labels = scaling[1]
             scaling_table = scaling[2]
+            scaling_type = scaling[3]
+        # Ascertain Scaled Attribute
         col_numer = 0
         for col in range(len(self.datastorage.table.col_labels)):
             if self.datastorage.table.col_labels[col] == self.frame.grid.GetCornerLabelValue():
@@ -155,10 +165,16 @@ class TableService:
         for i in range(len(self.datastorage.table.row_labels)):
             self.frame.grid.AppendRows(1)
             self.frame.grid.SetRowLabelValue(i, self.datastorage.table.row_labels[i])
-            if self.datastorage.table.original[(i, col_numer)] != "":
-                value = int(self.datastorage.table.original[(i, col_numer)])
-                for j in range(len(scaling_col_labels)):
-                    self.frame.grid.SetCellValue(i, j, scaling_table[value, j])
+            if scaling_type == constants.INT:
+                if self.datastorage.table.original[(i, col_numer)] != "":
+                    value = int(self.datastorage.table.original[(i, col_numer)])
+                    for j in range(len(scaling_col_labels)):
+                        self.frame.grid.SetCellValue(i, j, scaling_table[value, j])
+            if scaling_type == constants.GENERIC:
+                if self.datastorage.table.original[(i, col_numer)] != "":
+                    value = self.datastorage.table.original[(i, col_numer)]
+                    for j in range(len(scaling_col_labels)):
+                        self.frame.grid.SetCellValue(i, j, scaling_table[scaling_col_labels.index(value), j])
 
         self.datastorage.table_state = constants.RESULT
 
@@ -197,7 +213,7 @@ class TableService:
                 for j in range(self.frame.grid.GetNumberCols()):
                     table[(i, j)] = self.frame.grid.GetCellValue(i, j)
 
-            self.datastorage.table.set_scaling(self.frame.grid.GetCornerLabelValue(), row_labels, col_labels, table)
+            self.datastorage.table.set_scaling(self.frame.grid.GetCornerLabelValue(), row_labels, col_labels, table, self.datastorage.scaling_type)
 
     def load_from_storage(self, target):
 

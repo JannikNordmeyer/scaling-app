@@ -7,8 +7,8 @@ class Table:
     row_labels = list()
     scalings = dict()
 
-    def set_scaling(self, attribute, row_labels, col_labels, table):
-        self.scalings[attribute] = (row_labels, col_labels, table)
+    def set_scaling(self, attribute, row_labels, col_labels, table, data_type):
+        self.scalings[attribute] = (row_labels, col_labels, table, data_type)
 
     def get_scaling(self, attribute):
         return self.scalings[attribute]
@@ -23,6 +23,7 @@ class DataStorage:
     # States
     edited = False
     table_state = constants.ORIGINAL
+    scaling_type = None
 
     def set_edited(self, evt=None):
         self.edited = True

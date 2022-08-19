@@ -5,6 +5,10 @@ ORDINAL = "ordinal"
 INTERORDINAL = "interordinal"
 DICHOTOM = "dichotom"
 
+# Scaling Data Type
+INT = "int"
+GENERIC = "generic"
+
 # System States
 ORIGINAL = "original"
 EXPANDED = "expanded"
