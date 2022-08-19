@@ -41,14 +41,15 @@ class MenuService:
             if self.frame.grid.GetColLabelValue(evt.GetCol()) not in self.datastorage.table.scalings:
                 scaling = wx.Menu()
                 custom = scaling.Append(wx.ID_ANY, "Custom Scaling")
-                nominal = scaling.Append(wx.ID_ANY, "Nominal Scaling")
-                ordinal = scaling.Append(wx.ID_ANY, "Ordinal Scaling")
-                interordinal = scaling.Append(wx.ID_ANY, "Interordinal Scaling")
+                if self.tableservice.check_int_col(evt.GetCol()):
+                    nominal = scaling.Append(wx.ID_ANY, "Nominal Scaling")
+                    ordinal = scaling.Append(wx.ID_ANY, "Ordinal Scaling")
+                    interordinal = scaling.Append(wx.ID_ANY, "Interordinal Scaling")
+                    self.frame.Bind(wx.EVT_MENU, self.tableservice.get_to_scaling(evt, constants.DIAGONAL), nominal)
+                    self.frame.Bind(wx.EVT_MENU, self.tableservice.get_to_scaling(evt, constants.ORDINAL), ordinal)
+                    self.frame.Bind(wx.EVT_MENU, self.tableservice.get_to_scaling(evt, constants.INTERORDINAL), interordinal)
                 dichotom = scaling.Append(wx.ID_ANY, "Dichotomy Scaling")
                 self.frame.Bind(wx.EVT_MENU, self.tableservice.get_to_scaling(evt, constants.EMPTY), custom)
-                self.frame.Bind(wx.EVT_MENU, self.tableservice.get_to_scaling(evt, constants.DIAGONAL), nominal)
-                self.frame.Bind(wx.EVT_MENU, self.tableservice.get_to_scaling(evt, constants.ORDINAL), ordinal)
-                self.frame.Bind(wx.EVT_MENU, self.tableservice.get_to_scaling(evt, constants.INTERORDINAL), interordinal)
                 self.frame.Bind(wx.EVT_MENU, self.tableservice.get_to_scaling(evt, constants.DICHOTOM), dichotom)
                 menu.Append(wx.ID_ANY, "Scale Column", scaling)
             else:
