@@ -57,16 +57,24 @@ class TableService:
             scaling = self.datastorage.table.scalings[self.frame.grid.GetColLabelValue(col)]
             col_labels = scaling[1]
             scaling_table = scaling[2]
+            scaling_type = scaling[3]
 
             col_offset = self.frame.grid.GetNumberCols()
             self.frame.grid.AppendCols(len(col_labels))
             for new_col in range(len(col_labels)):
                 self.frame.grid.SetColLabelValue(col_offset + new_col, self.frame.grid.GetColLabelValue(col) + "\n" + col_labels[new_col])
-            for i in range(self.frame.grid.GetNumberRows()):
-                if self.frame.grid.GetCellValue(i, col) != "":
-                    value = int(self.frame.grid.GetCellValue(i, col))
-                    for j in range(len(col_labels)):
-                        self.frame.grid.SetCellValue(i, col_offset+j, scaling_table[(value, j)])
+            if scaling_type == constants.INT:
+                for i in range(self.frame.grid.GetNumberRows()):
+                    if self.frame.grid.GetCellValue(i, col) != "":
+                        value = int(self.frame.grid.GetCellValue(i, col))
+                        for j in range(len(col_labels)):
+                            self.frame.grid.SetCellValue(i, col_offset+j, scaling_table[(value, j)])
+            if scaling_type == constants.GENERIC:
+                for i in range(self.frame.grid.GetNumberRows()):
+                    if self.frame.grid.GetCellValue(i, col) != "":
+                        value = self.frame.grid.GetCellValue(i, col)
+                        for j in range(len(col_labels)):
+                            self.frame.grid.SetCellValue(i, col_offset+j, scaling_table[(col_labels.index(value), j)])
             for i in range(len(col_labels)):
                 self.cascade_col(col)
             self.frame.grid.DeleteCols(col)
