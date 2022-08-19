@@ -79,8 +79,26 @@ class TableService:
                 self.cascade_col(col)
             self.frame.grid.DeleteCols(col)
             self.datastorage.table_state = constants.EXPANDED
+            if self.frame.grid.GetColLabelValue(col).split("\n", 1)[0] not in self.datastorage.expanded_cols:
+                self.datastorage.expanded_cols.append(self.frame.grid.GetColLabelValue(col).split("\n", 1)[0])
 
         return expand_column
+
+    def get_unexpand_column(self, col):
+        def unexpand_column(evt=None):
+
+            attribute = self.frame.grid.GetColLabelValue(col).split("\n", 1)[0]
+            self.load_from_storage(constants.ORIGINAL)
+
+            print(self.datastorage.expanded_cols)
+            print(attribute)
+            self.datastorage.expanded_cols.remove(attribute)
+
+            for i in range(self.frame.grid.GetNumberCols()):
+                if self.frame.grid.GetColLabelValue(i) in self.datastorage.expanded_cols:
+                    self.get_expand_column(i)()
+
+        return unexpand_column
 
     def get_to_scaling(self, labelevent, type):
         def to_scaling(evt):

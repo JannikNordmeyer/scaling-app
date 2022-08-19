@@ -23,6 +23,7 @@ class DataStorage:
     # States
     edited = False
     table_state = constants.ORIGINAL
+    expanded_cols = list()
     scaling_type = None
 
     def set_edited(self, evt=None):
