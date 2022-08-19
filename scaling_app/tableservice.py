@@ -88,13 +88,18 @@ class TableService:
             self.frame.grid.SetCornerLabelValue(self.datastorage.table.col_labels[labelevent.GetCol()])
 
             if type == constants.EMPTY:
+                values = list()
+                for i in range(self.frame.grid.GetNumberRows()):
+                    if self.frame.grid.GetCellValue(i, labelevent.GetCol()) not in values:
+                        if self.frame.grid.GetCellValue(i, labelevent.GetCol()) != "":
+                            values.append(self.frame.grid.GetCellValue(i, labelevent.GetCol()))
                 self.frame.grid.DeleteCols(0, self.frame.grid.GetNumberCols())
-                self.frame.grid.AppendCols(1)
                 self.frame.grid.DeleteRows(0, self.frame.grid.GetNumberRows())
-                self.frame.grid.AppendRows(1)
-                self.frame.grid.SetColLabelValue(0, self.datastorage.table.col_labels[labelevent.GetCol()])
-                self.frame.grid.SetColLabelValue(0, "")
-                self.frame.grid.SetRowLabelValue(0, "")
+                self.frame.grid.AppendCols(len(values))
+                self.frame.grid.AppendRows(len(values))
+                for i in range(self.frame.grid.GetNumberRows()):
+                    self.frame.grid.SetColLabelValue(i, values[i])
+                    self.frame.grid.SetRowLabelValue(i, values[i])
 
             if type == constants.DIAGONAL or type == constants.ORDINAL:
                 max_value = self.check_int_col(labelevent.GetCol())
