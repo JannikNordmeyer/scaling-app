@@ -73,7 +73,6 @@ class MenuService:
         menu.Destroy()
 
     def label_menu(self, evt):
-
         evt.Skip()
         if evt.GetCol() == -1:
             self.show_row_menu(evt)

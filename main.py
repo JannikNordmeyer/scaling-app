@@ -78,6 +78,8 @@ def build_ui():
     frame.grid.Bind(grid.EVT_GRID_LABEL_RIGHT_CLICK, mservice.label_menu)
     frame.grid.Bind(grid.EVT_GRID_CELL_RIGHT_CLICK, mservice.cell_menu)
 
+    frame.grid.Bind(grid.EVT_GRID_CELL_LEFT_CLICK, tservice.check_toggle)
+
     frame.csvbox.Add(frame.grid, wx.ID_ANY, wx.EXPAND)
     frame.panelTop.SetSizer(frame.csvbox)
 

@@ -171,6 +171,7 @@ class TableService:
                 self.datastorage.scaling_type = constants.INT
 
             self.datastorage.table_state = constants.SCALING
+            self.frame.grid.EnableEditing(False)
 
         return to_scaling
 
@@ -207,6 +208,7 @@ class TableService:
     def return_to_original(self, evt=None):
         self.save_to_storage()
         self.load_from_storage(constants.ORIGINAL)
+        self.frame.grid.EnableEditing(True)
 
     def save_to_storage(self, evt=None):
         # Save Original Table
@@ -288,6 +290,18 @@ class TableService:
             if value.isnumeric():
                 maxvalue = max(maxvalue, int(value))
         return maxvalue
+
+
+    def check_toggle(self, evt):
+        print(str(evt.GetRow()) + " " + str(evt.GetCol()))
+        if self.datastorage.table_state == constants.SCALING:
+            if self.frame.grid.GetCellValue(evt.GetRow(), evt.GetCol()) == "":
+                self.frame.grid.SetCellValue(evt.GetRow(), evt.GetCol(), "✘")
+            else:
+                self.frame.grid.SetCellValue(evt.GetRow(), evt.GetCol(), "")
+        else:
+            evt.Skip()
+
 
     def get_delete_row(self, labelevent):
         def delete_row(evt):
