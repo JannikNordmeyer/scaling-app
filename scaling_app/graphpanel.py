@@ -20,14 +20,11 @@ class GraphPanel(wx.Panel):
         self.selectednode = None
         # limits as -x, x, -y, y
         self.borders = (0, 0, 0, 0)
+        self.drag_borders = (0, 0, 0, 0)
 
         plt.rcParams["figure.figsize"] = [1, 3]
         self.figure, self.axes = plt.subplots()
         mplstyle.use('fast')
-        print(self.axes.get_xlim())
-        print(self.axes.get_xbound())
-        self.axes.set_autoscale_on(False)
-        print(self.axes.get_autoscale_on())
 
         self.graph = nx.Graph()
         nx.draw(self.graph)
@@ -41,13 +38,13 @@ class GraphPanel(wx.Panel):
 
         def onclick(event):
 
-            print(event.ydata)
             if event.inaxes and event.button == MouseButton.LEFT:
 
                 for n in self.graph.nodes:
                     if euclidiandistance(self.graph.nodes[n]["pos"], (event.xdata, event.ydata)) < 0.1:
                         self.selectednode = n
                         self.update_borders(n)
+                        print(self.borders)
                         break
             elif event.button == MouseButton.RIGHT:
                 self.mservice.graph_menu()
@@ -60,14 +57,14 @@ class GraphPanel(wx.Panel):
 
                 node_buffer = 0.2
 
-                if x < self.borders[0]:
-                    x = self.borders[0]
-                if x > self.borders[1]:
-                    x = self.borders[1]
-                if y > self.borders[2] - node_buffer:
-                    y = self.borders[2] - node_buffer
-                if y < self.borders[3] + node_buffer:
-                    y = self.borders[3] + node_buffer
+                if x < self.drag_borders[0]:
+                    x = self.drag_borders[0]
+                if x > self.drag_borders[1]:
+                    x = self.drag_borders[1]
+                if y > self.drag_borders[2] - node_buffer:
+                    y = self.drag_borders[2] - node_buffer
+                if y < self.drag_borders[3] + node_buffer:
+                    y = self.drag_borders[3] + node_buffer
 
                 self.graph.nodes[self.selectednode]["pos"] = (x, y)
                 self.node_positions[self.selectednode] = (x, y)
@@ -77,6 +74,7 @@ class GraphPanel(wx.Panel):
 
         def onrelease(event):
             self.selectednode = None
+            self.drag_borders = self.borders
 
         self.figure.canvas.mpl_connect('button_press_event', onclick)
         self.figure.canvas.mpl_connect('motion_notify_event', ondrag)
@@ -99,9 +97,10 @@ class GraphPanel(wx.Panel):
 
         x_min = self.borders[0]
         x_max = self.borders[1]
-        y_min = self.borders[2]
-        y_max = self.borders[3]
+        y_min = -self.borders[2]
+        y_max = -self.borders[3]
 
+        #y_min
         for edge in self.storage.lattice['edges']:
             for start, targets in edge.items():
                 if node in targets:
@@ -116,7 +115,7 @@ class GraphPanel(wx.Panel):
                         if self.node_positions[target][1] < y_max:
                             y_max = self.node_positions[target][1]
 
-        self.borders = (x_min, x_max, y_min, y_max)
+        self.drag_borders = (x_min, x_max, y_min, y_max)
 
 
 
