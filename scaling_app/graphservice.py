@@ -30,12 +30,17 @@ class GraphService:
                 if coords[1] > y_max:
                     y_max = coords[1]
 
-                graph.add_node(name, pos=(coords[0], -coords[1]))
+                graph.add_node(name, pos=(coords[0], -coords[1]), color="blue", label=name)
 
         for edges in self.datastorage.lattice['edges']:
             for origin in edges:
                 for target in edges[origin]:
                     graph.add_edge(origin, target)
+
+        graph.add_node("anchor0", pos=(x_min-0.05, -y_min+0.05), color="red", label="")
+        graph.add_node("anchor1", pos=(x_max+0.05, -y_min+0.05), color="red", label="")
+        graph.add_node("anchor2", pos=(x_min-0.05, -y_max-0.05), color="red", label="")
+        graph.add_node("anchor3", pos=(x_max+0.05, -y_max-0.05), color="red", label="")
 
         self.frame.graph.draw_graph(graph, (x_min, x_max, y_min, y_max))
 

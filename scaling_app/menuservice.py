@@ -138,7 +138,6 @@ class MenuService:
             dialog.Destroy()
             self.datastorage.data = storage_backup
 
-
     def load_lattice(self, e):
 
         tkinter.Tk().withdraw()
@@ -148,6 +147,7 @@ class MenuService:
         file = open(filepath)
         storage_backup = self.datastorage.lattice
         self.datastorage.lattice = json.load(file)
+
         try:
             self.graphservice.draw_lattice()
         except:

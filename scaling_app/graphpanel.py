@@ -29,6 +29,8 @@ class GraphPanel(wx.Panel):
         self.graph = nx.Graph()
         nx.draw(self.graph)
         self.node_positions = []
+        self.color_map = []
+        self.labels = []
 
         self.canvas = FigureCanvas(self, -1, self.figure)
         self.sizer = wx.BoxSizer(wx.VERTICAL)
@@ -61,15 +63,18 @@ class GraphPanel(wx.Panel):
                     x = self.drag_borders[0]
                 if x > self.drag_borders[1]:
                     x = self.drag_borders[1]
-                if y > self.drag_borders[2] - node_buffer:
-                    y = self.drag_borders[2] - node_buffer
-                if y < self.drag_borders[3] + node_buffer:
-                    y = self.drag_borders[3] + node_buffer
+                if y > self.drag_borders[2]:
+                    y = self.drag_borders[2]
+                if y < self.drag_borders[3]:
+                    y = self.drag_borders[3]
+
+                print(self.drag_borders)
 
                 self.graph.nodes[self.selectednode]["pos"] = (x, y)
                 self.node_positions[self.selectednode] = (x, y)
                 plt.clf()
-                nx.draw(self.graph, self.node_positions, with_labels=True)
+                nx.draw(self.graph, pos=self.node_positions, node_color=self.color_map, with_labels=False, alpha=None)
+                nx.draw_networkx_labels(self.graph, pos=self.node_positions, labels=self.labels)
                 self.figure.canvas.draw()
 
         def onrelease(event):
@@ -90,7 +95,14 @@ class GraphPanel(wx.Panel):
         plt.clf()
         self.graph = graph
         self.node_positions = nx.get_node_attributes(self.graph, 'pos')
-        nx.draw(graph, self.node_positions, with_labels=True)
+        self.labels = nx.get_node_attributes(self.graph, 'label')
+        for i in range(self.graph.number_of_nodes()):
+            if i >= self.graph.number_of_nodes()-4:
+                self.color_map.append("None")
+            else:
+                self.color_map.append("red")
+        nx.draw(graph, pos=self.node_positions, node_color=self.color_map,  with_labels=False, alpha=None)
+        nx.draw_networkx_labels(graph, pos=self.node_positions, labels=self.labels)
         self.figure.canvas.draw()
 
     def update_borders(self, node):
@@ -112,7 +124,7 @@ class GraphPanel(wx.Panel):
             for start, targets in edge.items():
                 if start == node:
                     for target in targets:
-                        if self.node_positions[target][1] < y_max:
+                        if self.node_positions[target][1] > y_max:
                             y_max = self.node_positions[target][1]
 
         self.drag_borders = (x_min, x_max, y_min, y_max)
