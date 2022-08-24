@@ -18,6 +18,8 @@ class GraphPanel(wx.Panel):
         self.storage = datastorage
 
         self.selectednode = None
+        self.y_min_node = None
+        self.y_max_node = None
         # limits as -x, x, -y, y
         self.borders = (0, 0, 0, 0)
         self.drag_borders = (0, 0, 0, 0)
@@ -41,12 +43,12 @@ class GraphPanel(wx.Panel):
         def onclick(event):
 
             if event.inaxes and event.button == MouseButton.LEFT:
-
                 for n in self.graph.nodes:
                     if euclidiandistance(self.graph.nodes[n]["pos"], (event.xdata, event.ydata)) < 0.1:
+                        if "anchor" in n:
+                            return
                         self.selectednode = n
                         self.update_borders(n)
-                        print(self.borders)
                         break
             elif event.button == MouseButton.RIGHT:
                 self.mservice.graph_menu()
@@ -63,12 +65,17 @@ class GraphPanel(wx.Panel):
                     x = self.drag_borders[0]
                 if x > self.drag_borders[1]:
                     x = self.drag_borders[1]
-                if y > self.drag_borders[2]:
-                    y = self.drag_borders[2]
-                if y < self.drag_borders[3]:
-                    y = self.drag_borders[3]
+                if y > self.drag_borders[2] - node_buffer:
+                    if self.selectednode == self.y_min_node:
+                        y = -self.borders[2]
+                    else:
+                        y = self.drag_borders[2] - node_buffer
 
-                print(self.drag_borders)
+                if y < self.drag_borders[3] + node_buffer:
+                    if self.selectednode == self.y_max_node:
+                        y = -self.borders[3]
+                    else:
+                        y = self.drag_borders[3] + node_buffer
 
                 self.graph.nodes[self.selectednode]["pos"] = (x, y)
                 self.node_positions[self.selectednode] = (x, y)
@@ -88,14 +95,17 @@ class GraphPanel(wx.Panel):
         def euclidiandistance(a, b):
             return math.sqrt((a[0] -b[0])**2 + (a[1] -b[1])**2)
 
-    def draw_graph(self, graph, borders):
+    def draw_graph(self, graph, borders, y_min_node, y_max_node):
 
         self.borders = borders
+        self.y_min_node = y_min_node
+        self.y_max_node = y_max_node
 
         plt.clf()
         self.graph = graph
         self.node_positions = nx.get_node_attributes(self.graph, 'pos')
         self.labels = nx.get_node_attributes(self.graph, 'label')
+        self.color_map.clear()
         for i in range(self.graph.number_of_nodes()):
             if i >= self.graph.number_of_nodes()-4:
                 self.color_map.append("None")
