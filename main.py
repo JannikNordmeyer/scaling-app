@@ -87,7 +87,7 @@ def build_ui():
     frame.panelBottom.SetSizer(frame.tabpane)
 
     frame.graphbox = wx.BoxSizer(wx.VERTICAL)
-    frame.graph = graphpanel.GraphPanel(frame.panelLeft, mservice)
+    frame.graph = graphpanel.GraphPanel(frame.panelLeft, mservice, storage)
 
     frame.graphbox.Add(frame.graph, wx.ID_ANY, wx.EXPAND)
     frame.panelLeft.SetSizer(frame.graphbox)
