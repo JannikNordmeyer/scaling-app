@@ -56,6 +56,6 @@ class GraphService:
 
         self.datastorage.lattice = None
         graph = nx.Graph()
-        self.frame.graph.draw_graph(graph, (0, 0, 0, 0))
+        self.frame.graph.draw_graph(graph, (0, 0, 0, 0), None, None)
 
 
