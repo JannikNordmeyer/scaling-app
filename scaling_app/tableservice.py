@@ -9,8 +9,13 @@ class TableService:
     def __init__(self, frame, datastorage):
         self.frame = frame
         self.datastorage = datastorage
+        self.mservice = None
+
+        self.current_grid = None
 
     def fill_table(self):
+
+        self.current_grid = self.frame.grid
 
         values = csv.reader(self.datastorage.data, delimiter=',', quotechar='"', escapechar='\\', quoting=csv.QUOTE_ALL)
 
@@ -113,8 +118,10 @@ class TableService:
                 self.load_from_storage(self.frame.grid.GetCornerLabelValue())
                 return
 
+            self.new_tab(self.frame.grid.GetColLabelValue(labelevent.GetCol()))
+
             self.save_to_storage(labelevent)
-            self.frame.grid.SetCornerLabelValue(self.datastorage.table.col_labels[labelevent.GetCol()])
+            self.current_grid.SetCornerLabelValue(self.datastorage.table.col_labels[labelevent.GetCol()])
 
             if type == constants.EMPTY or type == constants.DICHOTOM:
                 values = list()
@@ -122,58 +129,70 @@ class TableService:
                     if self.frame.grid.GetCellValue(i, labelevent.GetCol()) not in values:
                         if self.frame.grid.GetCellValue(i, labelevent.GetCol()) != "":
                             values.append(self.frame.grid.GetCellValue(i, labelevent.GetCol()))
-                self.frame.grid.DeleteCols(0, self.frame.grid.GetNumberCols())
-                self.frame.grid.DeleteRows(0, self.frame.grid.GetNumberRows())
-                self.frame.grid.AppendCols(len(values))
-                self.frame.grid.AppendRows(len(values))
-                for i in range(self.frame.grid.GetNumberRows()):
-                    self.frame.grid.SetColLabelValue(i, values[i])
-                    self.frame.grid.SetRowLabelValue(i, values[i])
+                self.current_grid.DeleteCols(0, self.current_grid.GetNumberCols())
+                self.current_grid.DeleteRows(0, self.current_grid.GetNumberRows())
+                self.current_grid.AppendCols(len(values))
+                self.current_grid.AppendRows(len(values))
+                for i in range(self.current_grid.GetNumberRows()):
+                    self.current_grid.SetColLabelValue(i, values[i])
+                    self.current_grid.SetRowLabelValue(i, values[i])
                     if type == constants.DICHOTOM:
-                        self.frame.grid.SetCellValue(i, i, "✘")
+                        self.current_grid.SetCellValue(i, i, "✘")
                 self.datastorage.scaling_type = constants.GENERIC
 
             if type == constants.DIAGONAL or type == constants.ORDINAL:
                 max_value = self.check_int_col(labelevent.GetCol())
-                self.frame.grid.DeleteCols(0, self.frame.grid.GetNumberCols())
-                self.frame.grid.AppendCols(max_value+1)
-                self.frame.grid.DeleteRows(0, self.frame.grid.GetNumberRows())
-                self.frame.grid.AppendRows(max_value+1)
+                self.current_grid.DeleteCols(0, self.current_grid.GetNumberCols())
+                self.current_grid.AppendCols(max_value+1)
+                self.current_grid.DeleteRows(0, self.frame.grid.GetNumberRows())
+                self.current_grid.AppendRows(max_value+1)
                 for a in range(max_value+1):
-                    self.frame.grid.SetColLabelValue(a, str(a))
-                    self.frame.grid.SetRowLabelValue(a, str(a))
-                for i in range(self.frame.grid.GetNumberRows()):
-                    row_value = self.frame.grid.GetRowLabelValue(i)
-                    for j in range(self.frame.grid.GetNumberCols()):
-                        col_value = self.frame.grid.GetColLabelValue(j)
+                    self.current_grid.SetColLabelValue(a, str(a))
+                    self.current_grid.SetRowLabelValue(a, str(a))
+                for i in range(self.current_grid.GetNumberRows()):
+                    row_value = self.current_grid.GetRowLabelValue(i)
+                    for j in range(self.current_grid.GetNumberCols()):
+                        col_value = self.current_grid.GetColLabelValue(j)
                         if type == constants.ORDINAL and int(row_value) > int(col_value):
-                            self.frame.grid.SetCellValue(i, j, "✘")
+                            self.current_grid.SetCellValue(i, j, "✘")
                         if int(row_value) == int(col_value):
-                            self.frame.grid.SetCellValue(i, j, "✘")
+                            self.current_grid.SetCellValue(i, j, "✘")
                 self.datastorage.scaling_type = constants.INT
 
             if type == constants.INTERORDINAL:
                 max_value = self.check_int_col(labelevent.GetCol())
-                self.frame.grid.DeleteCols(0, self.frame.grid.GetNumberCols())
-                self.frame.grid.DeleteRows(0, self.frame.grid.GetNumberRows())
-                self.frame.grid.AppendCols(2*(max_value+1))
-                self.frame.grid.AppendRows(max_value+1)
+                self.current_grid.DeleteCols(0, self.current_grid.GetNumberCols())
+                self.current_grid.DeleteRows(0, self.current_grid.GetNumberRows())
+                self.current_grid.AppendCols(2*(max_value+1))
+                self.current_grid.AppendRows(max_value+1)
 
                 for a in range(2*(max_value+1)):
                     if a < max_value+1:
-                        self.frame.grid.SetColLabelValue(a, "≤" + str(a))
+                        self.current_grid.SetColLabelValue(a, "≤" + str(a))
                     else:
-                        self.frame.grid.SetColLabelValue(a, "≥" + str(a - (max_value+1)))
-                for i in range(self.frame.grid.GetNumberRows()):
-                    self.frame.grid.SetRowLabelValue(i, str(i))
+                        self.current_grid.SetColLabelValue(a, "≥" + str(a - (max_value+1)))
+                for i in range(self.current_grid.GetNumberRows()):
+                    self.current_grid.SetRowLabelValue(i, str(i))
                     for j in range(i, i+(max_value+1)+1):
-                        self.frame.grid.SetCellValue(i, j, "✘")
+                        self.current_grid.SetCellValue(i, j, "✘")
                 self.datastorage.scaling_type = constants.INT
 
             self.datastorage.table_state = constants.SCALING
-            self.frame.grid.EnableEditing(False)
+            self.current_grid.EnableEditing(False)
 
         return to_scaling
+
+    def new_tab(self, name):
+
+        new_grid = grid.Grid(self.frame.csvtabs)
+        new_grid.CreateGrid(16, 8)
+        new_grid.EnableDragCell()
+        new_grid.EnableDragColMove()
+        new_grid.Bind(grid.EVT_GRID_CELL_CHANGED, self.datastorage.set_edited)
+        new_grid.Bind(grid.EVT_GRID_LABEL_RIGHT_CLICK, self.mservice.label_menu)
+        new_grid.Bind(grid.EVT_GRID_CELL_RIGHT_CLICK, self.mservice.cell_menu)
+        self.frame.csvtabs.AddPage(new_grid, "Scaling:"+name)
+        self.current_grid = new_grid
 
     def view_result(self, evt=None):
         self.save_to_storage()
@@ -291,7 +310,6 @@ class TableService:
                 maxvalue = max(maxvalue, int(value))
         return maxvalue
 
-
     def check_toggle(self, evt):
         print(str(evt.GetRow()) + " " + str(evt.GetCol()))
         if self.datastorage.table_state == constants.SCALING:
@@ -301,7 +319,6 @@ class TableService:
                 self.frame.grid.SetCellValue(evt.GetRow(), evt.GetCol(), "")
         else:
             evt.Skip()
-
 
     def get_delete_row(self, labelevent):
         def delete_row(evt):

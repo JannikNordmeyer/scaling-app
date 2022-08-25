@@ -1,6 +1,6 @@
 import wx
 import wx.grid as grid
-from scaling_app import menuservice, tableservice, graphservice, datastorage, graphpanel, gridpanel
+from scaling_app import menuservice, tableservice, graphservice, datastorage, graphpanel
 from scaling_app import concepts
 from scaling_app import implications
 from scaling_app import rules
@@ -66,12 +66,11 @@ def build_ui():
     frame.grid.EnableDragCell()
     frame.grid.EnableDragColMove()
     frame.grid.Bind(grid.EVT_GRID_CELL_CHANGED, storage.set_edited)
+    frame.grid.Bind(grid.EVT_GRID_LABEL_RIGHT_CLICK, mservice.label_menu)
+    frame.grid.Bind(grid.EVT_GRID_CELL_RIGHT_CLICK, mservice.cell_menu)
 
     frame.sizer = wx.BoxSizer(wx.HORIZONTAL)
     frame.sizer.Add(frame.grid, 1, wx.EXPAND | wx.ALL, 5)
-
-    frame.grid.Bind(grid.EVT_GRID_LABEL_RIGHT_CLICK, mservice.label_menu)
-    frame.grid.Bind(grid.EVT_GRID_CELL_RIGHT_CLICK, mservice.cell_menu)
 
     frame.grid.Bind(grid.EVT_GRID_CELL_LEFT_CLICK, tservice.check_toggle)
     frame.csvtabs.AddPage(frame.grid, "Dataset")
@@ -105,6 +104,7 @@ storage = datastorage.DataStorage()
 tservice = tableservice.TableService(frame, storage)
 gservice = graphservice.GraphService(frame, storage)
 mservice = menuservice.MenuService(frame, storage, tservice, gservice)
+tservice.mservice = mservice
 build_ui()
 frame.Show()
 frame.Bind(wx.EVT_CLOSE, mservice.quit_scaling)
