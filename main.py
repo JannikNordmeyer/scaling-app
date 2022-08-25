@@ -74,6 +74,9 @@ def build_ui():
 
     frame.grid.Bind(grid.EVT_GRID_CELL_LEFT_CLICK, tservice.check_toggle)
     frame.csvtabs.AddPage(frame.grid, "Dataset")
+    storage.tabs.append(frame.grid)
+
+    frame.csvtabs.Bind(wx.EVT_NOTEBOOK_PAGE_CHANGED, tservice.get_save_to_storage(0))
 
     frame.tabpane = wx.BoxSizer()
     frame.tabs = wx.Notebook(frame.panelBottom)

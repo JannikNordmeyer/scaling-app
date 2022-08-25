@@ -40,9 +40,9 @@ class MenuService:
         self.frame.Bind(wx.EVT_MENU, self.tableservice.get_edit_col_label(evt), edit)
         self.frame.Bind(wx.EVT_MENU, self.tableservice.get_add_col(evt), new)
 
-        if self.datastorage.table_state == constants.ORIGINAL:
+        if self.frame.csvtabs.GetSelection() == 0:
             menu.AppendSeparator()
-            if self.frame.grid.GetColLabelValue(evt.GetCol()) not in self.datastorage.table.scalings:
+            if self.frame.grid.GetColLabelValue(evt.GetCol()) not in self.datastorage.table.scalings and"\n" not in self.frame.grid.GetColLabelValue(evt.GetCol()):
                 scaling = wx.Menu()
                 custom = scaling.Append(wx.ID_ANY, "Custom Scaling")
                 self.frame.Bind(wx.EVT_MENU, self.tableservice.get_to_scaling(evt, constants.EMPTY), custom)
@@ -57,11 +57,8 @@ class MenuService:
                     dichotom = scaling.Append(wx.ID_ANY, "Dichotomy Scaling")
                     self.frame.Bind(wx.EVT_MENU, self.tableservice.get_to_scaling(evt, constants.DICHOTOM), dichotom)
                 menu.Append(wx.ID_ANY, "Scale Column", scaling)
-            else:
-                to_scaling = menu.Append(wx.ID_ANY, "Go to Scaling")
-                self.frame.Bind(wx.EVT_MENU, self.tableservice.get_to_scaling(evt, None), to_scaling)
 
-        if self.datastorage.table_state != constants.SCALING and not "\n" in self.frame.grid.GetColLabelValue(evt.GetCol()):
+        if self.frame.csvtabs.GetSelection() == 0 and "\n" not in self.frame.grid.GetColLabelValue(evt.GetCol()) and self.frame.grid.GetColLabelValue(evt.GetCol()) in self.datastorage.table.scalings:
             expand = menu.Append(wx.ID_ANY, "Expand Column")
             self.frame.Bind(wx.EVT_MENU, self.tableservice.get_expand_column(evt.GetCol()), expand)
 

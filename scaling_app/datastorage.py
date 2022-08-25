@@ -20,6 +20,9 @@ class DataStorage:
     data = None
     table = Table()
 
+    # Grid Tabs
+    tabs = list()
+
     # States
     edited = False
     table_state = constants.ORIGINAL
