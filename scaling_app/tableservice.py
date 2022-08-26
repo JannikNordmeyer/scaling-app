@@ -53,10 +53,12 @@ class TableService:
         for i in range(len(self.datastorage.table.col_labels), -1, -1):
             self.get_expand_column(i)()
 
-        self.datastorage.table_state = constants.EXPANDED
+        self.datastorage.expanded = True
 
     def get_expand_column(self, col):
         def expand_column(evt=None):
+            if not self.datastorage.expanded:
+                self.get_save_to_storage(0)()
             if self.frame.grid.GetColLabelValue(col) not in self.datastorage.table.scalings:
                 return
             scaling = self.datastorage.table.scalings[self.frame.grid.GetColLabelValue(col)]
@@ -83,7 +85,7 @@ class TableService:
             for i in range(len(col_labels)):
                 self.cascade_col(col)
             self.frame.grid.DeleteCols(col)
-            self.datastorage.table_state = constants.EXPANDED
+            self.datastorage.expanded = True
             if self.frame.grid.GetColLabelValue(col).split("\n", 1)[0] not in self.datastorage.expanded_cols:
                 self.datastorage.expanded_cols.append(self.frame.grid.GetColLabelValue(col).split("\n", 1)[0])
 
@@ -92,19 +94,29 @@ class TableService:
     def get_unexpand_column(self, col):
         def unexpand_column(evt=None):
 
+            self.current_grid = self.datastorage.tabs[self.frame.csvtabs.GetSelection()]
             attribute = self.frame.grid.GetColLabelValue(col).split("\n", 1)[0]
             self.load_from_storage(constants.ORIGINAL)
 
             self.datastorage.expanded_cols.remove(attribute)
 
+            still_expanded = False
             for i in range(self.frame.grid.GetNumberCols()):
                 if self.frame.grid.GetColLabelValue(i) in self.datastorage.expanded_cols:
+                    still_expanded = True
                     self.get_expand_column(i)()
+            if not still_expanded:
+                self.datastorage.expanded = False
 
         return unexpand_column
 
     def get_to_scaling(self, labelevent, type):
         def to_scaling(evt):
+
+            # load from storage if scaling exists and right tab is selected
+            if self.current_grid.GetCornerLabelValue() in self.datastorage.table.scalings:
+                self.load_from_storage(self.current_grid.GetCornerLabelValue())
+                return
 
             self.get_save_to_storage(self.frame.csvtabs.GetSelection())()
 
@@ -179,59 +191,49 @@ class TableService:
         new_grid.Bind(grid.EVT_GRID_CELL_CHANGED, self.datastorage.set_edited)
         new_grid.Bind(grid.EVT_GRID_LABEL_RIGHT_CLICK, self.mservice.label_menu)
         new_grid.Bind(grid.EVT_GRID_CELL_RIGHT_CLICK, self.mservice.cell_menu)
+        new_grid.Bind(grid.EVT_GRID_CELL_LEFT_CLICK, self.check_toggle)
         self.frame.csvtabs.AddPage(new_grid, "Scaling:"+name)
         self.current_grid = new_grid
         self.datastorage.tabs.append(new_grid)
 
     def view_result(self, evt=None):
-        self.save_to_storage()
-        self.frame.grid.DeleteRows(0, self.frame.grid.GetNumberRows())
-        if not self.frame.grid.GetCornerLabelValue() == "":
-            scaling = self.datastorage.table.scalings[self.frame.grid.GetCornerLabelValue()]
+        self.get_save_to_storage(self.frame.csvtabs.GetSelection())
+        self.current_grid.DeleteRows(0, self.current_grid.GetNumberRows())
+        if not self.current_grid.GetCornerLabelValue() == "":
+            scaling = self.datastorage.table.scalings[self.current_grid.GetCornerLabelValue()]
             scaling_col_labels = scaling[1]
             scaling_table = scaling[2]
             scaling_type = scaling[3]
         # Ascertain Scaled Attribute
         col_numer = 0
         for col in range(len(self.datastorage.table.col_labels)):
-            if self.datastorage.table.col_labels[col] == self.frame.grid.GetCornerLabelValue():
+            if self.datastorage.table.col_labels[col] == self.current_grid.GetCornerLabelValue():
                 col_numer = col
                 break
         for i in range(len(self.datastorage.table.row_labels)):
-            self.frame.grid.AppendRows(1)
-            self.frame.grid.SetRowLabelValue(i, self.datastorage.table.row_labels[i])
+            self.current_grid.AppendRows(1)
+            self.current_grid.SetRowLabelValue(i, self.datastorage.table.row_labels[i])
             if scaling_type == constants.INT:
                 if self.datastorage.table.original[(i, col_numer)] != "":
                     value = int(self.datastorage.table.original[(i, col_numer)])
                     for j in range(len(scaling_col_labels)):
-                        self.frame.grid.SetCellValue(i, j, scaling_table[value, j])
+                        self.current_grid.SetCellValue(i, j, scaling_table[value, j])
             if scaling_type == constants.GENERIC:
                 if self.datastorage.table.original[(i, col_numer)] != "":
                     value = self.datastorage.table.original[(i, col_numer)]
                     for j in range(len(scaling_col_labels)):
-                        self.frame.grid.SetCellValue(i, j, scaling_table[scaling_col_labels.index(value), j])
+                        self.current_grid.SetCellValue(i, j, scaling_table[scaling_col_labels.index(value), j])
 
         self.datastorage.table_state = constants.RESULT
+        self.frame.csvtabs.SetPageText(self.frame.csvtabs.GetSelection(), "Result:"+self.current_grid.GetCornerLabelValue())
 
-    def return_to_original(self, evt=None):
-        self.save_to_storage()
-        self.load_from_storage(constants.ORIGINAL)
-        self.frame.grid.EnableEditing(True)
-
-    def get_save_to_storage(self, tab, evt=None):
-
+    def get_save_to_storage(self, evt=None):
         def save_to_storage(evt=None):
+
             # Save Original Table
-
-            if evt is not None:
-                tab = evt.GetOldSelection()
-            else:
-                tab = 0
-
-            if tab != 0:
-                self.datastorage.table_state = constants.SCALING
-
             if self.frame.csvtabs.GetSelection() == 0:
+                if self.datastorage.expanded:
+                    return
                 self.datastorage.table.col_labels.clear()
                 self.datastorage.table.row_labels.clear()
                 self.datastorage.table.original.clear()
@@ -262,12 +264,14 @@ class TableService:
                         table[(i, j)] = scaling_grid.GetCellValue(i, j)
 
                 self.datastorage.table.set_scaling(scaling_grid.GetCornerLabelValue(), row_labels, col_labels, table, self.datastorage.scaling_type)
+            self.current_grid = self.datastorage.tabs[self.frame.csvtabs.GetSelection()]
+            print(self.datastorage.table.col_labels)
         return save_to_storage
 
     def load_from_storage(self, target):
 
-        self.frame.grid.DeleteRows(0, self.frame.grid.GetNumberRows())
-        self.frame.grid.DeleteCols(0, self.frame.grid.GetNumberCols())
+        self.current_grid.DeleteRows(0, self.current_grid.GetNumberRows())
+        self.current_grid.DeleteCols(0, self.current_grid.GetNumberCols())
 
         # Load Original
         if target == constants.ORIGINAL:
@@ -290,16 +294,17 @@ class TableService:
         col_labels = scaling[1]
         table = scaling[2]
 
-        self.frame.grid.AppendCols(len(col_labels))
+        self.current_grid.AppendCols(len(col_labels))
         for a in range(len(col_labels)):
-            self.frame.grid.SetColLabelValue(a, col_labels[a])
-        self.frame.grid.AppendRows(len(row_labels))
+            self.current_grid.SetColLabelValue(a, col_labels[a])
+        self.current_grid.AppendRows(len(row_labels))
         for a in range(len(row_labels)):
-            self.frame.grid.SetRowLabelValue(a, row_labels[a])
+            self.current_grid.SetRowLabelValue(a, row_labels[a])
         for coords, value in table.items():
-            self.frame.grid.SetCellValue(coords[0], coords[1], value)
-        self.frame.grid.SetCornerLabelValue(target)
+            self.current_grid.SetCellValue(coords[0], coords[1], value)
+        self.current_grid.SetCornerLabelValue(target)
         self.datastorage.table_state = constants.SCALING
+        self.frame.csvtabs.SetPageText(self.frame.csvtabs.GetSelection(), "Scaling:"+target)
 
     def check_int_col(self, col):
 
@@ -313,12 +318,11 @@ class TableService:
         return maxvalue
 
     def check_toggle(self, evt):
-        print(str(evt.GetRow()) + " " + str(evt.GetCol()))
-        if self.datastorage.table_state == constants.SCALING:
-            if self.frame.grid.GetCellValue(evt.GetRow(), evt.GetCol()) == "":
-                self.frame.grid.SetCellValue(evt.GetRow(), evt.GetCol(), "✘")
+        if self.frame.csvtabs.GetSelection() > 0 and self.datastorage.table_state != constants.RESULT:
+            if self.current_grid.GetCellValue(evt.GetRow(), evt.GetCol()) == "":
+                self.current_grid.SetCellValue(evt.GetRow(), evt.GetCol(), "✘")
             else:
-                self.frame.grid.SetCellValue(evt.GetRow(), evt.GetCol(), "")
+                self.current_grid.SetCellValue(evt.GetRow(), evt.GetCol(), "")
         else:
             evt.Skip()
 

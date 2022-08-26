@@ -62,7 +62,7 @@ class MenuService:
             expand = menu.Append(wx.ID_ANY, "Expand Column")
             self.frame.Bind(wx.EVT_MENU, self.tableservice.get_expand_column(evt.GetCol()), expand)
 
-        if self.datastorage.table_state == constants.EXPANDED and "\n" in self.frame.grid.GetColLabelValue(evt.GetCol()):
+        if "\n" in self.frame.grid.GetColLabelValue(evt.GetCol()):
             unexpand = menu.Append(wx.ID_ANY, "Collapse Expansion")
             self.frame.Bind(wx.EVT_MENU, self.tableservice.get_unexpand_column(evt.GetCol()), unexpand)
 
@@ -82,18 +82,14 @@ class MenuService:
         purge = menu.Append(wx.ID_ANY, "Purge Table")
         reset = menu.Append(wx.ID_ANY, "Reset Table")
         menu.AppendSeparator()
-        if self.datastorage.table_state == constants.SCALING \
-                or self.datastorage.table_state == constants.RESULT \
-                or self.datastorage.table_state == constants.EXPANDED:
-            original = menu.Append(wx.ID_ANY, "Return to Original")
-            self.frame.Bind(wx.EVT_MENU, self.tableservice.return_to_original, original)
-        if self.datastorage.table_state == constants.SCALING:
+
+        if self.frame.csvtabs.GetSelection() > 0 and "Scaling:" in self.frame.csvtabs.GetPageText(self.frame.csvtabs.GetSelection()):
             result = menu.Append(wx.ID_ANY, "View Result")
             self.frame.Bind(wx.EVT_MENU, self.tableservice.view_result, result)
-        if self.datastorage.table_state == constants.RESULT:
+        if self.frame.csvtabs.GetSelection() > 0 and "Result:" in self.frame.csvtabs.GetPageText(self.frame.csvtabs.GetSelection()):
             to_scaling = menu.Append(wx.ID_ANY, "Go to Scaling")
             self.frame.Bind(wx.EVT_MENU, self.tableservice.get_to_scaling(evt, None), to_scaling)
-        if self.datastorage.table_state == constants.ORIGINAL:
+        if self.frame.csvtabs.GetSelection() == 0:
             expand = menu.Append(wx.ID_ANY, "Expand View")
             self.frame.Bind(wx.EVT_MENU, self.tableservice.load_expanded, expand)
 
@@ -124,16 +120,23 @@ class MenuService:
         csvfile = open(filepath)
         storage_backup = self.datastorage.data
         self.datastorage.data = csvfile
-        try:
+        self.tableservice.fill_table()
+        self.datastorage.table_state = constants.ORIGINAL
+        self.datastorage.clear_table()
+        while self.frame.csvtabs.GetPageCount() > 1:
+            self.frame.csvtabs.DeletePage(1)
+        """try:
             self.tableservice.fill_table()
             self.datastorage.table_state = constants.ORIGINAL
             self.datastorage.clear_table()
+            while self.frame.csvtabs.GetPageCount() > 1:
+                self.frame.csvtabs.DeletePage(1)
         except:
             errortext = 'An error has occurred loading the context from the selected file. The file may be poorly formatted.'
             dialog = wx.MessageDialog(None, errortext, 'Error Loading Context', wx.OK)
             dialog.ShowModal()
             dialog.Destroy()
-            self.datastorage.data = storage_backup
+            self.datastorage.data = storage_backup"""
 
     def load_lattice(self, e):
 
