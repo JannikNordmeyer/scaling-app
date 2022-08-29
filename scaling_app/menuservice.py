@@ -120,12 +120,7 @@ class MenuService:
         csvfile = open(filepath)
         storage_backup = self.datastorage.data
         self.datastorage.data = csvfile
-        self.tableservice.fill_table()
-        self.datastorage.table_state = constants.ORIGINAL
-        self.datastorage.clear_table()
-        while self.frame.csvtabs.GetPageCount() > 1:
-            self.frame.csvtabs.DeletePage(1)
-        """try:
+        try:
             self.tableservice.fill_table()
             self.datastorage.table_state = constants.ORIGINAL
             self.datastorage.clear_table()
@@ -136,7 +131,7 @@ class MenuService:
             dialog = wx.MessageDialog(None, errortext, 'Error Loading Context', wx.OK)
             dialog.ShowModal()
             dialog.Destroy()
-            self.datastorage.data = storage_backup"""
+            self.datastorage.data = storage_backup
 
     def load_lattice(self, e):
 
