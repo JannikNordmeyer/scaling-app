@@ -25,7 +25,6 @@ class DataStorage:
 
     # States
     edited = False
-    table_state = constants.ORIGINAL
     expanded = False
     expanded_cols = list()
     result_visible = list()
@@ -45,4 +44,5 @@ class DataStorage:
         grid = self.tabs[0]
         self.tabs.clear()
         self.tabs.append(grid)
+        self.result_visible.clear()
 

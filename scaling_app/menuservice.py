@@ -122,7 +122,6 @@ class MenuService:
         self.datastorage.data = csvfile
         try:
             self.tableservice.fill_table()
-            self.datastorage.table_state = constants.ORIGINAL
             self.datastorage.clear_table()
             while self.frame.csvtabs.GetPageCount() > 1:
                 self.frame.csvtabs.DeletePage(1)

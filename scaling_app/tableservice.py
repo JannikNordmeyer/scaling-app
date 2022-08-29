@@ -123,7 +123,7 @@ class TableService:
             self.get_save_to_storage(self.frame.csvtabs.GetSelection())()
 
             self.new_tab(self.frame.grid.GetColLabelValue(labelevent.GetCol()))
-            self.current_grid.SetCornerLabelValue(self.datastorage.table.col_labels[labelevent.GetCol()])
+            self.current_grid.SetCornerLabelValue(self.frame.grid.GetColLabelValue(labelevent.GetCol()))
 
             if type == constants.EMPTY or type == constants.DICHOTOM:
                 values = list()
@@ -300,7 +300,6 @@ class TableService:
             for coords, value in self.datastorage.table.original.items():
                 self.frame.grid.SetCellValue(coords[0], coords[1], value)
             self.frame.grid.SetCornerLabelValue("")
-            self.datastorage.table_state = constants.ORIGINAL
             return
 
         # Load Existing Scaling
@@ -318,7 +317,6 @@ class TableService:
         for coords, value in table.items():
             self.current_grid.SetCellValue(coords[0], coords[1], value)
         self.current_grid.SetCornerLabelValue(target)
-        self.datastorage.table_state = constants.SCALING
         self.frame.csvtabs.SetPageText(self.datastorage.tabs.index(self.current_grid), "Scaling:" + target)
 
     def check_int_col(self, col):
