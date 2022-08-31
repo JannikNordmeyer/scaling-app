@@ -328,9 +328,9 @@ class TableService:
 
     def get_delete_row(self, labelevent):
         def delete_row(evt):
-            for i in range(self.frame.main_grid.GetNumberRows() - labelevent.GetRow()):
-                self.frame.main_grid.SetRowLabelValue(labelevent.GetRow() + i, self.frame.main_grid.GetRowLabelValue(labelevent.GetRow() + i + 1))
-            self.frame.main_grid.DeleteRows(pos=labelevent.GetRow())
+            for i in range(self.current_grid.GetNumberRows() - labelevent.GetRow()):
+                self.current_grid.SetRowLabelValue(labelevent.GetRow() + i, self.current_grid.GetRowLabelValue(labelevent.GetRow() + i + 1))
+            self.current_grid.DeleteRows(pos=labelevent.GetRow())
             self.datastorage.edited = True
             self.table_edited()
 
@@ -340,8 +340,8 @@ class TableService:
         def purge_row(evt):
             if not self.is_empty():
                 self.datastorage.edited = True
-            for i in range(self.frame.main_grid.GetNumberCols()):
-                self.frame.main_grid.SetCellValue(labelevent.GetRow(), i, "")
+            for i in range(self.current_grid.GetNumberCols()):
+                self.current_grid.SetCellValue(labelevent.GetRow(), i, "")
             self.table_edited()
 
         return purge_row
@@ -354,7 +354,7 @@ class TableService:
             name = dialog.GetValue()
             dialog.Destroy()
             if name != "":
-                self.frame.main_grid.SetRowLabelValue(labelevent.GetRow(), name)
+                self.current_grid.SetRowLabelValue(labelevent.GetRow(), name)
                 self.datastorage.set_edited()
             self.table_edited()
 
@@ -362,9 +362,9 @@ class TableService:
 
     def get_add_row(self, labelevent):
         def add_row(evt):
-            self.frame.main_grid.AppendRows()
+            self.current_grid.AppendRows()
             self.cascade_row(labelevent.GetRow())
-            self.frame.main_grid.SetRowLabelValue(labelevent.GetRow() + 1, "")
+            self.current_grid.SetRowLabelValue(labelevent.GetRow() + 1, "")
             self.datastorage.set_edited()
             self.table_edited()
 
@@ -372,7 +372,7 @@ class TableService:
 
     def get_delete_col(self, labelevent):
         def delete_col(evt):
-            self.frame.main_grid.DeleteCols(pos=labelevent.GetCol(), updateLabels=False)
+            self.current_grid.DeleteCols(pos=labelevent.GetCol(), updateLabels=False)
             self.datastorage.set_edited()
 
         return delete_col
@@ -381,8 +381,8 @@ class TableService:
         def purge_col(evt):
             if not self.is_empty():
                 self.datastorage.set_edited()
-            for i in range(self.frame.main_grid.GetNumberRows()):
-                self.frame.main_grid.SetCellValue(i, labelevent.GetCol(), "")
+            for i in range(self.current_grid.GetNumberRows()):
+                self.current_grid.SetCellValue(i, labelevent.GetCol(), "")
             self.table_edited()
 
         return purge_col
@@ -401,7 +401,7 @@ class TableService:
                 dialog.ShowModal()
                 return
             if name != "":
-                self.frame.main_grid.SetColLabelValue(labelevent.GetCol(), name)
+                self.current_grid.SetColLabelValue(labelevent.GetCol(), name)
                 self.datastorage.set_edited()
 
         return edit_col_label
@@ -420,8 +420,8 @@ class TableService:
                 dialog.ShowModal()
                 return
             if name != "":
-                self.frame.main_grid.AppendCols()
-                self.frame.main_grid.SetColLabelValue(self.frame.main_grid.GetNumberCols() - 1, name)
+                self.current_grid.AppendCols()
+                self.current_grid.SetColLabelValue(self.current_grid.GetNumberCols() - 1, name)
                 self.cascade_col(labelevent.GetCol())
                 self.datastorage.set_edited()
             self.table_edited()
@@ -435,7 +435,7 @@ class TableService:
         return False
 
     def cascade_row(self, pos):
-        number_rows = self.frame.main_grid.GetNumberRows()
+        number_rows = self.current_grid.GetNumberRows()
         i = 0
         while i < number_rows - pos - 2:
             self.swap_row(number_rows - 2 - i, number_rows - 1 - i)
@@ -443,17 +443,17 @@ class TableService:
 
     def swap_row(self, a, b):
 
-        temp = self.frame.main_grid.GetRowLabelValue(a)
-        self.frame.main_grid.SetRowLabelValue(a, self.frame.main_grid.GetRowLabelValue(b))
-        self.frame.main_grid.SetRowLabelValue(b, temp)
-        for i in range(self.frame.main_grid.GetNumberCols()):
+        temp = self.current_grid.GetRowLabelValue(a)
+        self.current_grid.SetRowLabelValue(a, self.current_grid.GetRowLabelValue(b))
+        self.current_grid.SetRowLabelValue(b, temp)
+        for i in range(self.current_grid.GetNumberCols()):
 
-            temp = self.frame.main_grid.GetCellValue(a, i)
-            self.frame.main_grid.SetCellValue(a, i, self.frame.main_grid.GetCellValue(b, i))
-            self.frame.main_grid.SetCellValue(b, i, temp)
+            temp = self.current_grid.GetCellValue(a, i)
+            self.current_grid.SetCellValue(a, i, self.current_grid.GetCellValue(b, i))
+            self.current_grid.SetCellValue(b, i, temp)
 
     def cascade_col(self, pos):
-        number_cols = self.frame.main_grid.GetNumberCols()
+        number_cols = self.current_grid.GetNumberCols()
         i = 0
         while i < number_cols - pos - 2:
             self.swap_col(number_cols - 2 - i, number_cols - 1 - i)
@@ -461,19 +461,19 @@ class TableService:
 
     def swap_col(self, a, b):
 
-        temp = self.frame.main_grid.GetColLabelValue(a)
-        self.frame.main_grid.SetColLabelValue(a, self.frame.main_grid.GetColLabelValue(b))
-        self.frame.main_grid.SetColLabelValue(b, temp)
-        for i in range(self.frame.main_grid.GetNumberRows()):
+        temp = self.current_grid.GetColLabelValue(a)
+        self.current_grid.SetColLabelValue(a, self.current_grid.GetColLabelValue(b))
+        self.current_grid.SetColLabelValue(b, temp)
+        for i in range(self.current_grid.GetNumberRows()):
 
-            temp = self.frame.main_grid.GetCellValue(i, a)
-            self.frame.main_grid.SetCellValue(i, a, self.frame.main_grid.GetCellValue(i, b))
-            self.frame.main_grid.SetCellValue(i, b, temp)
+            temp = self.current_grid.GetCellValue(i, a)
+            self.current_grid.SetCellValue(i, a, self.current_grid.GetCellValue(i, b))
+            self.current_grid.SetCellValue(i, b, temp)
 
     def purge_table(self, evt):
         if not self.is_empty():
             self.datastorage.set_edited()
-            self.frame.main_grid.ClearGrid()
+            self.current_grid.ClearGrid()
 
     def reset_table(self, evt=None):
 
