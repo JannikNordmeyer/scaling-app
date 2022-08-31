@@ -318,7 +318,7 @@ class TableService:
         return maxvalue
 
     def check_toggle(self, evt):
-        if self.frame.csvtabs.GetSelection() > 0 and self.current_grid.GetCornerLabelValue() != "":
+        if self.frame.csvtabs.GetSelection() >= 2 and "Result:" not in self.frame.csvtabs.GetPageText(self.frame.csvtabs.GetSelection()):
             if self.current_grid.GetCellValue(evt.GetRow(), evt.GetCol()) == "":
                 self.current_grid.SetCellValue(evt.GetRow(), evt.GetCol(), "✘")
             else:

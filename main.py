@@ -81,6 +81,7 @@ def build_ui():
 
     frame.result_grid = grid.Grid(frame.csvtabs)
     frame.result_grid.CreateGrid(16, 8)
+    frame.result_grid.EnableEditing(False)
 
     frame.csvtabs.AddPage(frame.result_grid, "Scaled Context")
     storage.tabs.append(frame.result_grid)
