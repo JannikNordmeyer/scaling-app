@@ -64,20 +64,26 @@ def build_ui():
     # Table Headers
     frame.csvbox = wx.BoxSizer(wx.VERTICAL)
     frame.csvtabs = wx.Notebook(frame.panelTop)
-    frame.grid = grid.Grid(frame.csvtabs)
-    frame.grid.CreateGrid(16, 8)
-    frame.grid.EnableDragCell()
-    frame.grid.EnableDragColMove()
-    frame.grid.Bind(grid.EVT_GRID_CELL_CHANGED, storage.set_edited)
-    frame.grid.Bind(grid.EVT_GRID_LABEL_RIGHT_CLICK, mservice.label_menu)
-    frame.grid.Bind(grid.EVT_GRID_CELL_RIGHT_CLICK, mservice.cell_menu)
+    frame.main_grid = grid.Grid(frame.csvtabs)
+    frame.main_grid.CreateGrid(16, 8)
+    frame.main_grid.EnableDragCell()
+    frame.main_grid.EnableDragColMove()
+    frame.main_grid.Bind(grid.EVT_GRID_CELL_CHANGED, storage.set_edited)
+    frame.main_grid.Bind(grid.EVT_GRID_LABEL_RIGHT_CLICK, mservice.label_menu)
+    frame.main_grid.Bind(grid.EVT_GRID_CELL_RIGHT_CLICK, mservice.cell_menu)
 
     frame.sizer = wx.BoxSizer(wx.HORIZONTAL)
-    frame.sizer.Add(frame.grid, 1, wx.EXPAND | wx.ALL, 5)
+    frame.sizer.Add(frame.main_grid, 1, wx.EXPAND | wx.ALL, 5)
 
-    frame.grid.Bind(grid.EVT_GRID_CELL_LEFT_CLICK, tservice.check_toggle)
-    frame.csvtabs.AddPage(frame.grid, "Dataset")
-    storage.tabs.append(frame.grid)
+    frame.main_grid.Bind(grid.EVT_GRID_CELL_LEFT_CLICK, tservice.check_toggle)
+    frame.csvtabs.AddPage(frame.main_grid, "Dataset")
+    storage.tabs.append(frame.main_grid)
+
+    frame.result_grid = grid.Grid(frame.csvtabs)
+    frame.result_grid.CreateGrid(16, 8)
+
+    frame.csvtabs.AddPage(frame.result_grid, "Scaled Context")
+    storage.tabs.append(frame.result_grid)
 
     frame.csvtabs.Bind(wx.EVT_NOTEBOOK_PAGE_CHANGED, tservice.get_save_to_storage())
 

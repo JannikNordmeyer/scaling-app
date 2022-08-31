@@ -1,5 +1,6 @@
 import json
 import wx
+import wx.grid as grid
 import tkinter.filedialog
 from scaling_app import constants
 
@@ -42,7 +43,7 @@ class MenuService:
 
         if self.frame.csvtabs.GetSelection() == 0:
             menu.AppendSeparator()
-            if self.frame.grid.GetColLabelValue(evt.GetCol()) not in self.datastorage.table.scalings and"\n" not in self.frame.grid.GetColLabelValue(evt.GetCol()):
+            if self.frame.main_grid.GetColLabelValue(evt.GetCol()) not in self.datastorage.table.scalings and "\n" not in self.frame.main_grid.GetColLabelValue(evt.GetCol()):
                 scaling = wx.Menu()
                 custom = scaling.Append(wx.ID_ANY, "Custom Scaling")
                 self.frame.Bind(wx.EVT_MENU, self.tableservice.get_to_scaling(evt, constants.EMPTY), custom)
@@ -57,14 +58,6 @@ class MenuService:
                     nominal = scaling.Append(wx.ID_ANY, "Nominal Scaling")
                     self.frame.Bind(wx.EVT_MENU, self.tableservice.get_to_scaling(evt, constants.DIAGONAL_ANY), nominal)
                 menu.Append(wx.ID_ANY, "Scale Attribute", scaling)
-
-        if self.frame.csvtabs.GetSelection() == 0 and "\n" not in self.frame.grid.GetColLabelValue(evt.GetCol()) and self.frame.grid.GetColLabelValue(evt.GetCol()) in self.datastorage.table.scalings:
-            expand = menu.Append(wx.ID_ANY, "Expand Column")
-            self.frame.Bind(wx.EVT_MENU, self.tableservice.get_expand_column(evt.GetCol()), expand)
-
-        if "\n" in self.frame.grid.GetColLabelValue(evt.GetCol()):
-            unexpand = menu.Append(wx.ID_ANY, "Collapse Expansion")
-            self.frame.Bind(wx.EVT_MENU, self.tableservice.get_unexpand_column(evt.GetCol()), unexpand)
 
         self.frame.PopupMenu(menu)
         menu.Destroy()
@@ -89,9 +82,6 @@ class MenuService:
         if self.frame.csvtabs.GetSelection() > 0 and "Result:" in self.frame.csvtabs.GetPageText(self.frame.csvtabs.GetSelection()):
             to_scaling = menu.Append(wx.ID_ANY, "Go to Scaling")
             self.frame.Bind(wx.EVT_MENU, self.tableservice.get_to_scaling(evt, None), to_scaling)
-        if self.frame.csvtabs.GetSelection() == 0:
-            expand = menu.Append(wx.ID_ANY, "Expand View")
-            self.frame.Bind(wx.EVT_MENU, self.tableservice.load_expanded, expand)
 
         self.frame.Bind(wx.EVT_MENU, self.tableservice.purge_table, purge)
         self.frame.Bind(wx.EVT_MENU, self.tableservice.reset_table, reset)
@@ -120,17 +110,36 @@ class MenuService:
         csvfile = open(filepath)
         storage_backup = self.datastorage.data
         self.datastorage.data = csvfile
-        try:
+
+        self.tableservice.fill_table()
+        self.datastorage.clear_table()
+        while self.frame.csvtabs.GetPageCount() > 2:
+            self.frame.csvtabs.DeletePage(2)
+        if self.frame.result_grid.GetNumberCols() > 0:
+            self.frame.result_grid.DeleteCols(0, self.frame.result_grid.GetNumberCols())
+        if self.frame.result_grid.GetNumberRows() > 0:
+            self.frame.result_grid.DeleteRows(0, self.frame.result_grid.GetNumberRows())
+        for i in range(self.frame.main_grid.GetNumberRows()):
+            self.frame.result_grid.AppendRows(1)
+            self.frame.result_grid.SetRowLabelValue(i, self.frame.main_grid.GetRowLabelValue(i))
+        """try:
             self.tableservice.fill_table()
             self.datastorage.clear_table()
             while self.frame.csvtabs.GetPageCount() > 1:
                 self.frame.csvtabs.DeletePage(1)
+            self.frame.result_grid = grid.Grid(self.frame.csvtabs)
+            self.frame.result_grid.CreateGrid(16, 8)
+            self.frame.result_grid.EnableDragCell()
+            self.frame.result_grid.EnableDragColMove()
+
+            self.frame.csvtabs.AddPage(self.frame.result_grid, "Scaled Context")
+            self.storage.tabs.append(self.frame.result_grid)
         except:
             errortext = 'An error has occurred loading the context from the selected file. The file may be poorly formatted.'
             dialog = wx.MessageDialog(None, errortext, 'Error Loading Context', wx.OK)
             dialog.ShowModal()
             dialog.Destroy()
-            self.datastorage.data = storage_backup
+            self.datastorage.data = storage_backup"""
 
     def load_lattice(self, e):
 
@@ -159,11 +168,11 @@ class MenuService:
             return
 
         content = ""
-        row_count = self.frame.grid.GetNumberRows()
-        row_len = self.frame.grid.GetNumberCols()
+        row_count = self.frame.main_grid.GetNumberRows()
+        row_len = self.frame.main_grid.GetNumberCols()
 
         for labels in range(row_len):
-            value = self.frame.grid.GetColLabelValue(labels)
+            value = self.frame.main_grid.GetColLabelValue(labels)
             value = value.replace(",", "\,")
             content += value
             if labels < row_len - 1:
@@ -171,13 +180,13 @@ class MenuService:
         content += "\n"
 
         for i in range(row_count):
-            value = self.frame.grid.GetRowLabelValue(i)
+            value = self.frame.main_grid.GetRowLabelValue(i)
             value = value.replace(",", "\,")
             value += ","
             content += value
             for j in range(row_len):
 
-                value = self.frame.grid.GetCellValue(i, j)
+                value = self.frame.main_grid.GetCellValue(i, j)
                 value = value.replace(",", "\,")
                 content += value
                 if j < row_len - 1:
@@ -195,10 +204,10 @@ class MenuService:
         print("Empty Frame")
 
     def manual(self, e):
-        print("Manual")
+        self.datastorage.status()
 
     def about(self, e):
-        print("About")
+        self.datastorage.status()
 
     def comp_concepts(self, e):
         print("Compute Concepts")

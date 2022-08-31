@@ -1,5 +1,3 @@
-from scaling_app import constants
-
 
 class Table:
     original = dict()
@@ -25,10 +23,7 @@ class DataStorage:
 
     # States
     edited = False
-    expanded = False
-    expanded_cols = list()
-    result_visible = list()
-    scaling_type = None
+    result_visible = set()
 
     def set_edited(self, evt=None):
         self.edited = True
@@ -41,8 +36,19 @@ class DataStorage:
         self.table.col_labels.clear()
         self.table.row_labels.clear()
         self.table.scalings.clear()
-        grid = self.tabs[0]
+        main_grid = self.tabs[0]
+        result_grid = self.tabs[1]
         self.tabs.clear()
-        self.tabs.append(grid)
+        self.tabs.append(main_grid)
+        self.tabs.append(result_grid)
         self.result_visible.clear()
+
+    def status(self, evt=None):
+        print("Status:")
+        print("edited: " + str(self.edited))
+        print("result_visible:" + str(self.result_visible))
+        print("\n")
+        print("scalings:")
+        print(self.table.scalings)
+        print("---------------------------------------")
 
