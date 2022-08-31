@@ -15,10 +15,10 @@ class MenuService:
     def show_row_menu(self, evt):
 
         menu = wx.Menu()
-        delrow = menu.Append(wx.ID_ANY, "Delete Row")
-        purgerow = menu.Append(wx.ID_ANY, "Purge Row")
+        delrow = menu.Append(wx.ID_ANY, "Delete Object")
+        purgerow = menu.Append(wx.ID_ANY, "Purge Object")
         edit = menu.Append(wx.ID_ANY, "Edit Label")
-        new = menu.Append(wx.ID_ANY, "Add Row")
+        new = menu.Append(wx.ID_ANY, "Add Object")
 
         self.frame.Bind(wx.EVT_MENU, self.tableservice.get_delete_row(evt), delrow)
         self.frame.Bind(wx.EVT_MENU, self.tableservice.get_purge_row(evt), purgerow)
@@ -31,10 +31,10 @@ class MenuService:
     def show_col_menu(self, evt):
 
         menu = wx.Menu()
-        delcol = menu.Append(wx.ID_ANY, "Delete Column")
-        purgecol = menu.Append(wx.ID_ANY, "Purge Column")
+        delcol = menu.Append(wx.ID_ANY, "Delete Attribute")
+        purgecol = menu.Append(wx.ID_ANY, "Purge Attribute")
         edit = menu.Append(wx.ID_ANY, "Edit Label")
-        new = menu.Append(wx.ID_ANY, "Add Column")
+        new = menu.Append(wx.ID_ANY, "Add Attribute")
         self.frame.Bind(wx.EVT_MENU, self.tableservice.get_delete_col(evt), delcol)
         self.frame.Bind(wx.EVT_MENU, self.tableservice.get_purge_col(evt), purgecol)
         self.frame.Bind(wx.EVT_MENU, self.tableservice.get_edit_col_label(evt), edit)
@@ -54,9 +54,9 @@ class MenuService:
                     self.frame.Bind(wx.EVT_MENU, self.tableservice.get_to_scaling(evt, constants.ORDINAL), ordinal)
                     self.frame.Bind(wx.EVT_MENU, self.tableservice.get_to_scaling(evt, constants.INTERORDINAL), interordinal)
                 else:
-                    dichotom = scaling.Append(wx.ID_ANY, "Dichotomy Scaling")
-                    self.frame.Bind(wx.EVT_MENU, self.tableservice.get_to_scaling(evt, constants.DICHOTOM), dichotom)
-                menu.Append(wx.ID_ANY, "Scale Column", scaling)
+                    nominal = scaling.Append(wx.ID_ANY, "Nominal Scaling")
+                    self.frame.Bind(wx.EVT_MENU, self.tableservice.get_to_scaling(evt, constants.DIAGONAL_ANY), nominal)
+                menu.Append(wx.ID_ANY, "Scale Attribute", scaling)
 
         if self.frame.csvtabs.GetSelection() == 0 and "\n" not in self.frame.grid.GetColLabelValue(evt.GetCol()) and self.frame.grid.GetColLabelValue(evt.GetCol()) in self.datastorage.table.scalings:
             expand = menu.Append(wx.ID_ANY, "Expand Column")

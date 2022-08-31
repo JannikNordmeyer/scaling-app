@@ -1,6 +1,7 @@
 # Scaling Types
 EMPTY = "empty"
 DIAGONAL = "diagonal"
+DIAGONAL_ANY = "diagonal_any"
 ORDINAL = "ordinal"
 INTERORDINAL = "interordinal"
 DICHOTOM = "dichotom"

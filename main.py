@@ -8,6 +8,7 @@ from scaling_app import rules
 
 def build_ui():
 
+    # Top Menus
     menu_bar = wx.MenuBar()
 
     file_menu = wx.Menu()
@@ -45,6 +46,7 @@ def build_ui():
 
     frame.SetMenuBar(menu_bar)
 
+    # Screen Layout
     frame.hsplitter = wx.SplitterWindow(frame, style = wx.SP_LIVE_UPDATE)
     frame.vsplitter = wx.SplitterWindow(frame.hsplitter, style = wx.SP_LIVE_UPDATE)
 
@@ -59,6 +61,7 @@ def build_ui():
     frame.vsplitter.SetMinimumPaneSize(100)
     frame.vsplitter.SetSashPosition(400)
 
+    # Table Headers
     frame.csvbox = wx.BoxSizer(wx.VERTICAL)
     frame.csvtabs = wx.Notebook(frame.panelTop)
     frame.grid = grid.Grid(frame.csvtabs)
@@ -78,6 +81,7 @@ def build_ui():
 
     frame.csvtabs.Bind(wx.EVT_NOTEBOOK_PAGE_CHANGED, tservice.get_save_to_storage())
 
+    # Bottom Tabs
     frame.tabpane = wx.BoxSizer()
     frame.tabs = wx.Notebook(frame.panelBottom)
     tab1 = concepts.Concepts(frame.tabs)
@@ -93,6 +97,7 @@ def build_ui():
     frame.tabpane.Add(frame.tabs, wx.ID_ANY, wx.EXPAND)
     frame.panelBottom.SetSizer(frame.tabpane)
 
+    # Graph Box
     frame.graphbox = wx.BoxSizer(wx.VERTICAL)
     frame.graph = graphpanel.GraphPanel(frame.panelLeft, mservice, storage)
 

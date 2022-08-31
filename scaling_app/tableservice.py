@@ -125,7 +125,7 @@ class TableService:
             self.new_tab(self.frame.grid.GetColLabelValue(labelevent.GetCol()))
             self.current_grid.SetCornerLabelValue(self.frame.grid.GetColLabelValue(labelevent.GetCol()))
 
-            if type == constants.EMPTY or type == constants.DICHOTOM:
+            if type == constants.EMPTY or type == constants.DIAGONAL_ANY:
                 values = list()
                 for i in range(self.frame.grid.GetNumberRows()):
                     if self.frame.grid.GetCellValue(i, labelevent.GetCol()) not in values:
@@ -138,7 +138,7 @@ class TableService:
                 for i in range(self.current_grid.GetNumberRows()):
                     self.current_grid.SetColLabelValue(i, values[i])
                     self.current_grid.SetRowLabelValue(i, values[i])
-                    if type == constants.DICHOTOM:
+                    if type == constants.DIAGONAL_ANY:
                         self.current_grid.SetCellValue(i, i, "✘")
                 self.datastorage.scaling_type = constants.GENERIC
 
