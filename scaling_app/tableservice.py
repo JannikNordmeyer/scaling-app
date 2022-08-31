@@ -84,26 +84,6 @@ class TableService:
 
         return expand_column
 
-    def get_unexpand_column(self, col):
-        # No Longer Needed
-        def unexpand_column(evt=None):
-
-            self.current_grid = self.datastorage.tabs[self.frame.csvtabs.GetSelection()]
-            attribute = self.frame.main_grid.GetColLabelValue(col).split("\n", 1)[0]
-            self.load_from_storage(constants.ORIGINAL)
-
-            self.datastorage.expanded_cols.remove(attribute)
-
-            still_expanded = False
-            for i in range(self.frame.main_grid.GetNumberCols()):
-                if self.frame.main_grid.GetColLabelValue(i) in self.datastorage.expanded_cols:
-                    still_expanded = True
-                    self.get_expand_column(i)()
-            if not still_expanded:
-                self.datastorage.expanded = False
-
-        return unexpand_column
-
     def get_to_scaling(self, labelevent, type):
         def to_scaling(evt=None):
 
