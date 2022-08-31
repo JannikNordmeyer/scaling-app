@@ -50,5 +50,9 @@ class DataStorage:
         print("\n")
         print("scalings:")
         print(self.table.scalings)
+        print("Table:")
+        print(self.table.row_labels)
+        print(self.table.col_labels)
+        print(self.table.original)
         print("---------------------------------------")
 

@@ -52,6 +52,14 @@ class TableService:
 
         if self.frame.result_grid.GetNumberCols() > 0:
             self.frame.result_grid.DeleteCols(0, self.frame.result_grid.GetNumberCols())
+
+        # Reload Rows in case the Dataset Changed
+        if self.frame.result_grid.GetNumberRows() > 0:
+            self.frame.result_grid.DeleteRows(0, self.frame.result_grid.GetNumberRows())
+            for i in range(self.frame.main_grid.GetNumberRows()):
+                self.frame.result_grid.AppendRows(1)
+                self.frame.result_grid.SetRowLabelValue(i, self.frame.main_grid.GetRowLabelValue(i))
+
         for i in range(len(self.datastorage.table.col_labels), -1, -1):
             self.get_expand_column(i)()
 
@@ -254,7 +262,7 @@ class TableService:
         # Save current tables, then reset scalings to account for table changes
         for i in range(len(self.datastorage.tabs)):
             self.get_save_to_storage(i)()
-            if i > 0:
+            if i >= 2:
                 self.current_grid = self.datastorage.tabs[i]
                 self.get_to_scaling(labelevent=None, type=None)()
         self.current_grid = self.frame.main_grid
@@ -348,6 +356,7 @@ class TableService:
             if name != "":
                 self.frame.main_grid.SetRowLabelValue(labelevent.GetRow(), name)
                 self.datastorage.set_edited()
+            self.table_edited()
 
         return edit_row_label
 
