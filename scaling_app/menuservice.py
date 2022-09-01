@@ -16,14 +16,18 @@ class MenuService:
     def show_row_menu(self, evt):
 
         menu = wx.Menu()
-        delrow = menu.Append(wx.ID_ANY, "Delete Object")
-        purgerow = menu.Append(wx.ID_ANY, "Purge Object")
-        edit = menu.Append(wx.ID_ANY, "Edit Label")
-        new = menu.Append(wx.ID_ANY, "Add Object")
+        row_label = self.tableservice.current_grid.GetRowLabelValue(evt.GetRow())
+        selected_scaling = self.datastorage.tabs[self.frame.csvtabs.GetSelection()].GetCornerLabelValue()
+        col = self.datastorage.table.col_labels.index(selected_scaling)
 
-        self.frame.Bind(wx.EVT_MENU, self.tableservice.get_delete_row(evt), delrow)
-        self.frame.Bind(wx.EVT_MENU, self.tableservice.get_purge_row(evt), purgerow)
-        self.frame.Bind(wx.EVT_MENU, self.tableservice.get_edit_row_label(evt), edit)
+        if not self.tableservice.value_in_data(row_label, col):
+            delrow = menu.Append(wx.ID_ANY, "Delete Object")
+            self.frame.Bind(wx.EVT_MENU, self.tableservice.get_delete_row(evt), delrow)
+            purgerow = menu.Append(wx.ID_ANY, "Purge Object")
+            self.frame.Bind(wx.EVT_MENU, self.tableservice.get_purge_row(evt), purgerow)
+            edit = menu.Append(wx.ID_ANY, "Edit Label")
+            self.frame.Bind(wx.EVT_MENU, self.tableservice.get_edit_row_label(evt), edit)
+        new = menu.Append(wx.ID_ANY, "Add Object")
         self.frame.Bind(wx.EVT_MENU, self.tableservice.get_add_row(evt), new)
 
         self.frame.PopupMenu(menu)

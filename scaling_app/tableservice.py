@@ -484,3 +484,16 @@ class TableService:
                     return False
         return True
 
+    def value_in_data(self, value, col):
+
+        # Always Returns False if Main Grid is Selected
+        if self.frame.csvtabs.GetSelection() == 0:
+            return False
+        if value == "":
+            return False
+
+        for i in range(self.frame.main_grid.GetNumberRows()):
+            if self.frame.main_grid.GetCellValue(i, col) == value:
+                return True
+        return False
+
