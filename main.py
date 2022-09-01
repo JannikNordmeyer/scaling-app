@@ -68,7 +68,7 @@ def build_ui():
     frame.main_grid.CreateGrid(16, 8)
     frame.main_grid.EnableDragCell()
     frame.main_grid.EnableDragColMove()
-    frame.main_grid.Bind(grid.EVT_GRID_CELL_CHANGED, storage.set_edited)
+    frame.main_grid.Bind(grid.EVT_GRID_CELL_CHANGED, tservice.cell_changed)
     frame.main_grid.Bind(grid.EVT_GRID_LABEL_RIGHT_CLICK, mservice.label_menu)
     frame.main_grid.Bind(grid.EVT_GRID_CELL_RIGHT_CLICK, mservice.cell_menu)
 

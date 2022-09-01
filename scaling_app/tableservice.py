@@ -256,8 +256,6 @@ class TableService:
 
     def load_from_storage(self, target):
 
-        # ___Called When Tab Selection Changes___
-
         self.current_grid.DeleteRows(0, self.current_grid.GetNumberRows())
         self.current_grid.DeleteCols(0, self.current_grid.GetNumberCols())
 
@@ -497,3 +495,34 @@ class TableService:
                 return True
         return False
 
+    def value_in_scaling(self, value, scaling):
+
+        if scaling in self.datastorage.table.scalings:
+            scaling_rows = self.datastorage.table.scalings[scaling][0]
+            return value in scaling_rows
+        else:
+            # If Scaling Doesn't Exist, Cell May be Edited as Normal
+            return True
+
+    def cell_changed(self, evt):
+        self.datastorage.set_edited()
+        value = self.frame.main_grid.GetCellValue(evt.GetRow(), evt.GetCol())
+        scaling = self.frame.main_grid.GetColLabelValue(evt.GetCol())
+        if not self.value_in_scaling(value, scaling):
+            scaling_rows = self.datastorage.table.scalings[scaling][0]
+            scaling_cols = self.datastorage.table.scalings[scaling][1]
+            scaling_table = self.datastorage.table.scalings[scaling][2]
+            scaling_rows.append(value)
+            for i in range(len(scaling_cols)):
+                scaling_table[len(scaling_cols), i] = ""
+            self.datastorage.table.set_scaling(scaling, scaling_rows, scaling_cols, scaling_table)
+
+            # Ascertain Table of Scaling. Current Grid Will be Reset by load_from_storage()
+            for tab in self.datastorage.tabs:
+                if tab.GetCornerLabelValue() == scaling:
+                    self.current_grid = tab
+            self.load_from_storage(scaling)
+
+            errortext = 'The Value has been Added to the Scaling.'
+            dialog = wx.MessageDialog(None, errortext, 'Entered Value is not Part of the Attributes Scaling', wx.ICON_WARNING | wx.OK)
+            dialog.ShowModal()
