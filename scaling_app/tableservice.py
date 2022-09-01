@@ -360,6 +360,18 @@ class TableService:
 
     def get_delete_col(self, labelevent):
         def delete_col(evt):
+
+            if self.frame.csvtabs.GetSelection() == 0:
+
+                attribute = self.frame.main_grid.GetColLabelValue(labelevent.GetCol())
+                if attribute in self.datastorage.table.scalings:
+                    for i in range(self.frame.csvtabs.GetPageCount()):
+                        if self.frame.csvtabs.GetPageText(i) == "Scaling:" + attribute:
+                            self.frame.csvtabs.DeletePage(i)
+                            self.frame.csvtabs.SendSizeEvent()
+                            self.datastorage.tabs.pop(i)
+                    self.datastorage.table.scalings.pop(attribute)
+
             self.current_grid.DeleteCols(pos=labelevent.GetCol(), updateLabels=False)
             self.datastorage.set_edited()
             self.table_edited()
@@ -506,23 +518,24 @@ class TableService:
 
     def cell_changed(self, evt):
         self.datastorage.set_edited()
-        value = self.frame.main_grid.GetCellValue(evt.GetRow(), evt.GetCol())
-        scaling = self.frame.main_grid.GetColLabelValue(evt.GetCol())
-        if not self.value_in_scaling(value, scaling):
-            scaling_rows = self.datastorage.table.scalings[scaling][0]
-            scaling_cols = self.datastorage.table.scalings[scaling][1]
-            scaling_table = self.datastorage.table.scalings[scaling][2]
-            scaling_rows.append(value)
-            for i in range(len(scaling_cols)):
-                scaling_table[len(scaling_cols), i] = ""
-            self.datastorage.table.set_scaling(scaling, scaling_rows, scaling_cols, scaling_table)
+        if self.frame.csvtabs.GetSelection() == 0:
+            value = self.frame.main_grid.GetCellValue(evt.GetRow(), evt.GetCol())
+            scaling = self.frame.main_grid.GetColLabelValue(evt.GetCol())
+            if not self.value_in_scaling(value, scaling):
+                scaling_rows = self.datastorage.table.scalings[scaling][0]
+                scaling_cols = self.datastorage.table.scalings[scaling][1]
+                scaling_table = self.datastorage.table.scalings[scaling][2]
+                scaling_rows.append(value)
+                for i in range(len(scaling_cols)):
+                    scaling_table[len(scaling_cols), i] = ""
+                self.datastorage.table.set_scaling(scaling, scaling_rows, scaling_cols, scaling_table)
 
-            # Ascertain Table of Scaling. Current Grid Will be Reset by load_from_storage()
-            for tab in self.datastorage.tabs:
-                if tab.GetCornerLabelValue() == scaling:
-                    self.current_grid = tab
-            self.load_from_storage(scaling)
+                # Ascertain Table of Scaling. Current Grid Will be Reset by load_from_storage()
+                for tab in self.datastorage.tabs:
+                    if tab.GetCornerLabelValue() == scaling:
+                        self.current_grid = tab
+                self.load_from_storage(scaling)
 
-            errortext = 'The Value has been Added to the Scaling.'
-            dialog = wx.MessageDialog(None, errortext, 'Entered Value is not Part of the Attributes Scaling', wx.ICON_WARNING | wx.OK)
-            dialog.ShowModal()
+                errortext = 'The Value has been Added to the Scaling.'
+                dialog = wx.MessageDialog(None, errortext, 'Entered Value is not Part of the Attributes Scaling', wx.ICON_WARNING | wx.OK)
+                dialog.ShowModal()

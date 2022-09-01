@@ -48,6 +48,7 @@ class DataStorage:
         print("edited: " + str(self.edited))
         print("result_visible:" + str(self.result_visible))
         print("\n")
+        print("tabs: " + str(self.tabs))
         print("scalings:")
         print(self.table.scalings)
         print("Table:")
