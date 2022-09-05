@@ -82,12 +82,13 @@ class MenuService:
         menu = wx.Menu()
         purge = menu.Append(wx.ID_ANY, "Purge Table")
         reset = menu.Append(wx.ID_ANY, "Reset Table")
-        menu.AppendSeparator()
 
         if self.frame.csvtabs.GetSelection() > 0 and "Scaling:" in self.frame.csvtabs.GetPageText(self.frame.csvtabs.GetSelection()):
+            menu.AppendSeparator()
             result = menu.Append(wx.ID_ANY, "View Result")
             self.frame.Bind(wx.EVT_MENU, self.tableservice.view_result, result)
         if self.frame.csvtabs.GetSelection() > 0 and "Result:" in self.frame.csvtabs.GetPageText(self.frame.csvtabs.GetSelection()):
+            menu.AppendSeparator()
             to_scaling = menu.Append(wx.ID_ANY, "Go to Scaling")
             self.frame.Bind(wx.EVT_MENU, self.tableservice.get_to_scaling(evt, None), to_scaling)
         if self.frame.csvtabs.GetSelection() > 0:

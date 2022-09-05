@@ -78,6 +78,7 @@ def build_ui():
     frame.main_grid.Bind(grid.EVT_GRID_CELL_LEFT_CLICK, tservice.check_toggle)
     frame.csvtabs.AddPage(frame.main_grid, "Dataset")
     storage.tabs.append(frame.main_grid)
+    tservice.current_grid = frame.main_grid
 
     frame.result_grid = grid.Grid(frame.csvtabs)
     frame.result_grid.CreateGrid(16, 8)
