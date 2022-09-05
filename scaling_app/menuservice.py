@@ -90,6 +90,10 @@ class MenuService:
         if self.frame.csvtabs.GetSelection() > 0 and "Result:" in self.frame.csvtabs.GetPageText(self.frame.csvtabs.GetSelection()):
             to_scaling = menu.Append(wx.ID_ANY, "Go to Scaling")
             self.frame.Bind(wx.EVT_MENU, self.tableservice.get_to_scaling(evt, None), to_scaling)
+        if self.frame.csvtabs.GetSelection() > 0:
+            menu.AppendSeparator()
+            delete = menu.Append(wx.ID_ANY, "Delete Scaling")
+            self.frame.Bind(wx.EVT_MENU, self.tableservice.get_delete_selected_scaling(self.tableservice.current_grid.GetCornerLabelValue()), delete)
 
         self.frame.Bind(wx.EVT_MENU, self.tableservice.purge_table, purge)
         self.frame.Bind(wx.EVT_MENU, self.tableservice.reset_table, reset)

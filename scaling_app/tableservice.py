@@ -367,19 +367,27 @@ class TableService:
             if self.frame.csvtabs.GetSelection() == 0:
 
                 attribute = self.frame.main_grid.GetColLabelValue(labelevent.GetCol())
-                if attribute in self.datastorage.table.scalings:
-                    for i in range(self.frame.csvtabs.GetPageCount()):
-                        if self.frame.csvtabs.GetPageText(i) == "Scaling:" + attribute:
-                            self.frame.csvtabs.DeletePage(i)
-                            self.frame.csvtabs.SendSizeEvent()
-                            self.datastorage.tabs.pop(i)
-                    self.datastorage.table.scalings.pop(attribute)
+                self.get_delete_selected_scaling(attribute)()
 
             self.current_grid.DeleteCols(pos=labelevent.GetCol(), updateLabels=False)
             self.datastorage.set_edited()
             self.table_edited()
 
         return delete_col
+
+    def get_delete_selected_scaling(self, attribute):
+        def delete_selected_scaling(evt=None):
+
+            if attribute in self.datastorage.table.scalings:
+                for i in range(self.frame.csvtabs.GetPageCount()):
+                    if self.frame.csvtabs.GetPageText(i) == "Scaling:" + attribute:
+                        self.frame.csvtabs.DeletePage(i)
+                        self.frame.csvtabs.SendSizeEvent()
+                        self.datastorage.tabs.pop(i)
+                self.datastorage.table.scalings.pop(attribute)
+                self.frame.csvtabs.SetSelection(0)
+
+        return delete_selected_scaling
 
     def get_purge_col(self, labelevent):
         def purge_col(evt):
