@@ -17,8 +17,10 @@ class MenuService:
 
         menu = wx.Menu()
         row_label = self.tableservice.current_grid.GetRowLabelValue(evt.GetRow())
-        selected_scaling = self.datastorage.tabs[self.frame.csvtabs.GetSelection()].GetCornerLabelValue()
-        col = self.datastorage.table.col_labels.index(selected_scaling)
+        col = None
+        if self.frame.csvtabs.GetSelection() > 0:
+            selected_scaling = self.datastorage.tabs[self.frame.csvtabs.GetSelection()].GetCornerLabelValue()
+            col = self.datastorage.table.col_labels.index(selected_scaling)
 
         if not self.tableservice.value_in_data(row_label, col):
             delrow = menu.Append(wx.ID_ANY, "Delete Object")
@@ -46,8 +48,8 @@ class MenuService:
         self.frame.Bind(wx.EVT_MENU, self.tableservice.get_add_col(evt), new)
 
         if self.frame.csvtabs.GetSelection() == 0:
-            menu.AppendSeparator()
             if self.frame.main_grid.GetColLabelValue(evt.GetCol()) not in self.datastorage.table.scalings and "\n" not in self.frame.main_grid.GetColLabelValue(evt.GetCol()):
+                menu.AppendSeparator()
                 scaling = wx.Menu()
                 custom = scaling.Append(wx.ID_ANY, "Custom Scaling")
                 self.frame.Bind(wx.EVT_MENU, self.tableservice.get_to_scaling(evt, constants.EMPTY), custom)
@@ -67,6 +69,8 @@ class MenuService:
         menu.Destroy()
 
     def label_menu(self, evt):
+        print(evt.GetRow())
+        print(evt.GetCol())
         evt.Skip()
         if evt.GetCol() == -1:
             self.show_row_menu(evt)
@@ -115,35 +119,24 @@ class MenuService:
         storage_backup = self.datastorage.data
         self.datastorage.data = csvfile
 
-        self.tableservice.fill_table()
-        self.datastorage.clear_table()
-        while self.frame.csvtabs.GetPageCount() > 2:
-            self.frame.csvtabs.DeletePage(2)
-        if self.frame.result_grid.GetNumberCols() > 0:
-            self.frame.result_grid.DeleteCols(0, self.frame.result_grid.GetNumberCols())
-        if self.frame.result_grid.GetNumberRows() > 0:
-            self.frame.result_grid.DeleteRows(0, self.frame.result_grid.GetNumberRows())
-        for i in range(self.frame.main_grid.GetNumberRows()):
-            self.frame.result_grid.AppendRows(1)
-            self.frame.result_grid.SetRowLabelValue(i, self.frame.main_grid.GetRowLabelValue(i))
-        """try:
+        try:
             self.tableservice.fill_table()
             self.datastorage.clear_table()
-            while self.frame.csvtabs.GetPageCount() > 1:
-                self.frame.csvtabs.DeletePage(1)
-            self.frame.result_grid = grid.Grid(self.frame.csvtabs)
-            self.frame.result_grid.CreateGrid(16, 8)
-            self.frame.result_grid.EnableDragCell()
-            self.frame.result_grid.EnableDragColMove()
-
-            self.frame.csvtabs.AddPage(self.frame.result_grid, "Scaled Context")
-            self.storage.tabs.append(self.frame.result_grid)
+            while self.frame.csvtabs.GetPageCount() > 2:
+                self.frame.csvtabs.DeletePage(2)
+            if self.frame.result_grid.GetNumberCols() > 0:
+                self.frame.result_grid.DeleteCols(0, self.frame.result_grid.GetNumberCols())
+            if self.frame.result_grid.GetNumberRows() > 0:
+                self.frame.result_grid.DeleteRows(0, self.frame.result_grid.GetNumberRows())
+            for i in range(self.frame.main_grid.GetNumberRows()):
+                self.frame.result_grid.AppendRows(1)
+                self.frame.result_grid.SetRowLabelValue(i, self.frame.main_grid.GetRowLabelValue(i))
         except:
             errortext = 'An error has occurred loading the context from the selected file. The file may be poorly formatted.'
             dialog = wx.MessageDialog(None, errortext, 'Error Loading Context', wx.OK)
             dialog.ShowModal()
             dialog.Destroy()
-            self.datastorage.data = storage_backup"""
+            self.datastorage.data = storage_backup
 
     def load_lattice(self, e):
 

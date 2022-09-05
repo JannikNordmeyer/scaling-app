@@ -278,6 +278,7 @@ class TableService:
         row_labels = scaling[0]
         col_labels = scaling[1]
         table = scaling[2]
+        print(table)
 
         self.current_grid.AppendCols(len(col_labels))
         for a in range(len(col_labels)):
@@ -286,6 +287,8 @@ class TableService:
         for a in range(len(row_labels)):
             self.current_grid.SetRowLabelValue(a, row_labels[a])
         for coords, value in table.items():
+            print((coords[0], coords[1]))
+            print(value)
             self.current_grid.SetCellValue(coords[0], coords[1], value)
         self.current_grid.SetCornerLabelValue(target)
         self.frame.csvtabs.SetPageText(self.datastorage.tabs.index(self.current_grid), "Scaling:" + target)
@@ -527,7 +530,7 @@ class TableService:
                 scaling_table = self.datastorage.table.scalings[scaling][2]
                 scaling_rows.append(value)
                 for i in range(len(scaling_cols)):
-                    scaling_table[len(scaling_cols), i] = ""
+                    scaling_table[len(scaling_rows)-1, i] = ""
                 self.datastorage.table.set_scaling(scaling, scaling_rows, scaling_cols, scaling_table)
 
                 # Ascertain Table of Scaling. Current Grid Will be Reset by load_from_storage()
