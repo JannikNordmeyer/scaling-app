@@ -146,8 +146,6 @@ class TableService:
             if type == constants.INTERORDINAL:
                 limits = self.check_int_col(labelevent.GetCol())
                 columns = list(range(limits[0], limits[1] + 1))
-                print(columns)
-
                 data_values = list()
 
                 for i in range(self.frame.main_grid.GetNumberRows()):
@@ -168,7 +166,6 @@ class TableService:
                     else:
                         self.current_grid.SetColLabelValue(a, "≥" + str(columns_actual[a - (limits[1])]))
                 for i in range(self.current_grid.GetNumberRows()):
-                    print(i)
                     self.current_grid.SetRowLabelValue(i, str(columns_actual[i]))
                     for j in range(i, i+(limits[1]+1)):
                         self.current_grid.SetCellValue(i, j, "✘")
@@ -196,24 +193,26 @@ class TableService:
         self.get_save_to_storage(self.frame.csvtabs.GetSelection())()
         self.current_grid = self.datastorage.tabs[self.frame.csvtabs.GetSelection()]
         self.current_grid.DeleteRows(0, self.current_grid.GetNumberRows())
-        if not self.current_grid.GetCornerLabelValue() == "":
-            scaling = self.datastorage.table.scalings[self.current_grid.GetCornerLabelValue()]
-            scaling_col_labels = scaling[1]
-            scaling_table = scaling[2]
-        # Ascertain Scaled Attribute
-        col_numer = 0
+
+        scaling = self.datastorage.table.scalings[self.current_grid.GetCornerLabelValue()]
+        scaling_row_labels = scaling[0]
+        scaling_col_labels = scaling[1]
+        scaling_table = scaling[2]
+        # Ascertain Column of Scaled Attribute in Main Grid
+        col_number = 0
         for col in range(len(self.datastorage.table.col_labels)):
             if self.datastorage.table.col_labels[col] == self.current_grid.GetCornerLabelValue():
-                col_numer = col
+                col_number = col
                 break
+
         for i in range(len(self.datastorage.table.row_labels)):
             self.current_grid.AppendRows(1)
             self.current_grid.SetRowLabelValue(i, self.datastorage.table.row_labels[i])
 
-            if self.datastorage.table.original[(i, col_numer)] != "":
-                value = self.datastorage.table.original[(i, col_numer)]
+            if self.datastorage.table.original[(i, col_number)] != "":
+                value = self.datastorage.table.original[(i, col_number)]
                 for j in range(len(scaling_col_labels)):
-                    self.current_grid.SetCellValue(i, j, scaling_table[scaling_col_labels.index(value), j])
+                    self.current_grid.SetCellValue(i, j, scaling_table[scaling_row_labels.index(value), j])
 
         self.datastorage.result_visible.add(self.current_grid.GetCornerLabelValue())
         self.frame.csvtabs.SetPageText(self.frame.csvtabs.GetSelection(), "Result:"+self.current_grid.GetCornerLabelValue())
@@ -293,7 +292,6 @@ class TableService:
         row_labels = scaling[0]
         col_labels = scaling[1]
         table = scaling[2]
-        print(table)
 
         self.current_grid.AppendCols(len(col_labels))
         for a in range(len(col_labels)):
@@ -302,8 +300,6 @@ class TableService:
         for a in range(len(row_labels)):
             self.current_grid.SetRowLabelValue(a, row_labels[a])
         for coords, value in table.items():
-            print((coords[0], coords[1]))
-            print(value)
             self.current_grid.SetCellValue(coords[0], coords[1], value)
         self.current_grid.SetCornerLabelValue(target)
         self.frame.csvtabs.SetPageText(self.datastorage.tabs.index(self.current_grid), "Scaling:" + target)
