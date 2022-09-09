@@ -1,6 +1,6 @@
 import wx
 import wx.grid as grid
-from scaling_app import menuservice, tableservice, graphservice, datastorage, graphpanel
+from scaling_app import menuservice, tableservice, graphservice, datastorage, graphpanel, statistics, statservice
 from scaling_app import concepts
 from scaling_app import implications
 from scaling_app import rules
@@ -95,6 +95,7 @@ def build_ui():
     tab1 = concepts.Concepts(frame.tabs)
     tab2 = implications.Implications(frame.tabs)
     tab3 = rules.Rules(frame.tabs)
+
     frame.tabs.AddPage(tab1, "Concepts")
     frame.tabs.AddPage(tab2, "Implications")
     frame.tabs.AddPage(tab3, "Rules")
@@ -116,10 +117,12 @@ def build_ui():
 app = wx.App()
 frame = wx.Frame(None, title='FCA', size=(1200, 750))
 frame.Center()
+#frame.SetDoubleBuffered(True)
 storage = datastorage.DataStorage()
 tservice = tableservice.TableService(frame, storage)
 gservice = graphservice.GraphService(frame, storage)
-mservice = menuservice.MenuService(frame, storage, tservice, gservice)
+sservice = statservice.Statservice(frame, tservice, storage)
+mservice = menuservice.MenuService(frame, storage, tservice, gservice, sservice)
 tservice.mservice = mservice
 build_ui()
 frame.Show()

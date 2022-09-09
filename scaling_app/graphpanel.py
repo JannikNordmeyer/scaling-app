@@ -1,12 +1,10 @@
 import math
-import time
 import wx
 import matplotlib.pyplot as plt
 import matplotlib.style as mplstyle
 import networkx as nx
 from matplotlib.backend_bases import MouseButton
 from matplotlib.backends.backend_wxagg import FigureCanvasWxAgg as FigureCanvas
-from matplotlib.figure import Figure
 
 
 class GraphPanel(wx.Panel):

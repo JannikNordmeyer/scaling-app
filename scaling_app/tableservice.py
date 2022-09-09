@@ -1,7 +1,7 @@
 import csv
 import wx
 import wx.grid as grid
-from scaling_app import constants
+from scaling_app import constants, statistics
 
 
 class TableService:

@@ -7,11 +7,12 @@ from scaling_app import constants
 
 class MenuService:
 
-    def __init__(self, frame, datastorage, tableservice, graphservice):
+    def __init__(self, frame, datastorage, tableservice, graphservice, statservice):
         self.frame = frame
         self.datastorage = datastorage
         self.tableservice = tableservice
         self.graphservice = graphservice
+        self.statservice = statservice
 
     def show_row_menu(self, evt):
 
@@ -70,12 +71,15 @@ class MenuService:
                     self.frame.Bind(wx.EVT_MENU, self.tableservice.get_to_scaling(evt, constants.DIAGONAL_ANY), nominal)
                 menu.Append(wx.ID_ANY, "Scale Attribute", scaling)
 
+            menu.AppendSeparator()
+            stats = menu.Append(wx.ID_ANY, "Display Statistics")
+            self.frame.Bind(wx.EVT_MENU, self.statservice.get_add_stats(evt), stats)
+
         self.frame.PopupMenu(menu)
         menu.Destroy()
 
     def label_menu(self, evt):
-        print(evt.GetRow())
-        print(evt.GetCol())
+
         evt.Skip()
         if evt.GetCol() == -1:
             self.show_row_menu(evt)
