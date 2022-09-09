@@ -411,7 +411,7 @@ class TableService:
 
             if attribute in self.datastorage.table.scalings:
                 for i in range(self.frame.csvtabs.GetPageCount()):
-                    if self.frame.csvtabs.GetPageText(i) == "Scaling:" + attribute:
+                    if self.frame.csvtabs.GetPageText(i) == "Scaling:" + attribute or self.frame.csvtabs.GetPageText(i) == "Result:" + attribute:
                         self.frame.csvtabs.DeletePage(i)
                         self.frame.csvtabs.SendSizeEvent()
                         self.datastorage.tabs.pop(i)
