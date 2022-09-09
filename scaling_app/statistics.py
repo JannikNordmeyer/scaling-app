@@ -13,27 +13,42 @@ class StatsPanel(wx.Panel):
         self.parent = panel
         self.storage = datastorage
 
-        plt.rcParams["figure.figsize"] = [1, 3]
+        self.values = None
+        self.counts = None
+
         self.figure, self.axes = plt.subplots()
         mplstyle.use('fast')
 
         self.canvas = FigureCanvas(self, -1, self.figure)
 
         options = ['Histogram', 'Pie Chart']
-        cb = wx.ComboBox(self, choices=options, style=wx.CB_READONLY)
-        cb.SetSelection(0)
+        self.combobox = wx.ComboBox(self, choices=options, style=wx.CB_READONLY)
+        self.combobox.SetSelection(0)
 
         self.sizer = wx.BoxSizer(wx.VERTICAL)
-        self.sizer.Add(cb, 1, wx.TOP | wx.LEFT)
+        self.sizer.Add(self.combobox, 1, wx.TOP | wx.LEFT)
         self.sizer.Add(self.canvas, 15, wx.TOP | wx.LEFT | wx.EXPAND)
         self.SetSizer(self.sizer)
         self.Fit()
+
+        self.combobox.Bind(wx.EVT_COMBOBOX, self.select)
+
+    def select(self, evt):
+
+        plt.clf()
+
+        if evt.GetSelection() == 0:
+            self.load_histogram(self.values, self.counts)
+        if evt.GetSelection() == 1:
+            self.load_pie(self.values, self.counts)
 
     def load_histogram(self, values, counts):
 
         height = list()
         for value in values:
             height.append(counts[value])
+        self.values = values
+        self.counts = counts
 
         x = np.arange(len(values))
         plt.bar(x, height=height)
@@ -41,5 +56,18 @@ class StatsPanel(wx.Panel):
         plt.ylabel('Frequency')
         plt.xlabel('Objects')
 
-    def load_pie(self):
-        print("pie")
+        self.figure.canvas.draw()
+
+    def load_pie(self, values, counts):
+
+        height = list()
+        for value in values:
+            height.append(counts[value])
+        self.values = values
+        self.counts = counts
+
+        plt.pie(height, labels=values, autopct='%1.1f%%',
+                shadow=True, startangle=90)
+
+        self.figure.canvas.draw()
+
