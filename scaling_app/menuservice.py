@@ -25,8 +25,11 @@ class MenuService:
         if not self.tableservice.value_in_data(row_label, col):
             delrow = menu.Append(wx.ID_ANY, "Delete Object")
             self.frame.Bind(wx.EVT_MENU, self.tableservice.get_delete_row(evt), delrow)
-            purgerow = menu.Append(wx.ID_ANY, "Purge Object")
-            self.frame.Bind(wx.EVT_MENU, self.tableservice.get_purge_row(evt), purgerow)
+        purgerow = menu.Append(wx.ID_ANY, "Purge Object")
+        self.frame.Bind(wx.EVT_MENU, self.tableservice.get_purge_row(evt), purgerow)
+        floodrow = menu.Append(wx.ID_ANY, "Fill Object")
+        self.frame.Bind(wx.EVT_MENU, self.tableservice.get_flood_row(evt), floodrow)
+        if not self.tableservice.value_in_data(row_label, col):
             edit = menu.Append(wx.ID_ANY, "Edit Label")
             self.frame.Bind(wx.EVT_MENU, self.tableservice.get_edit_row_label(evt), edit)
         new = menu.Append(wx.ID_ANY, "Add Object")
@@ -40,10 +43,12 @@ class MenuService:
         menu = wx.Menu()
         delcol = menu.Append(wx.ID_ANY, "Delete Attribute")
         purgecol = menu.Append(wx.ID_ANY, "Purge Attribute")
+        floodcol = menu.Append(wx.ID_ANY, "Fill Attribute")
         edit = menu.Append(wx.ID_ANY, "Edit Label")
         new = menu.Append(wx.ID_ANY, "Add Attribute")
         self.frame.Bind(wx.EVT_MENU, self.tableservice.get_delete_col(evt), delcol)
         self.frame.Bind(wx.EVT_MENU, self.tableservice.get_purge_col(evt), purgecol)
+        self.frame.Bind(wx.EVT_MENU, self.tableservice.get_flood_col(evt), floodcol)
         self.frame.Bind(wx.EVT_MENU, self.tableservice.get_edit_col_label(evt), edit)
         self.frame.Bind(wx.EVT_MENU, self.tableservice.get_add_col(evt), new)
 

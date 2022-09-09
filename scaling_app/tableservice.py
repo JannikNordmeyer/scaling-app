@@ -350,6 +350,16 @@ class TableService:
 
         return purge_row
 
+    def get_flood_row(self, labelevent):
+        def flood_row(evt):
+            if not self.is_empty():
+                self.datastorage.edited = True
+            for i in range(self.current_grid.GetNumberCols()):
+                self.current_grid.SetCellValue(labelevent.GetRow(), i, "✘")
+            self.table_edited()
+
+        return flood_row
+
     def get_edit_row_label(self, labelevent):
         def edit_row_label(evt):
             dialog = wx.TextEntryDialog(None, "Row name:", caption="New Row", value="",
@@ -411,6 +421,16 @@ class TableService:
             self.table_edited()
 
         return purge_col
+
+    def get_flood_col(self, labelevent):
+        def flood_col(evt):
+            if not self.is_empty():
+                self.datastorage.set_edited()
+            for i in range(self.current_grid.GetNumberRows()):
+                self.current_grid.SetCellValue(i, labelevent.GetCol(), "✘")
+            self.table_edited()
+
+        return flood_col
 
     def get_edit_col_label(self, labelevent):
         def edit_col_label(evt):
