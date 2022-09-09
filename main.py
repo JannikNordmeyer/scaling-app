@@ -124,6 +124,7 @@ gservice = graphservice.GraphService(frame, storage)
 sservice = statservice.Statservice(frame, tservice, storage)
 mservice = menuservice.MenuService(frame, storage, tservice, gservice, sservice)
 tservice.mservice = mservice
+tservice.sservice = sservice
 build_ui()
 frame.Show()
 frame.Bind(wx.EVT_CLOSE, mservice.quit_scaling)

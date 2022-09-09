@@ -7,14 +7,17 @@ import numpy as np
 
 class StatsPanel(wx.Panel):
 
-    def __init__(self, panel, datastorage):
+    def __init__(self, panel, datastorage, attribute):
         wx.Panel.__init__(self, panel, -1)
 
         self.parent = panel
         self.storage = datastorage
 
+        self.attribute = attribute
+
         self.values = None
         self.counts = None
+        self.selection = 0
 
         self.figure, self.axes = plt.subplots()
         mplstyle.use('fast')
@@ -35,11 +38,16 @@ class StatsPanel(wx.Panel):
 
     def select(self, evt):
 
-        plt.clf()
+        self.selection = evt.GetSelection()
 
-        if evt.GetSelection() == 0:
+        self.load_stats(evt.GetSelection())
+
+    def load_stats(self, selection):
+
+        plt.clf()
+        if selection == 0:
             self.load_histogram(self.values, self.counts)
-        if evt.GetSelection() == 1:
+        if selection == 1:
             self.load_pie(self.values, self.counts)
 
     def load_histogram(self, values, counts):
@@ -70,4 +78,5 @@ class StatsPanel(wx.Panel):
                 shadow=True, startangle=90)
 
         self.figure.canvas.draw()
+
 

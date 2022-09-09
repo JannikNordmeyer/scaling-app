@@ -71,9 +71,10 @@ class MenuService:
                     self.frame.Bind(wx.EVT_MENU, self.tableservice.get_to_scaling(evt, constants.DIAGONAL_ANY), nominal)
                 menu.Append(wx.ID_ANY, "Scale Attribute", scaling)
 
-            menu.AppendSeparator()
-            stats = menu.Append(wx.ID_ANY, "Display Statistics")
-            self.frame.Bind(wx.EVT_MENU, self.statservice.get_add_stats(evt), stats)
+            if self.frame.main_grid.GetColLabelValue(evt.GetCol()) not in self.datastorage.stats_visible:
+                menu.AppendSeparator()
+                stats = menu.Append(wx.ID_ANY, "Display Statistics")
+                self.frame.Bind(wx.EVT_MENU, self.statservice.get_add_stats(evt), stats)
 
         self.frame.PopupMenu(menu)
         menu.Destroy()
@@ -136,8 +137,8 @@ class MenuService:
         try:
             self.tableservice.fill_table()
             self.datastorage.clear_table()
-            while self.frame.csvtabs.GetPageCount() > 2:
-                self.frame.csvtabs.DeletePage(2)
+            self.tableservice.clear_scalings()
+            self.statservice.clear_stats()
             if self.frame.result_grid.GetNumberCols() > 0:
                 self.frame.result_grid.DeleteCols(0, self.frame.result_grid.GetNumberCols())
             if self.frame.result_grid.GetNumberRows() > 0:

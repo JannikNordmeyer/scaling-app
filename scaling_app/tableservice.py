@@ -10,6 +10,7 @@ class TableService:
         self.frame = frame
         self.datastorage = datastorage
         self.mservice = None
+        self.sservice = None
 
         self.current_grid = None
 
@@ -267,6 +268,7 @@ class TableService:
                 self.get_to_scaling(labelevent=None, type=None)()
         self.current_grid = self.datastorage.tabs[self.frame.csvtabs.GetSelection()]
         self.load_expanded()
+        self.sservice.update_stats()
 
     def load_from_storage(self, target):
 
@@ -527,6 +529,7 @@ class TableService:
             self.datastorage.set_edited()
             self.current_grid.ClearGrid()
             self.table_edited()
+            self.sservice.clear_stats()
 
     def reset_table(self, evt=None):
 
@@ -536,6 +539,16 @@ class TableService:
         self.frame.main_grid.AppendCols(8)
         for i in range(self.frame.main_grid.GetNumberRows()):
             self.frame.main_grid.SetRowLabelValue(i, str(i + 1))
+        self.sservice.clear_stats()
+        self.clear_scalings()
+
+    def clear_scalings(self):
+        self.datastorage.result_visible.clear()
+        while len(self.datastorage.tabs) > 2:
+            self.datastorage.tabs.pop()
+
+        while self.frame.csvtabs.GetPageCount() > 2:
+            self.frame.csvtabs.DeletePage(2)
 
     def is_empty(self):
         for i in range(self.frame.main_grid.GetNumberRows()):
@@ -568,6 +581,7 @@ class TableService:
 
     def cell_changed(self, evt):
         self.datastorage.set_edited()
+        self.sservice.update_stats()
         if self.frame.csvtabs.GetSelection() == 0:
             value = self.frame.main_grid.GetCellValue(evt.GetRow(), evt.GetCol())
             scaling = self.frame.main_grid.GetColLabelValue(evt.GetCol())

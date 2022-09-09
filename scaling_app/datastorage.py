@@ -20,10 +20,13 @@ class DataStorage:
 
     # Grid Tabs
     tabs = list()
+    # Stat Tabs
+    stats = list()
 
     # States
     edited = False
     result_visible = set()
+    stats_visible = set()
 
     def set_edited(self, evt=None):
         self.edited = True
@@ -47,6 +50,7 @@ class DataStorage:
         print("Status:")
         print("edited: " + str(self.edited))
         print("result_visible:" + str(self.result_visible))
+        print("stats_visible:" + str(self.stats_visible))
         print("\n")
         print("tabs: " + str(self.tabs))
         print("scalings:")
