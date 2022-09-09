@@ -376,11 +376,17 @@ class TableService:
 
     def get_add_row(self, labelevent):
         def add_row(evt):
-            self.current_grid.AppendRows()
-            self.cascade_row(labelevent.GetRow())
-            self.current_grid.SetRowLabelValue(labelevent.GetRow() + 1, "")
-            self.datastorage.set_edited()
-            self.table_edited()
+            dialog = wx.TextEntryDialog(None, "Row name:", caption="New Row", value="",
+                                        style=wx.TextEntryDialogStyle, pos=wx.DefaultPosition)
+            dialog.ShowModal()
+            name = dialog.GetValue()
+            dialog.Destroy()
+            if name != "":
+                self.current_grid.AppendRows()
+                self.cascade_row(labelevent.GetRow())
+                self.current_grid.SetRowLabelValue(labelevent.GetRow() + 1, name)
+                self.datastorage.set_edited()
+                self.table_edited()
 
         return add_row
 
@@ -476,7 +482,7 @@ class TableService:
 
     def col_name_taken(self, string):
         for i in range(self.frame.main_grid.GetNumberCols()):
-            if self.frame.main_grid.GetColLabelValue(i) == string:
+            if self.current_grid.GetColLabelValue(i) == string:
                 return True
         return False
 
