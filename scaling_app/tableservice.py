@@ -162,13 +162,13 @@ class TableService:
                 self.current_grid.AppendRows(len(columns_actual))
 
                 for a in range(2*(len(columns_actual))):
-                    if a < limits[1]:
+                    if a < len(columns_actual):
                         self.current_grid.SetColLabelValue(a, "≤" + str(columns_actual[a]))
                     else:
-                        self.current_grid.SetColLabelValue(a, "≥" + str(columns_actual[a - (limits[1])]))
+                        self.current_grid.SetColLabelValue(a, "≥" + str(columns_actual[a - len(columns_actual)]))
                 for i in range(self.current_grid.GetNumberRows()):
                     self.current_grid.SetRowLabelValue(i, str(columns_actual[i]))
-                    for j in range(i, i+(limits[1]+1)):
+                    for j in range(i, i+(len(columns_actual)+1)):
                         self.current_grid.SetCellValue(i, j, "✘")
 
             self.current_grid.EnableEditing(False)
