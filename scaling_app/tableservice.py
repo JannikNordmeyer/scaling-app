@@ -593,6 +593,7 @@ class TableService:
                 for i in range(len(scaling_cols)):
                     scaling_table[len(scaling_rows)-1, i] = ""
                 self.datastorage.table.set_scaling(scaling, scaling_rows, scaling_cols, scaling_table)
+                self.datastorage.result_visible.discard(scaling)
 
                 # Ascertain Table of Scaling. Current Grid Will be Reset by load_from_storage()
                 for tab in self.datastorage.tabs:
