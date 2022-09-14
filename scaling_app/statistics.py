@@ -28,8 +28,18 @@ class StatsPanel(wx.Panel):
         self.combobox = wx.ComboBox(self, choices=options, style=wx.CB_READONLY)
         self.combobox.SetSelection(0)
 
+        self.infotext = wx.StaticText(self)
+        font = wx.Font(18, wx.ROMAN, wx.NORMAL, wx.NORMAL)
+        self.infotext.SetFont(font)
+        self.infotext.SetLabel("")
+
+
+        self.hsizer = wx.BoxSizer(wx.HORIZONTAL)
+        self.hsizer.Add(self.combobox, 1, wx.TOP | wx.LEFT)
+        self.hsizer.Add(self.infotext, 1, wx.TOP | wx.LEFT)
+
         self.sizer = wx.BoxSizer(wx.VERTICAL)
-        self.sizer.Add(self.combobox, 1, wx.TOP | wx.LEFT)
+        self.sizer.Add(self.hsizer, 1, wx.TOP | wx.LEFT)
         self.sizer.Add(self.canvas, 15, wx.TOP | wx.LEFT | wx.EXPAND)
         self.SetSizer(self.sizer)
         self.Fit()
