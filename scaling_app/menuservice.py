@@ -53,22 +53,25 @@ class MenuService:
         self.frame.Bind(wx.EVT_MENU, self.tableservice.get_edit_col_label(evt), edit)
         self.frame.Bind(wx.EVT_MENU, self.tableservice.get_add_col(evt), new)
 
+        attribute = self.frame.main_grid.GetColLabelValue(evt.GetCol())
+
         if self.frame.csvtabs.GetSelection() == 0:
-            if self.frame.main_grid.GetColLabelValue(evt.GetCol()) not in self.datastorage.table.scalings and "\n" not in self.frame.main_grid.GetColLabelValue(evt.GetCol()):
+            if attribute not in self.datastorage.table.scalings and attribute in self.datastorage.table.attribute_levels:
                 menu.AppendSeparator()
                 scaling = wx.Menu()
                 custom = scaling.Append(wx.ID_ANY, "Custom Scaling")
                 self.frame.Bind(wx.EVT_MENU, self.tableservice.get_to_scaling(evt, constants.EMPTY), custom)
-                if self.tableservice.check_numeric_col(evt.GetCol()):
-                    nominal = scaling.Append(wx.ID_ANY, "Nominal Scaling")
+
+                nominal = scaling.Append(wx.ID_ANY, "Nominal Scaling")
+                self.frame.Bind(wx.EVT_MENU, self.tableservice.get_to_scaling(evt, constants.DIAGONAL), nominal)
+
+                level = self.datastorage.table.attribute_levels[attribute]
+                if constants.allows_order(level):
                     ordinal = scaling.Append(wx.ID_ANY, "Ordinal Scaling")
                     interordinal = scaling.Append(wx.ID_ANY, "Interordinal Scaling")
-                    self.frame.Bind(wx.EVT_MENU, self.tableservice.get_to_scaling(evt, constants.DIAGONAL), nominal)
                     self.frame.Bind(wx.EVT_MENU, self.tableservice.get_to_scaling(evt, constants.ORDINAL), ordinal)
                     self.frame.Bind(wx.EVT_MENU, self.tableservice.get_to_scaling(evt, constants.INTERORDINAL), interordinal)
-                else:
-                    nominal = scaling.Append(wx.ID_ANY, "Nominal Scaling")
-                    self.frame.Bind(wx.EVT_MENU, self.tableservice.get_to_scaling(evt, constants.DIAGONAL_ANY), nominal)
+
                 menu.Append(wx.ID_ANY, "Scale Attribute", scaling)
 
             if self.frame.main_grid.GetColLabelValue(evt.GetCol()) not in self.datastorage.stats_visible:
@@ -77,7 +80,6 @@ class MenuService:
                 self.frame.Bind(wx.EVT_MENU, self.statservice.get_add_stats(evt), stats)
 
             level = wx.Menu()
-            attribute = self.frame.main_grid.GetColLabelValue(evt.GetCol())
             string = level.Append(wx.ID_ANY, "String")
             self.frame.Bind(wx.EVT_MENU, self.tableservice.get_set_level(evt.GetCol(), attribute, constants.LEVEL_STRING), string)
             if self.tableservice.check_numeric_col(evt.GetCol()):

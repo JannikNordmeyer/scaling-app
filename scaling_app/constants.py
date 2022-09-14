@@ -46,3 +46,9 @@ def color_conv(level):
         return LEVEL_INT_COLOR
     if level == LEVEL_RAT:
         return LEVEL_RAT_COLOR
+
+
+def allows_order(level):
+
+    return level == LEVEL_ORD or level == LEVEL_INT or level == LEVEL_RAT
+
