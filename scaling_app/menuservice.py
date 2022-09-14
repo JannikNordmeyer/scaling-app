@@ -59,7 +59,7 @@ class MenuService:
                 scaling = wx.Menu()
                 custom = scaling.Append(wx.ID_ANY, "Custom Scaling")
                 self.frame.Bind(wx.EVT_MENU, self.tableservice.get_to_scaling(evt, constants.EMPTY), custom)
-                if self.tableservice.check_int_col(evt.GetCol()):
+                if self.tableservice.check_numeric_col(evt.GetCol()):
                     nominal = scaling.Append(wx.ID_ANY, "Nominal Scaling")
                     ordinal = scaling.Append(wx.ID_ANY, "Ordinal Scaling")
                     interordinal = scaling.Append(wx.ID_ANY, "Interordinal Scaling")

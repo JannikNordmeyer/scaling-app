@@ -119,15 +119,8 @@ class TableService:
                         self.current_grid.SetCellValue(i, i, "✘")
 
             if type == constants.DIAGONAL or type == constants.ORDINAL:
-                limits = self.check_int_col(labelevent.GetCol())
-                columns = list(range(limits[0], limits[1]+1))
-                data_values = list()
-                for i in range(self.frame.main_grid.GetNumberRows()):
-                    value = self.frame.main_grid.GetCellValue(i, labelevent.GetCol())
-                    if value != "":
-                        data_values.append(int(value))
-                columns_actual = [x for x in columns if x in data_values]
 
+                columns_actual = self.get_col_entries(labelevent.GetCol())
                 self.current_grid.DeleteCols(0, self.current_grid.GetNumberCols())
                 self.current_grid.AppendCols(len(columns_actual))
                 self.current_grid.DeleteRows(0, self.frame.main_grid.GetNumberRows())
@@ -139,23 +132,14 @@ class TableService:
                     row_value = self.current_grid.GetRowLabelValue(i)
                     for j in range(self.current_grid.GetNumberCols()):
                         col_value = self.current_grid.GetColLabelValue(j)
-                        if type == constants.ORDINAL and int(row_value) > int(col_value):
+                        if type == constants.ORDINAL and float(row_value) > float(col_value):
                             self.current_grid.SetCellValue(i, j, "✘")
-                        if int(row_value) == int(col_value):
+                        if float(row_value) == float(col_value):
                             self.current_grid.SetCellValue(i, j, "✘")
 
             if type == constants.INTERORDINAL:
-                limits = self.check_int_col(labelevent.GetCol())
-                columns = list(range(limits[0], limits[1] + 1))
-                data_values = list()
 
-                for i in range(self.frame.main_grid.GetNumberRows()):
-                    value = self.frame.main_grid.GetCellValue(i, labelevent.GetCol())
-                    if value != "":
-                        data_values.append(int(value))
-
-                columns_actual = [x for x in columns if x in data_values]
-
+                columns_actual = self.get_col_entries(labelevent.GetCol())
                 self.current_grid.DeleteCols(0, self.current_grid.GetNumberCols())
                 self.current_grid.AppendCols(2*len(columns_actual))
                 self.current_grid.DeleteRows(0, self.frame.main_grid.GetNumberRows())
@@ -307,17 +291,22 @@ class TableService:
         self.frame.csvtabs.SetPageText(self.datastorage.tabs.index(self.current_grid), "Scaling:" + target)
         self.current_grid = self.datastorage.tabs[self.frame.csvtabs.GetSelection()]
 
-    def check_int_col(self, col):
+    def check_numeric_col(self, col):
+        # Return the Minimum and Maximum Values, if all Entries are Numbers, otherwise False.
 
         maxvalue = 0
         minvalue = 0
         for i in range(self.frame.main_grid.GetNumberRows()):
             value = self.frame.main_grid.GetCellValue(i, col)
-            if not (value.isnumeric() or value == ""):
-                return False
-            if value.isnumeric():
-                maxvalue = max(maxvalue, int(value))
-                minvalue = min(minvalue, int(value))
+
+            try:
+                maxvalue = max(maxvalue, float(value))
+                minvalue = min(minvalue, float(value))
+            except:
+                if value != "":
+                    print(value)
+                    return False
+
         return (minvalue, maxvalue)
 
     def check_toggle(self, evt):
@@ -331,6 +320,16 @@ class TableService:
             self.load_expanded()
         else:
             evt.Skip()
+
+    def get_col_entries(self, col):
+        # Only checks Main Grid
+        entries = set()
+        for i in range(self.current_grid.GetNumberRows()):
+            entries.add(self.frame.main_grid.GetCellValue(i, col))
+        entries = list(entries)
+        entries.sort(key=float)
+        print(entries)
+        return entries
 
     def get_delete_row(self, labelevent):
         def delete_row(evt):
