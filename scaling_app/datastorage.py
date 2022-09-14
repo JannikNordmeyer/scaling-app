@@ -4,6 +4,7 @@ class Table:
     col_labels = list()
     row_labels = list()
     scalings = dict()
+    attribute_levels = dict()
 
     def set_scaling(self, attribute, row_labels, col_labels, table):
         self.scalings[attribute] = (row_labels, col_labels, table)

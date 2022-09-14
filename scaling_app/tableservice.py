@@ -48,6 +48,28 @@ class TableService:
                     j += 1
         self.frame.main_grid.SetRowLabelSize(grid.GRID_AUTOSIZE)
         self.frame.main_grid.SetCornerLabelValue("")
+        self.check_attribute_levels()
+
+    def check_attribute_levels(self):
+
+        for i in range(self.frame.main_grid.GetNumberCols()):
+            if self.check_numeric_col(i):
+                self.datastorage.table.attribute_levels[self.frame.main_grid.GetColLabelValue(i)] = constants.LEVEL_RAT
+                self.dye_col(i, constants.LEVEL_RAT_COLOR)
+            else:
+                self.datastorage.table.attribute_levels[self.frame.main_grid.GetColLabelValue(i)] = constants.LEVEL_STRING
+                self.dye_col(i, constants.LEVEL_STRING_COLOR)
+
+    def get_set_level(self, col, attribute, level):
+        def set_level(evt):
+            self.datastorage.table.attribute_levels[attribute] = level
+            self.dye_col(col, constants.color_conv(level))
+        return set_level
+
+    def dye_col(self, col, color):
+        for i in range(self.frame.main_grid.GetNumberRows()):
+            self.frame.main_grid.SetCellBackgroundColour(i, col, color)
+            self.frame.main_grid.ForceRefresh()
 
     def load_expanded(self, evt=None):
 
