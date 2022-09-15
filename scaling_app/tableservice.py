@@ -64,6 +64,7 @@ class TableService:
         def set_level(evt):
             self.datastorage.table.attribute_levels[attribute] = level
             self.dye_col(col, constants.color_conv(level))
+            self.sservice.update_stats()
         return set_level
 
     def dye_col(self, col, color):

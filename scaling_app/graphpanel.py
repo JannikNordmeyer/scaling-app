@@ -95,6 +95,8 @@ class GraphPanel(wx.Panel):
 
     def draw_graph(self, graph, borders, y_min_node, y_max_node):
 
+        plt.figure(self.figure.number)
+
         self.borders = borders
         self.y_min_node = y_min_node
         self.y_max_node = y_max_node

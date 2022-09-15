@@ -1,8 +1,13 @@
+import collections
+import statistics
+
 import wx
 import matplotlib.pyplot as plt
 import matplotlib.style as mplstyle
 from matplotlib.backends.backend_wxagg import FigureCanvasWxAgg as FigureCanvas
 import numpy as np
+
+from scaling_app import constants
 
 
 class StatsPanel(wx.Panel):
@@ -19,8 +24,7 @@ class StatsPanel(wx.Panel):
         self.counts = None
         self.selection = 0
 
-        self.figure, self.axes = plt.subplots()
-        mplstyle.use('fast')
+        self.figure = plt.figure()
 
         self.canvas = FigureCanvas(self, -1, self.figure)
 
@@ -54,13 +58,15 @@ class StatsPanel(wx.Panel):
 
     def load_stats(self, selection):
 
-        plt.clf()
         if selection == 0:
             self.load_histogram(self.values, self.counts)
         if selection == 1:
             self.load_pie(self.values, self.counts)
 
     def load_histogram(self, values, counts):
+
+        plt.figure(self.figure.number)
+        plt.clf()
 
         height = list()
         for value in values:
@@ -74,9 +80,13 @@ class StatsPanel(wx.Panel):
         plt.ylabel('Frequency')
         plt.xlabel('Objects')
 
+        self.set_tendencies()
         self.figure.canvas.draw()
 
     def load_pie(self, values, counts):
+
+        plt.figure(self.figure.number)
+        plt.clf()
 
         height = list()
         for value in values:
@@ -87,6 +97,42 @@ class StatsPanel(wx.Panel):
         plt.pie(height, labels=values, autopct='%1.1f%%',
                 shadow=True, startangle=90)
 
+        self.set_tendencies()
         self.figure.canvas.draw()
+
+    def set_tendencies(self):
+
+        text = "  Mode : " + str(self.mode())
+
+        if self.attribute in self.storage.table.attribute_levels:
+            level = self.storage.table.attribute_levels[self.attribute]
+
+            if constants.allows_order(level):
+                text += "   Median : " + str(self.median())
+
+            if constants.allows_mean(level):
+                text += "   Mean : " + str(self.mean())
+
+        self.infotext.SetLabel(text)
+
+    def mode(self):
+
+        return collections.Counter.most_common(self.counts)[0][0]
+
+    def median(self):
+
+        values = list()
+        for i in self.values:
+            for count in range(self.counts[i]):
+                values.append(float(i))
+        return statistics.median(values)
+
+    def mean(self):
+
+        values = list()
+        for i in self.values:
+            for count in range(self.counts[i]):
+                values.append(float(i))
+        return round(statistics.mean(values), 6)
 
 

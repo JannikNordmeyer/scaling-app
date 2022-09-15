@@ -52,3 +52,7 @@ def allows_order(level):
 
     return level == LEVEL_ORD or level == LEVEL_INT or level == LEVEL_RAT
 
+
+def allows_mean(level):
+
+    return level == LEVEL_INT or level == LEVEL_RAT
