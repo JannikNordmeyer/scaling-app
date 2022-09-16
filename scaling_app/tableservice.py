@@ -144,7 +144,6 @@ class TableService:
             if type == constants.DIAGONAL or type == constants.ORDINAL:
 
                 columns_actual = self.get_col_entries(labelevent.GetCol())
-                print(columns_actual)
                 self.current_grid.DeleteCols(0, self.current_grid.GetNumberCols())
                 self.current_grid.AppendCols(len(columns_actual))
                 self.current_grid.DeleteRows(0, self.frame.main_grid.GetNumberRows())
@@ -158,8 +157,13 @@ class TableService:
                         col_value = self.current_grid.GetColLabelValue(j)
                         if type == constants.ORDINAL and float(row_value) > float(col_value):
                             self.current_grid.SetCellValue(i, j, "✘")
-                        if float(row_value) == float(col_value):
-                            self.current_grid.SetCellValue(i, j, "✘")
+
+                        if type == constants.ORDINAL:
+                            if float(row_value) == float(col_value):
+                                self.current_grid.SetCellValue(i, j, "✘")
+                        if type == constants.DIAGONAL:
+                            if row_value == col_value:
+                                self.current_grid.SetCellValue(i, j, "✘")
 
             if type == constants.INTERORDINAL:
 
