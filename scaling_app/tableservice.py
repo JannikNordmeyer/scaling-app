@@ -144,6 +144,7 @@ class TableService:
             if type == constants.DIAGONAL or type == constants.ORDINAL:
 
                 columns_actual = self.get_col_entries(labelevent.GetCol())
+                print(columns_actual)
                 self.current_grid.DeleteCols(0, self.current_grid.GetNumberCols())
                 self.current_grid.AppendCols(len(columns_actual))
                 self.current_grid.DeleteRows(0, self.frame.main_grid.GetNumberRows())
@@ -346,10 +347,16 @@ class TableService:
     def get_col_entries(self, col):
         # Only checks Main Grid
         entries = set()
-        for i in range(self.current_grid.GetNumberRows()):
-            entries.add(self.frame.main_grid.GetCellValue(i, col))
+        for i in range(self.frame.main_grid.GetNumberRows()):
+            value = self.frame.main_grid.GetCellValue(i, col)
+            if value != "":
+                entries.add(value)
         entries = list(entries)
-        entries.sort(key=float)
+        if self.check_numeric_col(col):
+            entries.sort(key=float)
+        else:
+            entries.sort()
+
         return entries
 
     def get_delete_row(self, labelevent):
