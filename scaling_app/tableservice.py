@@ -327,7 +327,6 @@ class TableService:
                 minvalue = min(minvalue, float(value))
             except:
                 if value != "":
-                    print(value)
                     return False
 
         return (minvalue, maxvalue)
@@ -351,7 +350,6 @@ class TableService:
             entries.add(self.frame.main_grid.GetCellValue(i, col))
         entries = list(entries)
         entries.sort(key=float)
-        print(entries)
         return entries
 
     def get_delete_row(self, labelevent):
@@ -476,8 +474,41 @@ class TableService:
                 dialog.ShowModal()
                 return
             if name != "":
+
+                old_name = self.current_grid.GetColLabelValue(labelevent.GetCol())
+
                 self.current_grid.SetColLabelValue(labelevent.GetCol(), name)
                 self.datastorage.set_edited()
+
+                # Replace all occurrences of the original name with the new one
+                if old_name in self.datastorage.table.scalings:
+                    scaling = self.datastorage.table.scalings[old_name]
+                    self.datastorage.table.scalings[name] = scaling
+
+                    level = self.datastorage.table.attribute_levels[old_name]
+                    self.datastorage.table.attribute_levels[name] = level
+
+                    for i in range(self.frame.csvtabs.GetPageCount()):
+
+                        if self.frame.csvtabs.GetPageText(i) == "Scaling:" + old_name:
+                            self.frame.csvtabs.SetPageText(i, "Scaling:" + name)
+                            self.datastorage.tabs[i].SetCornerLabelValue(name)
+                            break
+                        if self.frame.csvtabs.GetPageText(i) == "Result:" + old_name:
+                            self.frame.csvtabs.SetPageText(i, "Result:" + name)
+                            self.datastorage.tabs[i].SetCornerLabelValue(name)
+                            break
+
+                if old_name in self.datastorage.stats_visible:
+                    for i in range(self.frame.tabs.GetPageCount()):
+                        if self.frame.tabs.GetPageText(i) == "Stats: " + old_name:
+                            self.frame.tabs.SetPageText(i, "Stats: " + name)
+                            numberspecialtabs = 2
+                            self.datastorage.stats[i - numberspecialtabs].attribute = name
+                            break
+
+            self.frame.csvtabs.Layout()
+            self.frame.csvtabs.Update()
             self.table_edited()
 
         return edit_col_label
