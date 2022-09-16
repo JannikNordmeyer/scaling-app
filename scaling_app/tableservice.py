@@ -61,7 +61,7 @@ class TableService:
                 self.dye_col(i, constants.LEVEL_STRING_COLOR)
 
     def get_set_level(self, col, attribute, level):
-        def set_level(evt):
+        def set_level(evt=None):
             self.datastorage.table.attribute_levels[attribute] = level
             self.dye_col(col, constants.color_conv(level))
             self.sservice.update_stats()
@@ -621,6 +621,12 @@ class TableService:
                     return False
         return True
 
+    def col_empty(self, col):
+        for i in range(self.frame.main_grid.GetNumberRows()):
+            if self.frame.main_grid.GetCellValue(i, col) != "":
+                return False
+        return True
+
     def value_in_data(self, value, col):
 
         # Always Returns False if Main Grid is Selected
@@ -648,22 +654,31 @@ class TableService:
         self.sservice.update_stats()
         if self.frame.csvtabs.GetSelection() == 0:
             value = self.frame.main_grid.GetCellValue(evt.GetRow(), evt.GetCol())
-            scaling = self.frame.main_grid.GetColLabelValue(evt.GetCol())
-            if not self.value_in_scaling(value, scaling):
-                scaling_rows = self.datastorage.table.scalings[scaling][0]
-                scaling_cols = self.datastorage.table.scalings[scaling][1]
-                scaling_table = self.datastorage.table.scalings[scaling][2]
+            attribute = self.frame.main_grid.GetColLabelValue(evt.GetCol())
+
+            # Update Level of Measurement if new Value is String
+
+            try:
+                float(value)
+            except:
+                self.get_set_level(evt.GetCol(), attribute, constants.LEVEL_STRING)()
+
+            if not self.value_in_scaling(value, attribute):
+                # Update Scaling
+                scaling_rows = self.datastorage.table.scalings[attribute][0]
+                scaling_cols = self.datastorage.table.scalings[attribute][1]
+                scaling_table = self.datastorage.table.scalings[attribute][2]
                 scaling_rows.append(value)
                 for i in range(len(scaling_cols)):
                     scaling_table[len(scaling_rows)-1, i] = ""
-                self.datastorage.table.set_scaling(scaling, scaling_rows, scaling_cols, scaling_table)
-                self.datastorage.result_visible.discard(scaling)
+                self.datastorage.table.set_scaling(attribute, scaling_rows, scaling_cols, scaling_table)
+                self.datastorage.result_visible.discard(attribute)
 
                 # Ascertain Table of Scaling. Current Grid Will be Reset by load_from_storage()
                 for tab in self.datastorage.tabs:
-                    if tab.GetCornerLabelValue() == scaling:
+                    if tab.GetCornerLabelValue() == attribute:
                         self.current_grid = tab
-                self.load_from_storage(scaling)
+                self.load_from_storage(attribute)
 
                 errortext = 'The Value has been Added to the Scaling.'
                 dialog = wx.MessageDialog(None, errortext, 'Entered Value is not Part of the Attributes Scaling', wx.ICON_WARNING | wx.OK)

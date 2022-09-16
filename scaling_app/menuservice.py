@@ -43,36 +43,38 @@ class MenuService:
 
         menu = wx.Menu()
         delcol = menu.Append(wx.ID_ANY, "Delete Attribute")
-        purgecol = menu.Append(wx.ID_ANY, "Purge Attribute")
-        floodcol = menu.Append(wx.ID_ANY, "Fill Attribute")
-        edit = menu.Append(wx.ID_ANY, "Edit Label")
-        new = menu.Append(wx.ID_ANY, "Add Attribute")
         self.frame.Bind(wx.EVT_MENU, self.tableservice.get_delete_col(evt), delcol)
+        purgecol = menu.Append(wx.ID_ANY, "Purge Attribute")
         self.frame.Bind(wx.EVT_MENU, self.tableservice.get_purge_col(evt), purgecol)
-        self.frame.Bind(wx.EVT_MENU, self.tableservice.get_flood_col(evt), floodcol)
+        if self.frame.csvtabs.GetSelection() > 0:
+            floodcol = menu.Append(wx.ID_ANY, "Fill Attribute")
+            self.frame.Bind(wx.EVT_MENU, self.tableservice.get_flood_col(evt), floodcol)
+        edit = menu.Append(wx.ID_ANY, "Edit Label")
         self.frame.Bind(wx.EVT_MENU, self.tableservice.get_edit_col_label(evt), edit)
+        new = menu.Append(wx.ID_ANY, "Add Attribute")
         self.frame.Bind(wx.EVT_MENU, self.tableservice.get_add_col(evt), new)
 
         attribute = self.frame.main_grid.GetColLabelValue(evt.GetCol())
 
         if self.frame.csvtabs.GetSelection() == 0:
             if attribute not in self.datastorage.table.scalings and attribute in self.datastorage.table.attribute_levels:
-                menu.AppendSeparator()
-                scaling = wx.Menu()
-                custom = scaling.Append(wx.ID_ANY, "Custom Scaling")
-                self.frame.Bind(wx.EVT_MENU, self.tableservice.get_to_scaling(evt, constants.EMPTY), custom)
+                if not self.tableservice.col_empty(evt.GetCol()):
+                    menu.AppendSeparator()
+                    scaling = wx.Menu()
+                    custom = scaling.Append(wx.ID_ANY, "Custom Scaling")
+                    self.frame.Bind(wx.EVT_MENU, self.tableservice.get_to_scaling(evt, constants.EMPTY), custom)
 
-                nominal = scaling.Append(wx.ID_ANY, "Nominal Scaling")
-                self.frame.Bind(wx.EVT_MENU, self.tableservice.get_to_scaling(evt, constants.DIAGONAL), nominal)
+                    nominal = scaling.Append(wx.ID_ANY, "Nominal Scaling")
+                    self.frame.Bind(wx.EVT_MENU, self.tableservice.get_to_scaling(evt, constants.DIAGONAL), nominal)
 
-                level = self.datastorage.table.attribute_levels[attribute]
-                if constants.allows_order(level):
-                    ordinal = scaling.Append(wx.ID_ANY, "Ordinal Scaling")
-                    interordinal = scaling.Append(wx.ID_ANY, "Interordinal Scaling")
-                    self.frame.Bind(wx.EVT_MENU, self.tableservice.get_to_scaling(evt, constants.ORDINAL), ordinal)
-                    self.frame.Bind(wx.EVT_MENU, self.tableservice.get_to_scaling(evt, constants.INTERORDINAL), interordinal)
+                    level = self.datastorage.table.attribute_levels[attribute]
+                    if constants.allows_order(level):
+                        ordinal = scaling.Append(wx.ID_ANY, "Ordinal Scaling")
+                        interordinal = scaling.Append(wx.ID_ANY, "Interordinal Scaling")
+                        self.frame.Bind(wx.EVT_MENU, self.tableservice.get_to_scaling(evt, constants.ORDINAL), ordinal)
+                        self.frame.Bind(wx.EVT_MENU, self.tableservice.get_to_scaling(evt, constants.INTERORDINAL), interordinal)
 
-                menu.Append(wx.ID_ANY, "Scale Attribute", scaling)
+                    menu.Append(wx.ID_ANY, "Scale Attribute", scaling)
 
             if self.frame.main_grid.GetColLabelValue(evt.GetCol()) not in self.datastorage.stats_visible:
                 menu.AppendSeparator()
