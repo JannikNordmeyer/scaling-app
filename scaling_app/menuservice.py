@@ -1,6 +1,6 @@
 import json
 import wx
-import wx.grid as grid
+import sys
 import tkinter.filedialog
 from scaling_app import constants
 
@@ -252,11 +252,11 @@ class MenuService:
 
     def quit_scaling(self, e=None):
         if not self.datastorage.edited:
-            exit(0)
+            sys.exit(0)
         else:
             errortext = 'You have unsaved changes. Do you want to close the application regardless?'
             dialog = wx.MessageDialog(None, errortext, 'Data Loss Warning', wx.ICON_WARNING | wx.YES_NO)
             answer = dialog.ShowModal()
             if answer == wx.ID_YES:
                 dialog.Destroy()
-                exit(0)
+                sys.exit(0)
