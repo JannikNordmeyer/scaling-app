@@ -82,14 +82,19 @@ class MenuService:
                 self.frame.Bind(wx.EVT_MENU, self.statservice.get_add_stats(evt), stats)
 
             level = wx.Menu()
-            level_nom = level.Append(wx.ID_ANY, "Nominal")
+            level_nom = wx.MenuItem(menu, -1, "Nominal")
+            level_nom.SetBackgroundColour(constants.LEVEL_NOM_COLOR)
+            level.Append(level_nom)
             self.frame.Bind(wx.EVT_MENU, self.tableservice.get_set_level(evt.GetCol(), attribute, constants.LEVEL_NOM), level_nom)
             if self.tableservice.check_numeric_col(evt.GetCol()):
                 level_ord = level.Append(wx.ID_ANY, "Ordinal")
+                level_ord.SetBackgroundColour(constants.LEVEL_ORD_COLOR)
                 self.frame.Bind(wx.EVT_MENU, self.tableservice.get_set_level(evt.GetCol(), attribute, constants.LEVEL_ORD), level_ord)
                 level_int = level.Append(wx.ID_ANY, "Interval")
+                level_int.SetBackgroundColour(constants.LEVEL_INT_COLOR)
                 self.frame.Bind(wx.EVT_MENU, self.tableservice.get_set_level(evt.GetCol(), attribute, constants.LEVEL_INT), level_int)
                 level_rat = level.Append(wx.ID_ANY, "Ratio")
+                level_rat.SetBackgroundColour(constants.LEVEL_RAT_COLOR)
                 self.frame.Bind(wx.EVT_MENU, self.tableservice.get_set_level(evt.GetCol(), attribute, constants.LEVEL_RAT), level_rat)
 
             menu.Append(wx.ID_ANY, "Set Level of Measurement", level)
