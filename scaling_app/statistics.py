@@ -1,12 +1,9 @@
 import collections
 import statistics
-
 import wx
 import matplotlib.pyplot as plt
-import matplotlib.style as mplstyle
 from matplotlib.backends.backend_wxagg import FigureCanvasWxAgg as FigureCanvas
 import numpy as np
-
 from scaling_app import constants
 
 
@@ -32,11 +29,11 @@ class StatsPanel(wx.Panel):
         self.combobox = wx.ComboBox(self, choices=options, style=wx.CB_READONLY)
         self.combobox.SetSelection(0)
 
+        # Text for Central Tendencies
         self.infotext = wx.StaticText(self)
         font = wx.Font(18, wx.ROMAN, wx.NORMAL, wx.NORMAL)
         self.infotext.SetFont(font)
         self.infotext.SetLabel("")
-
 
         self.hsizer = wx.BoxSizer(wx.HORIZONTAL)
         self.hsizer.Add(self.combobox, 1, wx.TOP | wx.LEFT)
@@ -52,8 +49,8 @@ class StatsPanel(wx.Panel):
 
     def select(self, evt):
 
+        # Handle Selection via Combobox
         self.selection = evt.GetSelection()
-
         self.load_stats(evt.GetSelection())
 
     def load_stats(self, selection):

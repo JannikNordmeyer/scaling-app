@@ -12,6 +12,7 @@ class Statservice:
 
     def get_add_stats(self, labelevent):
         def add_stats(evt=None):
+            # Add Stats Header for Selected Attribute
 
             self.tableservice.get_save_to_storage()()
 
@@ -32,6 +33,7 @@ class Statservice:
         return add_stats
 
     def compile_stats(self, col):
+        # Computes Unique Values and Respective Occurrence Counts from Selected Attribute
         values = list()
         for i in range(self.frame.main_grid.GetNumberRows()):
             value = self.frame.main_grid.GetCellValue(i, col)
@@ -44,6 +46,7 @@ class Statservice:
         return unique_values, Counter(list(values))
 
     def update_stats(self):
+        # Recompiles and Display Stats for each Stats Header
 
         for stats in self.datastorage.stats:
 
@@ -57,5 +60,5 @@ class Statservice:
         self.datastorage.stats_visible.clear()
         self.datastorage.stats.clear()
 
-        while self.frame.tabs.GetPageCount() > 2:
-            self.frame.tabs.DeletePage(2)
+        while self.frame.tabs.GetPageCount() > 3:
+            self.frame.tabs.DeletePage(3)

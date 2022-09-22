@@ -41,6 +41,7 @@ class GraphPanel(wx.Panel):
         def onclick(event):
 
             if event.inaxes and event.button == MouseButton.LEFT:
+                # Determine Selected Node
                 for n in self.graph.nodes:
                     if euclidiandistance(self.graph.nodes[n]["pos"], (event.xdata, event.ydata)) < 0.1:
                         if "anchor" in n:
@@ -49,10 +50,12 @@ class GraphPanel(wx.Panel):
                         self.update_borders(n)
                         break
             elif event.button == MouseButton.RIGHT:
+                # Display Graph Menu
                 self.mservice.graph_menu()
 
         def ondrag(event):
             if event.inaxes and self.selectednode is not None:
+                # Drag Selected Node
 
                 x = event.xdata
                 y = event.ydata
@@ -83,6 +86,7 @@ class GraphPanel(wx.Panel):
                 self.figure.canvas.draw()
 
         def onrelease(event):
+            # Deselect Node
             self.selectednode = None
             self.drag_borders = self.borders
 
@@ -116,6 +120,7 @@ class GraphPanel(wx.Panel):
         self.figure.canvas.draw()
 
     def update_borders(self, node):
+        # Compute Restraints for Node Movement based on Overall Panel Borders and Lattice Relation
 
         x_min = self.borders[0]
         x_max = self.borders[1]
@@ -128,7 +133,6 @@ class GraphPanel(wx.Panel):
                 if node in targets:
                     if self.node_positions[start][1] < y_min:
                         y_min = self.node_positions[start][1]
-
         # y_max
         for edge in self.storage.lattice['edges']:
             for start, targets in edge.items():

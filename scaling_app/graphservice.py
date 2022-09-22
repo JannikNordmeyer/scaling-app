@@ -8,6 +8,7 @@ class GraphService:
         self.datastorage = datastorage
 
     def draw_lattice(self, evt=None):
+        # Create Lattice Graph from JSON Layout
 
         if self.datastorage.lattice is None:
             return
@@ -18,7 +19,6 @@ class GraphService:
         x_max = 0
         y_min = 0
         y_max = 0
-
         y_min_node = None
         y_max_node = None
 

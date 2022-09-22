@@ -16,6 +16,7 @@ class TableService:
 
     def fill_table(self):
 
+        # Loads Table Contents from CSV
         self.current_grid = self.frame.main_grid
 
         values = csv.reader(self.datastorage.data, delimiter=',', quotechar='"', escapechar='\\', quoting=csv.QUOTE_ALL)
@@ -28,6 +29,7 @@ class TableService:
         for row in values:
 
             if values.line_num == 1:
+                # Read Column Names
                 rowlabellength = len(row)
                 self.frame.main_grid.AppendCols(len(row))
                 i = 0
@@ -36,11 +38,13 @@ class TableService:
                     i += 1
             else:
                 self.frame.main_grid.AppendRows(1)
+                # Assign Number to Row Labels
                 self.frame.main_grid.SetRowLabelValue(values.line_num - 2, str(values.line_num - 1))
                 j = 0
                 first = True
                 for entry in row:
                     if len(row) == rowlabellength + 1 and first:
+                        # Replace Row Label, if File is Formatted Accordingly
                         self.frame.main_grid.SetRowLabelValue(values.line_num - 2, entry)
                         first = False
                         continue
@@ -51,17 +55,18 @@ class TableService:
         self.check_attribute_levels()
 
     def check_attribute_levels(self):
-
+        # Calculates Maximum Level of Measurements for Each Column
         for i in range(self.frame.main_grid.GetNumberCols()):
             if self.check_numeric_col(i):
                 self.datastorage.table.attribute_levels[self.frame.main_grid.GetColLabelValue(i)] = constants.LEVEL_RAT
                 self.dye_col(i, constants.LEVEL_RAT_COLOR)
             else:
-                self.datastorage.table.attribute_levels[self.frame.main_grid.GetColLabelValue(i)] = constants.LEVEL_STRING
-                self.dye_col(i, constants.LEVEL_STRING_COLOR)
+                self.datastorage.table.attribute_levels[self.frame.main_grid.GetColLabelValue(i)] = constants.LEVEL_NOM
+                self.dye_col(i, constants.LEVEL_NOM_COLOR)
 
     def get_set_level(self, col, attribute, level):
         def set_level(evt=None):
+            # Assigns Level of Measurement to Attribute
             self.datastorage.table.attribute_levels[attribute] = level
             self.dye_col(col, constants.color_conv(level))
             self.sservice.update_stats()
@@ -70,9 +75,10 @@ class TableService:
     def dye_col(self, col, color):
         for i in range(self.frame.main_grid.GetNumberRows()):
             self.frame.main_grid.SetCellBackgroundColour(i, col, color)
-            self.frame.main_grid.ForceRefresh()
+        self.frame.main_grid.ForceRefresh()
 
     def load_expanded(self, evt=None):
+        # Updates Result Grid
 
         if self.frame.result_grid.GetNumberCols() > 0:
             self.frame.result_grid.DeleteCols(0, self.frame.result_grid.GetNumberCols())
@@ -89,6 +95,7 @@ class TableService:
 
     def get_expand_column(self, col):
         def expand_column(evt=None):
+            # Append Scaling Attributes of Single Dataset Attribute to the Result Grid
 
             if self.frame.main_grid.GetColLabelValue(col) not in self.datastorage.table.scalings:
                 return
@@ -97,11 +104,13 @@ class TableService:
             col_labels = scaling[1]
             scaling_table = scaling[2]
 
+            # Generate Column Labels
             col_offset = self.frame.result_grid.GetNumberCols()
             self.frame.result_grid.AppendCols(len(col_labels))
             for new_col in range(len(col_labels)):
                 self.frame.result_grid.SetColLabelValue(col_offset + new_col, self.frame.main_grid.GetColLabelValue(col) + ":\n" + col_labels[new_col])
 
+            # Fill in Cells from Dataset
             for i in range(self.frame.main_grid.GetNumberRows()):
                 if self.frame.main_grid.GetCellValue(i, col) != "":
                     value = self.frame.main_grid.GetCellValue(i, col)
@@ -113,24 +122,28 @@ class TableService:
     def get_to_scaling(self, labelevent, type):
         def to_scaling(evt=None):
 
-            # load from storage if scaling exists and right tab is selected
+            # Load Scaling from Storage if it is Selected, in Case Result is Visible
             if self.current_grid.GetCornerLabelValue() in self.datastorage.table.scalings:
                 self.load_from_storage(self.current_grid.GetCornerLabelValue())
                 self.datastorage.result_visible.discard(self.current_grid.GetCornerLabelValue())
                 return
 
-            # Add new tab if scaling doesn't exist
+            # Add New Header if Scaling does not Exist
             self.get_save_to_storage(self.frame.csvtabs.GetSelection())()
 
             self.new_tab(self.frame.main_grid.GetColLabelValue(labelevent.GetCol()))
             self.current_grid.SetCornerLabelValue(self.frame.main_grid.GetColLabelValue(labelevent.GetCol()))
 
-            if type == constants.EMPTY or type == constants.DIAGONAL_ANY:
+            # Generate Scaling Based on Selected Type
+
+            if type == constants.EMPTY:
+                # Ascertain Values
                 values = list()
                 for i in range(self.frame.main_grid.GetNumberRows()):
                     if self.frame.main_grid.GetCellValue(i, labelevent.GetCol()) not in values:
                         if self.frame.main_grid.GetCellValue(i, labelevent.GetCol()) != "":
                             values.append(self.frame.main_grid.GetCellValue(i, labelevent.GetCol()))
+                # Add Attribute Labels to Table
                 self.current_grid.DeleteCols(0, self.current_grid.GetNumberCols())
                 self.current_grid.DeleteRows(0, self.current_grid.GetNumberRows())
                 self.current_grid.AppendCols(len(values))
@@ -138,11 +151,10 @@ class TableService:
                 for i in range(self.current_grid.GetNumberRows()):
                     self.current_grid.SetColLabelValue(i, values[i])
                     self.current_grid.SetRowLabelValue(i, values[i])
-                    if type == constants.DIAGONAL_ANY:
-                        self.current_grid.SetCellValue(i, i, "✘")
 
             if type == constants.DIAGONAL or type == constants.ORDINAL:
 
+                # Add Attribute Labels to Table
                 columns_actual = self.get_col_entries(labelevent.GetCol())
                 self.current_grid.DeleteCols(0, self.current_grid.GetNumberCols())
                 self.current_grid.AppendCols(len(columns_actual))
@@ -151,13 +163,14 @@ class TableService:
                 for a in range(len(columns_actual)):
                     self.current_grid.SetColLabelValue(a, str(columns_actual[a]))
                     self.current_grid.SetRowLabelValue(a, str(columns_actual[a]))
+
+                # Fill Cells
                 for i in range(self.current_grid.GetNumberRows()):
                     row_value = self.current_grid.GetRowLabelValue(i)
                     for j in range(self.current_grid.GetNumberCols()):
                         col_value = self.current_grid.GetColLabelValue(j)
                         if type == constants.ORDINAL and float(row_value) > float(col_value):
                             self.current_grid.SetCellValue(i, j, "✘")
-
                         if type == constants.ORDINAL:
                             if float(row_value) == float(col_value):
                                 self.current_grid.SetCellValue(i, j, "✘")
@@ -173,6 +186,7 @@ class TableService:
                 self.current_grid.DeleteRows(0, self.frame.main_grid.GetNumberRows())
                 self.current_grid.AppendRows(len(columns_actual))
 
+                # Add Attribute Labels and Cells
                 for a in range(2*(len(columns_actual))):
                     if a < len(columns_actual):
                         self.current_grid.SetColLabelValue(a, "≤" + str(columns_actual[a]))
@@ -189,7 +203,7 @@ class TableService:
         return to_scaling
 
     def new_tab(self, name):
-
+        # Created new Grid Tab
         new_grid = grid.Grid(self.frame.csvtabs)
         new_grid.CreateGrid(16, 8)
         new_grid.EnableDragCell()
@@ -203,6 +217,7 @@ class TableService:
         self.datastorage.tabs.append(new_grid)
 
     def view_result(self, evt=None):
+        # Displays Result in Tab of Selected Scaling
         self.get_save_to_storage(self.frame.csvtabs.GetSelection())()
         self.current_grid = self.datastorage.tabs[self.frame.csvtabs.GetSelection()]
         self.current_grid.DeleteRows(0, self.current_grid.GetNumberRows())
@@ -222,6 +237,7 @@ class TableService:
             self.current_grid.AppendRows(1)
             self.current_grid.SetRowLabelValue(i, self.datastorage.table.row_labels[i])
 
+            # Get Value of Object from Main Table and Check Scaling for Relation of the Value to the Attributes
             if self.datastorage.table.original[(i, col_number)] != "":
                 value = self.datastorage.table.original[(i, col_number)]
                 for j in range(len(scaling_col_labels)):
@@ -233,6 +249,7 @@ class TableService:
     def get_save_to_storage(self, evt=None):
         def save_to_storage(evt=None):
             # -----Called When Tab Changes-----
+            # Saves the Original Table, as well as the Currently Selected One, Unless the Result is Displayed
 
             self.current_grid = self.datastorage.tabs[self.frame.csvtabs.GetSelection()]
 
@@ -272,7 +289,7 @@ class TableService:
         return save_to_storage
 
     def table_edited(self):
-        # Save current tables, then reset scalings to account for table changes
+        # Save All Tables and Resets Scalings to Account for Table Changes
         for i in range(len(self.datastorage.tabs)):
             self.get_save_to_storage(i)()
             if i >= 2:
@@ -283,6 +300,7 @@ class TableService:
         self.sservice.update_stats()
 
     def load_from_storage(self, target):
+        # Loads Specified Table from Storage
 
         self.current_grid.DeleteRows(0, self.current_grid.GetNumberRows())
         self.current_grid.DeleteCols(0, self.current_grid.GetNumberCols())
@@ -334,9 +352,10 @@ class TableService:
                 if value != "":
                     return False
 
-        return (minvalue, maxvalue)
+        return minvalue, maxvalue
 
     def check_toggle(self, evt):
+        # Toggles Selection of Scaling Cells
         if self.frame.csvtabs.GetSelection() >= 2 and "Result:" not in self.frame.csvtabs.GetPageText(self.frame.csvtabs.GetSelection()):
             self.current_grid = self.datastorage.tabs[self.frame.csvtabs.GetSelection()]
             if self.current_grid.GetCellValue(evt.GetRow(), evt.GetCol()) == "":
@@ -349,7 +368,7 @@ class TableService:
             evt.Skip()
 
     def get_col_entries(self, col):
-        # Only checks Main Grid
+        # Returns all Unique Values from Specified Attribute in Main Grid
         entries = set()
         for i in range(self.frame.main_grid.GetNumberRows()):
             value = self.frame.main_grid.GetCellValue(i, col)
@@ -491,7 +510,7 @@ class TableService:
                 self.current_grid.SetColLabelValue(labelevent.GetCol(), name)
                 self.datastorage.set_edited()
 
-                # Replace all occurrences of the original name with the new one
+                # Replace All Occurrences of the Original Name with the New One
                 if old_name in self.datastorage.table.scalings:
                     scaling = self.datastorage.table.scalings[old_name]
                     self.datastorage.table.scalings[name] = scaling
@@ -553,6 +572,7 @@ class TableService:
         return False
 
     def cascade_row(self, pos):
+        # Moves Final Row of the Table up to the Specified Position
         number_rows = self.current_grid.GetNumberRows()
         i = 0
         while i < number_rows - pos - 2:
@@ -578,7 +598,7 @@ class TableService:
             i += 1
 
     def swap_col(self, a, b):
-
+        # Moves Final Column of the Table up to the Specified Position
         temp = self.current_grid.GetColLabelValue(a)
         self.current_grid.SetColLabelValue(a, self.current_grid.GetColLabelValue(b))
         self.current_grid.SetColLabelValue(b, temp)
@@ -596,7 +616,7 @@ class TableService:
             self.sservice.clear_stats()
 
     def reset_table(self, evt=None):
-
+        # Deletes All Data Relating to the Loaded Table and Resets it to it's Default State
         self.frame.main_grid.DeleteRows(0, self.frame.main_grid.GetNumberRows())
         self.frame.main_grid.DeleteCols(0, self.frame.main_grid.GetNumberCols())
         self.frame.main_grid.AppendRows(16)
@@ -607,7 +627,9 @@ class TableService:
         self.clear_scalings()
 
     def clear_scalings(self):
+        # Deletes All Scalings and Related Data
         self.datastorage.result_visible.clear()
+        self.datastorage.table.scalings.clear()
         while len(self.datastorage.tabs) > 2:
             self.datastorage.tabs.pop()
 
@@ -615,6 +637,7 @@ class TableService:
             self.frame.csvtabs.DeletePage(2)
 
     def is_empty(self):
+        # Checks if Main Grid is Fully Empty
         for i in range(self.frame.main_grid.GetNumberRows()):
             for j in range(self.frame.main_grid.GetNumberCols()):
                 if self.frame.main_grid.GetCellValue(i, j) != "":
@@ -628,8 +651,9 @@ class TableService:
         return True
 
     def value_in_data(self, value, col):
+        # Checks if Specified Value is Part of the Data in the Specified Column in th Main Grid
 
-        # Always Returns False if Main Grid is Selected
+        # Always Returns False if Main Grid is Currently Selected
         if self.frame.csvtabs.GetSelection() == 0:
             return False
         if value == "":
@@ -641,6 +665,7 @@ class TableService:
         return False
 
     def value_in_scaling(self, value, scaling):
+        # Checks if Specified Value is Already in the Specified Scaling
 
         if scaling in self.datastorage.table.scalings:
             scaling_rows = self.datastorage.table.scalings[scaling][0]
@@ -650,6 +675,8 @@ class TableService:
             return True
 
     def cell_changed(self, evt):
+        # Called Whenever a Cell's Content Changes
+
         self.datastorage.set_edited()
         self.sservice.update_stats()
         if self.frame.csvtabs.GetSelection() == 0:
@@ -657,14 +684,13 @@ class TableService:
             attribute = self.frame.main_grid.GetColLabelValue(evt.GetCol())
 
             # Update Level of Measurement if new Value is String
-
             try:
                 float(value)
             except:
                 self.get_set_level(evt.GetCol(), attribute, constants.LEVEL_STRING)()
 
+            # Update Scaling if Value is New
             if not self.value_in_scaling(value, attribute):
-                # Update Scaling
                 scaling_rows = self.datastorage.table.scalings[attribute][0]
                 scaling_cols = self.datastorage.table.scalings[attribute][1]
                 scaling_table = self.datastorage.table.scalings[attribute][2]

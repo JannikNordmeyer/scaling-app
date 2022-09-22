@@ -82,18 +82,16 @@ class MenuService:
                 self.frame.Bind(wx.EVT_MENU, self.statservice.get_add_stats(evt), stats)
 
             level = wx.Menu()
-            string = level.Append(wx.ID_ANY, "String")
-            self.frame.Bind(wx.EVT_MENU, self.tableservice.get_set_level(evt.GetCol(), attribute, constants.LEVEL_STRING), string)
+            level_nom = level.Append(wx.ID_ANY, "Nominal")
+            self.frame.Bind(wx.EVT_MENU, self.tableservice.get_set_level(evt.GetCol(), attribute, constants.LEVEL_NOM), level_nom)
             if self.tableservice.check_numeric_col(evt.GetCol()):
-                level_nom = level.Append(wx.ID_ANY, "Numeric Nominal")
-                level_ord = level.Append(wx.ID_ANY, "Numeric Ordinal")
-                level_int = level.Append(wx.ID_ANY, "Numeric Interval")
-                level_rat = level.Append(wx.ID_ANY, "Numeric Ratio")
-
-                self.frame.Bind(wx.EVT_MENU, self.tableservice.get_set_level(evt.GetCol(), attribute, constants.LEVEL_NOM), level_nom)
+                level_ord = level.Append(wx.ID_ANY, "Ordinal")
                 self.frame.Bind(wx.EVT_MENU, self.tableservice.get_set_level(evt.GetCol(), attribute, constants.LEVEL_ORD), level_ord)
+                level_int = level.Append(wx.ID_ANY, "Interval")
                 self.frame.Bind(wx.EVT_MENU, self.tableservice.get_set_level(evt.GetCol(), attribute, constants.LEVEL_INT), level_int)
+                level_rat = level.Append(wx.ID_ANY, "Ratio")
                 self.frame.Bind(wx.EVT_MENU, self.tableservice.get_set_level(evt.GetCol(), attribute, constants.LEVEL_RAT), level_rat)
+
             menu.Append(wx.ID_ANY, "Set Level of Measurement", level)
 
         self.frame.PopupMenu(menu)

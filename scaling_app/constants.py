@@ -1,7 +1,6 @@
 # Scaling Types
 EMPTY = "empty"
 DIAGONAL = "diagonal"
-DIAGONAL_ANY = "diagonal_any"
 ORDINAL = "ordinal"
 INTERORDINAL = "interordinal"
 DICHOTOM = "dichotom"
@@ -18,9 +17,6 @@ RESULT = "result"
 
 # Levels of Measurement
 
-LEVEL_STRING = "string"
-LEVEL_STRING_COLOR = "#E7B09E"
-
 LEVEL_NOM = "nominal"
 LEVEL_NOM_COLOR = "#C4CDE7"
 
@@ -36,8 +32,6 @@ LEVEL_RAT_COLOR = "#4B9AE7"
 
 def color_conv(level):
 
-    if level == LEVEL_STRING:
-        return LEVEL_STRING_COLOR
     if level == LEVEL_NOM:
         return LEVEL_NOM_COLOR
     if level == LEVEL_ORD:
