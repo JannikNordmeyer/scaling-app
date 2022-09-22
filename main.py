@@ -123,6 +123,7 @@ tservice = tableservice.TableService(frame, storage)
 gservice = graphservice.GraphService(frame, storage)
 sservice = statservice.Statservice(frame, tservice, storage)
 mservice = menuservice.MenuService(frame, storage, tservice, gservice, sservice)
+sservice.menuservice = mservice
 tservice.mservice = mservice
 tservice.sservice = sservice
 build_ui()

@@ -3,17 +3,19 @@ import statistics
 import wx
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_wxagg import FigureCanvasWxAgg as FigureCanvas
+from matplotlib.backend_bases import MouseButton
 import numpy as np
 from scaling_app import constants
 
 
 class StatsPanel(wx.Panel):
 
-    def __init__(self, panel, datastorage, attribute):
+    def __init__(self, panel, datastorage, menuservice, attribute):
         wx.Panel.__init__(self, panel, -1)
 
         self.parent = panel
         self.storage = datastorage
+        self.mservice = menuservice
 
         self.attribute = attribute
 
@@ -46,6 +48,11 @@ class StatsPanel(wx.Panel):
         self.Fit()
 
         self.combobox.Bind(wx.EVT_COMBOBOX, self.select)
+        self.figure.canvas.mpl_connect('button_press_event', self.onclick)
+
+    def onclick(self, event):
+        if event.button == MouseButton.RIGHT:
+            self.mservice.stats_menu()
 
     def select(self, evt):
 
@@ -131,5 +138,7 @@ class StatsPanel(wx.Panel):
             for count in range(self.counts[i]):
                 values.append(float(i))
         return round(statistics.mean(values), 6)
+
+
 
 

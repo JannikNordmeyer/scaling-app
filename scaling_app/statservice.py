@@ -9,6 +9,7 @@ class Statservice:
         self.frame = frame
         self.tableservice = tableservice
         self.datastorage = datastorage
+        self.menuservice = None
 
     def get_add_stats(self, labelevent):
         def add_stats(evt=None):
@@ -24,13 +25,18 @@ class Statservice:
 
             self.datastorage.stats_visible.add(attribute)
 
-            statistics_new = statistics.StatsPanel(self.frame.tabs, self.datastorage, attribute)
+            statistics_new = statistics.StatsPanel(self.frame.tabs, self.datastorage, self.menuservice, attribute)
             self.datastorage.stats.append(statistics_new)
 
             statistics_new.load_histogram(unique_values, height)
             self.frame.tabs.AddPage(statistics_new, "Stats: " + attribute)
 
         return add_stats
+
+    def close_tab(self, evt=None):
+        selection = self.frame.tabs.GetSelection()
+        self.frame.tabs.SetSelection(selection-1)
+        self.frame.tabs.DeletePage(selection)
 
     def compile_stats(self, col):
         # Computes Unique Values and Respective Occurrence Counts from Selected Attribute
