@@ -105,10 +105,11 @@ class MenuService:
     def label_menu(self, evt):
 
         evt.Skip()
-        if evt.GetCol() == -1:
-            self.show_row_menu(evt)
-        else:
-            self.show_col_menu(evt)
+        if "Result:" not in self.frame.csvtabs.GetPageText(self.frame.csvtabs.GetSelection()):
+            if evt.GetCol() == -1:
+                self.show_row_menu(evt)
+            else:
+                self.show_col_menu(evt)
 
     def cell_menu(self, evt):
 

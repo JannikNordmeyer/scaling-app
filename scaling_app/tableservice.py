@@ -533,7 +533,7 @@ class TableService:
                     for i in range(self.frame.tabs.GetPageCount()):
                         if self.frame.tabs.GetPageText(i) == "Stats: " + old_name:
                             self.frame.tabs.SetPageText(i, "Stats: " + name)
-                            numberspecialtabs = 2
+                            numberspecialtabs = 3
                             self.datastorage.stats[i - numberspecialtabs].attribute = name
                             break
 
