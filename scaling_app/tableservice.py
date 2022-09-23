@@ -511,12 +511,13 @@ class TableService:
                 self.datastorage.set_edited()
 
                 # Replace All Occurrences of the Original Name with the New One
+
+                level = self.datastorage.table.attribute_levels.pop(old_name)
+                self.datastorage.table.attribute_levels[name] = level
+
                 if old_name in self.datastorage.table.scalings:
                     scaling = self.datastorage.table.scalings[old_name]
                     self.datastorage.table.scalings[name] = scaling
-
-                    level = self.datastorage.table.attribute_levels[old_name]
-                    self.datastorage.table.attribute_levels[name] = level
 
                     for i in range(self.frame.csvtabs.GetPageCount()):
 
