@@ -105,7 +105,8 @@ class MenuService:
     def label_menu(self, evt):
 
         evt.Skip()
-        if "Result:" not in self.frame.csvtabs.GetPageText(self.frame.csvtabs.GetSelection()):
+        print()
+        if self.tableservice.current_attribute() not in self.datastorage.result_visible:
             if evt.GetCol() == -1:
                 self.show_row_menu(evt)
             else:
@@ -121,7 +122,7 @@ class MenuService:
             menu.AppendSeparator()
             result = menu.Append(wx.ID_ANY, "View Result")
             self.frame.Bind(wx.EVT_MENU, self.tableservice.view_result, result)
-        if self.frame.csvtabs.GetSelection() > 0 and "Result:" in self.frame.csvtabs.GetPageText(self.frame.csvtabs.GetSelection()):
+        if self.frame.csvtabs.GetSelection() > 0 and self.tableservice.current_attribute() in self.datastorage.result_visible:
             menu.AppendSeparator()
             to_scaling = menu.Append(wx.ID_ANY, "Go to Scaling")
             self.frame.Bind(wx.EVT_MENU, self.tableservice.get_to_scaling(evt, None), to_scaling)

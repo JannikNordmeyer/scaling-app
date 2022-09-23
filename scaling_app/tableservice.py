@@ -1,7 +1,7 @@
 import csv
 import wx
 import wx.grid as grid
-from scaling_app import constants, statistics
+from scaling_app import constants
 
 
 class TableService:
@@ -356,7 +356,7 @@ class TableService:
 
     def check_toggle(self, evt):
         # Toggles Selection of Scaling Cells
-        if self.frame.csvtabs.GetSelection() >= 2 and "Result:" not in self.frame.csvtabs.GetPageText(self.frame.csvtabs.GetSelection()):
+        if self.frame.csvtabs.GetSelection() >= 2 and self.current_attribute() not in self.datastorage.result_visible:
             self.current_grid = self.datastorage.tabs[self.frame.csvtabs.GetSelection()]
             if self.current_grid.GetCellValue(evt.GetRow(), evt.GetCol()) == "":
                 self.current_grid.SetCellValue(evt.GetRow(), evt.GetCol(), "✘")
@@ -687,7 +687,7 @@ class TableService:
             try:
                 float(value)
             except:
-                self.get_set_level(evt.GetCol(), attribute, constants.LEVEL_STRING)()
+                self.get_set_level(evt.GetCol(), attribute, constants.LEVEL_NOM)()
 
             # Update Scaling if Value is New
             if not self.value_in_scaling(value, attribute):
@@ -709,3 +709,7 @@ class TableService:
                 errortext = 'The Value has been Added to the Scaling.'
                 dialog = wx.MessageDialog(None, errortext, 'Entered Value is not Part of the Attributes Scaling', wx.ICON_WARNING | wx.OK)
                 dialog.ShowModal()
+
+    def current_attribute(self):
+        # Returns if the Attribute Represented by the Currently Selected Scaling Table
+        return self.frame.csvtabs.GetPage(self.frame.csvtabs.GetSelection()).GetCornerLabelValue()
