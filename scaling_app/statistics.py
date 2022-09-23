@@ -1,6 +1,12 @@
 import collections
+
+from matplotlib import pylab
+
 import statistics
+
 import wx
+import seaborn as sns
+import pandas as pd
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_wxagg import FigureCanvasWxAgg as FigureCanvas
 from matplotlib.backend_bases import MouseButton
@@ -78,11 +84,8 @@ class StatsPanel(wx.Panel):
         self.values = values
         self.counts = counts
 
-        x = np.arange(len(values))
-        plt.bar(x, height=height)
-        plt.xticks(x, values)
-        plt.ylabel('Frequency')
-        plt.xlabel('Objects')
+        sns.set(style="darkgrid")
+        sns.barplot(x=values, y=height)
 
         self.set_tendencies()
         self.figure.canvas.draw()
@@ -103,6 +106,9 @@ class StatsPanel(wx.Panel):
 
         self.set_tendencies()
         self.figure.canvas.draw()
+
+    def load_histplot(self):
+        print("Plot")
 
     def set_tendencies(self):
 
