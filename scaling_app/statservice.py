@@ -38,6 +38,10 @@ class Statservice:
         self.frame.tabs.SetSelection(selection-1)
         self.frame.tabs.DeletePage(selection)
 
+    def recalculate(self, evt=None):
+        selection = self.frame.tabs.GetPage(self.frame.tabs.GetSelection())
+        selection.load_histplot()
+
     def compile_stats(self, col):
         # Computes Unique Values and Respective Occurrence Counts from Selected Attribute
         values = list()

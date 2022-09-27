@@ -156,6 +156,7 @@ class MenuService:
         #self.frame.Bind(wx.EVT_MENU, self.statservice.close_tab, close)
 
         recalc = menu.Append(wx.ID_ANY, "Recalculate")
+        self.frame.Bind(wx.EVT_MENU, self.statservice.recalculate, recalc)
 
         self.frame.PopupMenu(menu)
         menu.Destroy()

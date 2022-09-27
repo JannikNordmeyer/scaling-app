@@ -1,16 +1,10 @@
 import collections
-
-from matplotlib import pylab
-
 import statistics
-
 import wx
 import seaborn as sns
-import pandas as pd
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_wxagg import FigureCanvasWxAgg as FigureCanvas
 from matplotlib.backend_bases import MouseButton
-import numpy as np
 from scaling_app import constants
 
 
@@ -108,7 +102,15 @@ class StatsPanel(wx.Panel):
         self.figure.canvas.draw()
 
     def load_histplot(self):
-        print("Plot")
+        plt.figure(self.figure.number)
+        plt.clf()
+
+        plot = [1,1,1,2,2,3,3,3,3,3,5,5,6,6,6,6,7,7,9]
+
+        sns.set(style="darkgrid")
+        sns.histplot(data=plot, bins=9)
+
+        self.figure.canvas.draw()
 
     def set_tendencies(self):
 
