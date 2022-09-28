@@ -1,6 +1,7 @@
 import collections
 import statistics
 import wx
+import wx.grid as grid
 import seaborn as sns
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_wxagg import FigureCanvasWxAgg as FigureCanvas
@@ -28,7 +29,7 @@ class StatsPanel(wx.Panel):
 
         self.canvas = FigureCanvas(self, -1, self.figure)
 
-        options = ['Histogram', 'Expanded Histogram', 'Pie Chart']
+        options = ['Histogram', 'Expanded Histogram', 'Pie Chart', 'Order']
         self.combobox = wx.ComboBox(self, choices=options, style=wx.CB_READONLY)
         self.combobox.SetSelection(0)
 
@@ -41,6 +42,15 @@ class StatsPanel(wx.Panel):
         self.binselector = wx.TextCtrl(self, size=wx.Size(1, 25))
         self.binselector.Hide()
 
+        self.sort_text = wx.StaticText(self)
+        self.sort_text.SetLabel("Move Below Elements Into a Total Order:")
+        self.sort_text.Hide()
+        self.sort_grid = grid.Grid(self)
+        self.sort_grid.CreateGrid(0, 0)
+        self.sort_grid.EnableDragColMove()
+        self.sort_grid.HideRowLabels()
+        self.sort_grid.Hide()
+
         self.hsizer = wx.BoxSizer(wx.HORIZONTAL)
         self.hsizer.Add(self.combobox, 1, wx.TOP | wx.LEFT)
         self.hsizer.Add(self.infotext, 1, wx.TOP | wx.LEFT)
@@ -49,15 +59,17 @@ class StatsPanel(wx.Panel):
         self.sizer = wx.BoxSizer(wx.VERTICAL)
         self.sizer.Add(self.hsizer, 1, wx.TOP | wx.LEFT)
         self.sizer.Add(self.canvas, 15, wx.TOP | wx.LEFT | wx.EXPAND)
+        self.sizer.Add(self.sort_text, wx.TOP | wx.LEFT)
+        self.sizer.Add(self.sort_grid, wx.TOP | wx.LEFT | wx.EXPAND)
         self.SetSizer(self.sizer)
         self.Fit()
 
         self.combobox.Bind(wx.EVT_COMBOBOX, self.select)
         self.figure.canvas.mpl_connect('button_press_event', self.onclick)
 
-        self.binselector.Bind(wx.EVT_TEXT, self.binchange)
+        self.binselector.Bind(wx.EVT_TEXT, self.bin_change)
 
-    def binchange(self, evt=None):
+    def bin_change(self, evt=None):
         if self.binselector.GetLineText(0) != "":
             bin_number = min(int(self.binselector.GetLineText(0)), len(self.unique_values))
             self.load_histplot(self.uncounted_values, bin_number)
@@ -80,8 +92,21 @@ class StatsPanel(wx.Panel):
             self.load_histplot(self.uncounted_values, len(self.unique_values))
         if selection == 2:
             self.load_pie(self.unique_values, self.value_counts)
+        if selection == 3:
+            self.load_order()
 
         self.Layout()
+
+    def load_order(self):
+        self.binselector.Hide()
+        self.infotext.Hide()
+        self.sort_grid.Hide()
+        self.canvas.Hide()
+        self.sort_text.Show()
+        self.sort_grid.Show()
+        for i in range(len(self.unique_values)):
+            self.sort_grid.AppendCols(1)
+            self.sort_grid.SetColLabelValue(i, str(self.unique_values[i]))
 
     def load_histogram(self, values, counts):
 
@@ -99,6 +124,10 @@ class StatsPanel(wx.Panel):
 
         self.set_tendencies()
         self.binselector.Hide()
+        self.sort_text.Hide()
+        self.sort_grid.Hide()
+        self.infotext.Show()
+        self.canvas.Show()
         self.figure.canvas.draw()
 
     def load_histplot(self, uncounted_values, bins=None):
@@ -117,6 +146,10 @@ class StatsPanel(wx.Panel):
         if not label.endswith("       Bins:  "):
             self.infotext.SetLabel(label + "       Bins:  ")
         self.binselector.Show()
+        self.infotext.Show()
+        self.sort_text.Hide()
+        self.sort_grid.Hide()
+        self.canvas.Show()
         self.figure.canvas.draw()
 
     def load_pie(self, values, counts):
@@ -135,6 +168,10 @@ class StatsPanel(wx.Panel):
 
         self.set_tendencies()
         self.binselector.Hide()
+        self.sort_text.Hide()
+        self.sort_grid.Hide()
+        self.infotext.Show()
+        self.canvas.Show()
         self.figure.canvas.draw()
 
     def set_tendencies(self):
