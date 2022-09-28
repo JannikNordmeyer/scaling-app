@@ -17,7 +17,7 @@ class Statservice:
 
             self.tableservice.get_save_to_storage()()
 
-            unique_values, height = self.compile_stats(labelevent.GetCol())
+            unique_values, height, uncounted_values = self.compile_stats(labelevent.GetCol())
 
             if len(unique_values) == 0:
                 return
@@ -28,6 +28,8 @@ class Statservice:
             statistics_new = statistics.StatsPanel(self.frame.tabs, self.datastorage, self.menuservice, attribute)
             self.datastorage.stats.append(statistics_new)
 
+            statistics_new.uncounted_values = uncounted_values
+
             statistics_new.load_histogram(unique_values, height)
             self.frame.tabs.AddPage(statistics_new, "Stats: " + attribute)
 
@@ -37,10 +39,6 @@ class Statservice:
         selection = self.frame.tabs.GetSelection()
         self.frame.tabs.SetSelection(selection-1)
         self.frame.tabs.DeletePage(selection)
-
-    def recalculate(self, evt=None):
-        selection = self.frame.tabs.GetPage(self.frame.tabs.GetSelection())
-        selection.load_histplot()
 
     def compile_stats(self, col):
         # Computes Unique Values and Respective Occurrence Counts from Selected Attribute
@@ -53,7 +51,7 @@ class Statservice:
         unique_values = list(set(values))
         unique_values.sort()
 
-        return unique_values, Counter(list(values))
+        return unique_values, Counter(list(values)), values
 
     def update_stats(self):
         # Recompiles and Display Stats for each Stats Header
@@ -63,7 +61,7 @@ class Statservice:
             attribute = stats.attribute
             col = self.datastorage.table.col_labels.index(attribute)
 
-            stats.values, stats.counts = self.compile_stats(col)
+            stats.unique_values, stats.value_counts, stats.uncounted_values = self.compile_stats(col)
             stats.load_stats(stats.selection)
 
     def clear_stats(self):

@@ -19,15 +19,16 @@ class StatsPanel(wx.Panel):
 
         self.attribute = attribute
 
-        self.values = None
-        self.counts = None
+        self.unique_values = None
+        self.value_counts = None
+        self.uncounted_values = None
         self.selection = 0
 
         self.figure = plt.figure()
 
         self.canvas = FigureCanvas(self, -1, self.figure)
 
-        options = ['Histogram', 'Pie Chart']
+        options = ['Histogram', 'Expanded Histogram', 'Pie Chart']
         self.combobox = wx.ComboBox(self, choices=options, style=wx.CB_READONLY)
         self.combobox.SetSelection(0)
 
@@ -63,9 +64,11 @@ class StatsPanel(wx.Panel):
     def load_stats(self, selection):
 
         if selection == 0:
-            self.load_histogram(self.values, self.counts)
+            self.load_histogram(self.unique_values, self.value_counts)
         if selection == 1:
-            self.load_pie(self.values, self.counts)
+            self.load_histplot(self.uncounted_values)
+        if selection == 2:
+            self.load_pie(self.unique_values, self.value_counts)
 
     def load_histogram(self, values, counts):
 
@@ -75,13 +78,27 @@ class StatsPanel(wx.Panel):
         height = list()
         for value in values:
             height.append(counts[value])
-        self.values = values
-        self.counts = counts
+        self.unique_values = values
+        self.value_counts = counts
 
         sns.set(style="darkgrid")
         sns.barplot(x=values, y=height)
 
         self.set_tendencies()
+        self.figure.canvas.draw()
+
+    def load_histplot(self, uncounted_values):
+        plt.figure(self.figure.number)
+        plt.clf()
+
+        try:
+            uncounted_values.sort(key=float)
+        except:
+            uncounted_values.sort()
+
+        sns.set(style="darkgrid")
+        sns.histplot(data=uncounted_values, bins=9)
+
         self.figure.canvas.draw()
 
     def load_pie(self, values, counts):
@@ -92,24 +109,13 @@ class StatsPanel(wx.Panel):
         height = list()
         for value in values:
             height.append(counts[value])
-        self.values = values
-        self.counts = counts
+        self.unique_values = values
+        self.value_counts = counts
 
         plt.pie(height, labels=values, autopct='%1.1f%%',
                 shadow=True, startangle=90)
 
         self.set_tendencies()
-        self.figure.canvas.draw()
-
-    def load_histplot(self):
-        plt.figure(self.figure.number)
-        plt.clf()
-
-        plot = [1,1,1,2,2,3,3,3,3,3,5,5,6,6,6,6,7,7,9]
-
-        sns.set(style="darkgrid")
-        sns.histplot(data=plot, bins=9)
-
         self.figure.canvas.draw()
 
     def set_tendencies(self):
@@ -129,21 +135,21 @@ class StatsPanel(wx.Panel):
 
     def mode(self):
 
-        return collections.Counter.most_common(self.counts)[0][0]
+        return collections.Counter.most_common(self.value_counts)[0][0]
 
     def median(self):
 
         values = list()
-        for i in self.values:
-            for count in range(self.counts[i]):
+        for i in self.unique_values:
+            for count in range(self.value_counts[i]):
                 values.append(float(i))
         return statistics.median(values)
 
     def mean(self):
 
         values = list()
-        for i in self.values:
-            for count in range(self.counts[i]):
+        for i in self.unique_values:
+            for count in range(self.value_counts[i]):
                 values.append(float(i))
         return round(statistics.mean(values), 6)
 
