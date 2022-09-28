@@ -38,9 +38,13 @@ class StatsPanel(wx.Panel):
         self.infotext.SetFont(font)
         self.infotext.SetLabel("")
 
+        self.binselector = wx.TextCtrl(self, size=wx.Size(1, 25))
+        self.binselector.Hide()
+
         self.hsizer = wx.BoxSizer(wx.HORIZONTAL)
         self.hsizer.Add(self.combobox, 1, wx.TOP | wx.LEFT)
         self.hsizer.Add(self.infotext, 1, wx.TOP | wx.LEFT)
+        self.hsizer.Add(self.binselector, 1, wx.TOP | wx.RIGHT)
 
         self.sizer = wx.BoxSizer(wx.VERTICAL)
         self.sizer.Add(self.hsizer, 1, wx.TOP | wx.LEFT)
@@ -50,6 +54,13 @@ class StatsPanel(wx.Panel):
 
         self.combobox.Bind(wx.EVT_COMBOBOX, self.select)
         self.figure.canvas.mpl_connect('button_press_event', self.onclick)
+
+        self.binselector.Bind(wx.EVT_TEXT, self.binchange)
+
+    def binchange(self, evt=None):
+        if self.binselector.GetLineText(0) != "":
+            bin_number = min(int(self.binselector.GetLineText(0)), len(self.unique_values))
+            self.load_histplot(self.uncounted_values, bin_number)
 
     def onclick(self, event):
         if event.button == MouseButton.RIGHT:
@@ -66,9 +77,11 @@ class StatsPanel(wx.Panel):
         if selection == 0:
             self.load_histogram(self.unique_values, self.value_counts)
         if selection == 1:
-            self.load_histplot(self.uncounted_values)
+            self.load_histplot(self.uncounted_values, len(self.unique_values))
         if selection == 2:
             self.load_pie(self.unique_values, self.value_counts)
+
+        self.Layout()
 
     def load_histogram(self, values, counts):
 
@@ -85,9 +98,10 @@ class StatsPanel(wx.Panel):
         sns.barplot(x=values, y=height)
 
         self.set_tendencies()
+        self.binselector.Hide()
         self.figure.canvas.draw()
 
-    def load_histplot(self, uncounted_values):
+    def load_histplot(self, uncounted_values, bins=None):
         plt.figure(self.figure.number)
         plt.clf()
 
@@ -97,8 +111,12 @@ class StatsPanel(wx.Panel):
             uncounted_values.sort()
 
         sns.set(style="darkgrid")
-        sns.histplot(data=uncounted_values, bins=9)
+        sns.histplot(data=uncounted_values, bins=bins)
 
+        label = self.infotext.GetLabel()
+        if not label.endswith("       Bins:  "):
+            self.infotext.SetLabel(label + "       Bins:  ")
+        self.binselector.Show()
         self.figure.canvas.draw()
 
     def load_pie(self, values, counts):
@@ -116,6 +134,7 @@ class StatsPanel(wx.Panel):
                 shadow=True, startangle=90)
 
         self.set_tendencies()
+        self.binselector.Hide()
         self.figure.canvas.draw()
 
     def set_tendencies(self):

@@ -46,7 +46,10 @@ class Statservice:
         for i in range(self.frame.main_grid.GetNumberRows()):
             value = self.frame.main_grid.GetCellValue(i, col)
             if value != "":
-                values.append(self.frame.main_grid.GetCellValue(i, col))
+                try:
+                    values.append(float(self.frame.main_grid.GetCellValue(i, col)))
+                except:
+                    values.append(self.frame.main_grid.GetCellValue(i, col))
 
         unique_values = list(set(values))
         unique_values.sort()
