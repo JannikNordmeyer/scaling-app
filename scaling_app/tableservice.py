@@ -4,6 +4,13 @@ import wx.grid as grid
 from scaling_app import constants
 
 
+def delete_cols(grid):
+    # Deletes all Columns from the Specified Grid.
+    # Needed to Circumvent Bug with Deletion after the Column Order has been Changed.
+    while grid.GetNumberCols() > 0:
+        grid.DeleteCols(0, grid.GetNumberCols())
+
+
 class TableService:
 
     def __init__(self, frame, datastorage):
@@ -22,7 +29,7 @@ class TableService:
         values = csv.reader(self.datastorage.data, delimiter=',', quotechar='"', escapechar='\\', quoting=csv.QUOTE_ALL)
 
         self.frame.main_grid.DeleteRows(0, self.frame.main_grid.GetNumberRows())
-        self.frame.main_grid.DeleteCols(0, self.frame.main_grid.GetNumberCols())
+        delete_cols(self.frame.main_grid)
         self.frame.main_grid.AppendRows(values.line_num)
 
         rowlabellength = 0
@@ -81,7 +88,7 @@ class TableService:
         # Updates Result Grid
 
         if self.frame.result_grid.GetNumberCols() > 0:
-            self.frame.result_grid.DeleteCols(0, self.frame.result_grid.GetNumberCols())
+            delete_cols(self.frame.result_grid)
 
         # Reload Rows in case the Dataset Changed
         if self.frame.result_grid.GetNumberRows() > 0:
@@ -144,7 +151,7 @@ class TableService:
                         if self.frame.main_grid.GetCellValue(i, labelevent.GetCol()) != "":
                             values.append(self.frame.main_grid.GetCellValue(i, labelevent.GetCol()))
                 # Add Attribute Labels to Table
-                self.current_grid.DeleteCols(0, self.current_grid.GetNumberCols())
+                delete_cols(self.current_grid)
                 self.current_grid.DeleteRows(0, self.current_grid.GetNumberRows())
                 self.current_grid.AppendCols(len(values))
                 self.current_grid.AppendRows(len(values))
@@ -156,7 +163,7 @@ class TableService:
 
                 # Add Attribute Labels to Table
                 columns_actual = self.get_col_entries(labelevent.GetCol())
-                self.current_grid.DeleteCols(0, self.current_grid.GetNumberCols())
+                delete_cols(self.current_grid)
                 self.current_grid.AppendCols(len(columns_actual))
                 self.current_grid.DeleteRows(0, self.frame.main_grid.GetNumberRows())
                 self.current_grid.AppendRows(len(columns_actual))
@@ -181,7 +188,7 @@ class TableService:
             if type == constants.INTERORDINAL:
 
                 columns_actual = self.get_col_entries(labelevent.GetCol())
-                self.current_grid.DeleteCols(0, self.current_grid.GetNumberCols())
+                delete_cols(self.current_grid)
                 self.current_grid.AppendCols(2*len(columns_actual))
                 self.current_grid.DeleteRows(0, self.frame.main_grid.GetNumberRows())
                 self.current_grid.AppendRows(len(columns_actual))
@@ -303,7 +310,7 @@ class TableService:
         # Loads Specified Table from Storage
 
         self.current_grid.DeleteRows(0, self.current_grid.GetNumberRows())
-        self.current_grid.DeleteCols(0, self.current_grid.GetNumberCols())
+        delete_cols(self.current_grid)
 
         # Load Original
         if target == constants.ORIGINAL:
@@ -619,7 +626,7 @@ class TableService:
     def reset_table(self, evt=None):
         # Deletes All Data Relating to the Loaded Table and Resets it to it's Default State
         self.frame.main_grid.DeleteRows(0, self.frame.main_grid.GetNumberRows())
-        self.frame.main_grid.DeleteCols(0, self.frame.main_grid.GetNumberCols())
+        delete_cols(self.frame.main_grid)
         self.frame.main_grid.AppendRows(16)
         self.frame.main_grid.AppendCols(8)
         for i in range(self.frame.main_grid.GetNumberRows()):

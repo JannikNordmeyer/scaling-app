@@ -6,7 +6,7 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_wxagg import FigureCanvasWxAgg as FigureCanvas
 from matplotlib.backend_bases import MouseButton
-from scaling_app import constants
+from scaling_app import constants, tableservice
 
 
 class StatsPanel(wx.Panel):
@@ -104,6 +104,9 @@ class StatsPanel(wx.Panel):
         self.canvas.Hide()
         self.sort_text.Show()
         self.sort_grid.Show()
+        if self.sort_grid.GetNumberCols() > 0:
+            print(self.sort_grid.GetColAt(0))
+            tableservice.delete_cols(self.sort_grid)
         for i in range(len(self.unique_values)):
             self.sort_grid.AppendCols(1)
             self.sort_grid.SetColLabelValue(i, str(self.unique_values[i]))
