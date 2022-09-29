@@ -25,7 +25,7 @@ class Statservice:
 
             self.datastorage.stats_visible.add(attribute)
 
-            statistics_new = statistics.StatsPanel(self.frame.tabs, self.datastorage, self.menuservice, attribute)
+            statistics_new = statistics.StatsPanel(self.frame.tabs, self.datastorage, self.menuservice, self.tableservice, attribute)
             self.datastorage.stats.append(statistics_new)
 
             statistics_new.uncounted_values = uncounted_values

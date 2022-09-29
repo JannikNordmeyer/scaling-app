@@ -117,7 +117,6 @@ def build_ui():
 app = wx.App()
 frame = wx.Frame(None, title='FCA', size=(1200, 750))
 frame.Center()
-#frame.SetDoubleBuffered(True)
 storage = datastorage.DataStorage()
 tservice = tableservice.TableService(frame, storage)
 gservice = graphservice.GraphService(frame, storage)

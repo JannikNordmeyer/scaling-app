@@ -11,12 +11,13 @@ from scaling_app import constants, tableservice
 
 class StatsPanel(wx.Panel):
 
-    def __init__(self, panel, datastorage, menuservice, attribute):
+    def __init__(self, panel, datastorage, menuservice, tableservice, attribute):
         wx.Panel.__init__(self, panel, -1)
 
         self.parent = panel
         self.storage = datastorage
         self.mservice = menuservice
+        self.tservice = tableservice
 
         self.attribute = attribute
 
@@ -39,9 +40,11 @@ class StatsPanel(wx.Panel):
         self.infotext.SetFont(font)
         self.infotext.SetLabel("")
 
+        # Text Control for Bin Amount
         self.binselector = wx.TextCtrl(self, size=wx.Size(1, 25))
         self.binselector.Hide()
 
+        # Pseudogrid for Set Ordering
         self.sort_text = wx.StaticText(self)
         self.sort_text.SetLabel("Move Below Elements Into a Total Order:")
         self.sort_text.Hide()
@@ -50,6 +53,7 @@ class StatsPanel(wx.Panel):
         self.sort_grid.EnableDragColMove()
         self.sort_grid.HideRowLabels()
         self.sort_grid.Hide()
+        self.sort_grid.Bind(grid.EVT_GRID_COL_MOVE, self.order_changed)
 
         self.hsizer = wx.BoxSizer(wx.HORIZONTAL)
         self.hsizer.Add(self.combobox, 1, wx.TOP | wx.LEFT)
@@ -68,6 +72,19 @@ class StatsPanel(wx.Panel):
         self.figure.canvas.mpl_connect('button_press_event', self.onclick)
 
         self.binselector.Bind(wx.EVT_TEXT, self.bin_change)
+
+    def order_changed(self, evt):
+        wx.CallAfter(self.update_order)
+
+    def update_order(self):
+
+        new_order = list()
+        for i in range(self.sort_grid.GetNumberCols()):
+            try:
+                new_order.append(float(self.sort_grid.GetColLabelValue(self.sort_grid.GetColAt(i))))
+            except:
+                new_order.append(self.sort_grid.GetColLabelValue(self.sort_grid.GetColAt(i)))
+        self.unique_values = new_order
 
     def bin_change(self, evt=None):
         if self.binselector.GetLineText(0) != "":
@@ -105,7 +122,6 @@ class StatsPanel(wx.Panel):
         self.sort_text.Show()
         self.sort_grid.Show()
         if self.sort_grid.GetNumberCols() > 0:
-            print(self.sort_grid.GetColAt(0))
             tableservice.delete_cols(self.sort_grid)
         for i in range(len(self.unique_values)):
             self.sort_grid.AppendCols(1)
@@ -115,6 +131,8 @@ class StatsPanel(wx.Panel):
 
         plt.figure(self.figure.number)
         plt.clf()
+        print(values)
+        print(counts)
 
         height = list()
         for value in values:
@@ -122,8 +140,10 @@ class StatsPanel(wx.Panel):
         self.unique_values = values
         self.value_counts = counts
 
+        print(height)
+
         sns.set(style="darkgrid")
-        sns.barplot(x=values, y=height)
+        sns.barplot(x=values, y=height, order=self.unique_values)
 
         self.set_tendencies()
         self.binselector.Hide()
