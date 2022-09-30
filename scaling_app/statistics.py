@@ -1,4 +1,6 @@
 import collections
+import math
+
 import statistics
 import wx
 import wx.grid as grid
@@ -131,16 +133,12 @@ class StatsPanel(wx.Panel):
 
         plt.figure(self.figure.number)
         plt.clf()
-        print(values)
-        print(counts)
 
         height = list()
         for value in values:
             height.append(counts[value])
         self.unique_values = values
         self.value_counts = counts
-
-        print(height)
 
         sns.set(style="darkgrid")
         sns.barplot(x=values, y=height, order=self.unique_values)
@@ -222,7 +220,8 @@ class StatsPanel(wx.Panel):
         for i in self.unique_values:
             for count in range(self.value_counts[i]):
                 values.append(float(i))
-        return statistics.median(values)
+
+        return values[math.ceil(len(values)/2)]
 
     def mean(self):
 
