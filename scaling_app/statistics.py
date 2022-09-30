@@ -86,10 +86,11 @@ class StatsPanel(wx.Panel):
         for i in range(self.sort_grid.GetNumberCols()):
             try:
                 new_order.append(float(self.sort_grid.GetColLabelValue(self.sort_grid.GetColAt(i))))
-                order_dict[self.sort_grid.GetColLabelValue(self.sort_grid.GetColAt(i))] = i
             except:
                 new_order.append(self.sort_grid.GetColLabelValue(self.sort_grid.GetColAt(i)))
-                order_dict[self.sort_grid.GetColLabelValue(self.sort_grid.GetColAt(i))] = i
+
+            order_dict[self.sort_grid.GetColLabelValue(self.sort_grid.GetColAt(i))] = i
+
         self.unique_values = new_order
         self.order_dict = order_dict
 
@@ -103,7 +104,6 @@ class StatsPanel(wx.Panel):
             self.mservice.stats_menu()
 
     def select(self, evt):
-
         # Handle Selection via Combobox
         self.selection = evt.GetSelection()
         self.load_stats(evt.GetSelection())
@@ -170,6 +170,7 @@ class StatsPanel(wx.Panel):
         sns.set(style="darkgrid")
         sns.histplot(data=uncounted_values, bins=bins)
 
+        self.set_tendencies()
         label = self.infotext.GetLabel()
         if not label.endswith("       Bins:  "):
             self.infotext.SetLabel(label + "       Bins:  ")
@@ -222,6 +223,8 @@ class StatsPanel(wx.Panel):
         return collections.Counter.most_common(self.value_counts)[0][0]
 
     def median(self):
+
+        print(self.unique_values)
 
         values = list()
         for i in self.unique_values:

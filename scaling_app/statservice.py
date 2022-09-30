@@ -1,6 +1,6 @@
 from collections import Counter
 
-from scaling_app import statistics
+from scaling_app import statistics, tableservice
 
 
 class Statservice:
@@ -59,13 +59,23 @@ class Statservice:
     def update_stats(self):
         # Recompiles and Display Stats for each Stats Header
 
-        for stats in self.datastorage.stats:
+        for stats_tab in self.datastorage.stats:
 
-            attribute = stats.attribute
+            attribute = stats_tab.attribute
             col = self.datastorage.table.col_labels.index(attribute)
 
-            stats.unique_values, stats.value_counts, stats.uncounted_values = self.compile_stats(col)
-            stats.load_stats(stats.selection)
+            stats_tab.unique_values, stats_tab.value_counts, stats_tab.uncounted_values = self.compile_stats(col)
+
+            # Reload Order Grid and Order Dictionary
+            if stats_tab.sort_grid.GetNumberCols() > 0:
+                tableservice.delete_cols(stats_tab.sort_grid)
+            for i in range(len(stats_tab.unique_values)):
+                stats_tab.sort_grid.AppendCols(1)
+                stats_tab.sort_grid.SetColLabelValue(i, str(stats_tab.unique_values[i]))
+
+            stats_tab.update_order()
+
+            stats_tab.load_stats(stats_tab.selection)
 
     def clear_stats(self):
         self.datastorage.stats_visible.clear()
