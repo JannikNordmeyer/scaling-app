@@ -26,6 +26,7 @@ class StatsPanel(wx.Panel):
         self.unique_values = None
         self.value_counts = None
         self.uncounted_values = None
+        self.order_dict = None
         self.selection = 0
 
         self.figure = plt.figure()
@@ -81,12 +82,16 @@ class StatsPanel(wx.Panel):
     def update_order(self):
 
         new_order = list()
+        order_dict = dict()
         for i in range(self.sort_grid.GetNumberCols()):
             try:
                 new_order.append(float(self.sort_grid.GetColLabelValue(self.sort_grid.GetColAt(i))))
+                order_dict[self.sort_grid.GetColLabelValue(self.sort_grid.GetColAt(i))] = i
             except:
                 new_order.append(self.sort_grid.GetColLabelValue(self.sort_grid.GetColAt(i)))
+                order_dict[self.sort_grid.GetColLabelValue(self.sort_grid.GetColAt(i))] = i
         self.unique_values = new_order
+        self.order_dict = order_dict
 
     def bin_change(self, evt=None):
         if self.binselector.GetLineText(0) != "":
@@ -155,9 +160,11 @@ class StatsPanel(wx.Panel):
         plt.figure(self.figure.number)
         plt.clf()
 
-        try:
-            uncounted_values.sort(key=float)
-        except:
+        if self.order_dict is not None:
+            uncounted_values.sort(key=lambda val: self.order_dict[str(val)])
+            for i in range(len(uncounted_values)):
+                uncounted_values[i] = str(uncounted_values[i])
+        else:
             uncounted_values.sort()
 
         sns.set(style="darkgrid")
