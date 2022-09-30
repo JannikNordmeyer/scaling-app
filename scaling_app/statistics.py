@@ -23,6 +23,7 @@ class StatsPanel(wx.Panel):
 
         self.attribute = attribute
 
+        self.is_numeric = False
         self.unique_values = None
         self.value_counts = None
         self.uncounted_values = None
@@ -72,7 +73,9 @@ class StatsPanel(wx.Panel):
         self.Fit()
 
         self.combobox.Bind(wx.EVT_COMBOBOX, self.select)
-        self.figure.canvas.mpl_connect('button_press_event', self.onclick)
+        self.Bind(wx.EVT_RIGHT_UP, self.onclick)
+        self.sort_grid.Bind(grid.EVT_GRID_LABEL_RIGHT_CLICK, self.onclick)
+        self.sort_grid.Bind(grid.EVT_GRID_CELL_RIGHT_CLICK, self.onclick)
 
         self.binselector.Bind(wx.EVT_TEXT, self.bin_change)
 
@@ -83,10 +86,11 @@ class StatsPanel(wx.Panel):
 
         new_order = list()
         order_dict = dict()
+        numeric = self.isnumeric()
         for i in range(self.sort_grid.GetNumberCols()):
-            try:
+            if numeric:
                 new_order.append(float(self.sort_grid.GetColLabelValue(self.sort_grid.GetColAt(i))))
-            except:
+            else:
                 new_order.append(self.sort_grid.GetColLabelValue(self.sort_grid.GetColAt(i)))
 
             order_dict[self.sort_grid.GetColLabelValue(self.sort_grid.GetColAt(i))] = i
@@ -95,13 +99,58 @@ class StatsPanel(wx.Panel):
         self.order_dict = order_dict
 
     def bin_change(self, evt=None):
-        if self.binselector.GetLineText(0) != "":
+
+        entry = self.binselector.GetLineText(0)
+        if entry != "" and entry.isnumeric() and int(entry) > 0:
             bin_number = min(int(self.binselector.GetLineText(0)), len(self.unique_values))
             self.load_histplot(self.uncounted_values, bin_number)
 
-    def onclick(self, event):
-        if event.button == MouseButton.RIGHT:
-            self.mservice.stats_menu()
+    def onclick(self, evt=None):
+        if self.selection == 3:
+            if self.isnumeric():
+                menu = wx.Menu()
+
+                reset = menu.Append(wx.ID_ANY, "Reset to Numeric Order")
+                self.Bind(wx.EVT_MENU, self.reset_to_numeric, reset)
+
+                self.PopupMenu(menu)
+                menu.Destroy()
+
+    def reset_to_numeric(self, evt=None):
+        for i in range(len(self.unique_values)):
+            self.unique_values[i] = float(self.unique_values[i])
+        self.unique_values.sort(key=float)
+        for j in range(len(self.uncounted_values)):
+            self.uncounted_values[j] = float(self.uncounted_values[j])
+        self.uncounted_values.sort(key=float)
+        self.order_dict = None
+        self.reload_order_grid()
+
+    def isnumeric(self):
+        numeric = True
+        for value in self.unique_values:
+            try:
+                float(value)
+            except:
+                numeric = False
+                break
+        return numeric
+
+    def load_order(self):
+        self.binselector.Hide()
+        self.infotext.Hide()
+        self.sort_grid.Hide()
+        self.canvas.Hide()
+        self.sort_text.Show()
+        self.sort_grid.Show()
+        self.reload_order_grid()
+
+    def reload_order_grid(self):
+        if self.sort_grid.GetNumberCols() > 0:
+            tableservice.delete_cols(self.sort_grid)
+        for i in range(len(self.unique_values)):
+            self.sort_grid.AppendCols(1)
+            self.sort_grid.SetColLabelValue(i, str(self.unique_values[i]))
 
     def select(self, evt):
         # Handle Selection via Combobox
@@ -120,19 +169,6 @@ class StatsPanel(wx.Panel):
             self.load_order()
 
         self.Layout()
-
-    def load_order(self):
-        self.binselector.Hide()
-        self.infotext.Hide()
-        self.sort_grid.Hide()
-        self.canvas.Hide()
-        self.sort_text.Show()
-        self.sort_grid.Show()
-        if self.sort_grid.GetNumberCols() > 0:
-            tableservice.delete_cols(self.sort_grid)
-        for i in range(len(self.unique_values)):
-            self.sort_grid.AppendCols(1)
-            self.sort_grid.SetColLabelValue(i, str(self.unique_values[i]))
 
     def load_histogram(self, values, counts):
 
@@ -160,6 +196,7 @@ class StatsPanel(wx.Panel):
         plt.figure(self.figure.number)
         plt.clf()
 
+        print(self.order_dict)
         if self.order_dict is not None:
             uncounted_values.sort(key=lambda val: self.order_dict[str(val)])
             for i in range(len(uncounted_values)):
@@ -223,8 +260,6 @@ class StatsPanel(wx.Panel):
         return collections.Counter.most_common(self.value_counts)[0][0]
 
     def median(self):
-
-        print(self.unique_values)
 
         values = list()
         for i in self.unique_values:

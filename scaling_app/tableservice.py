@@ -686,7 +686,6 @@ class TableService:
         # Called Whenever a Cell's Content Changes
 
         self.datastorage.set_edited()
-        self.sservice.update_stats()
         if self.frame.csvtabs.GetSelection() == 0:
             value = self.frame.main_grid.GetCellValue(evt.GetRow(), evt.GetCol())
             attribute = self.frame.main_grid.GetColLabelValue(evt.GetCol())
@@ -717,6 +716,7 @@ class TableService:
                 errortext = 'The Value has been Added to the Scaling.'
                 dialog = wx.MessageDialog(None, errortext, 'Entered Value is not Part of the Attributes Scaling', wx.ICON_WARNING | wx.OK)
                 dialog.ShowModal()
+        self.sservice.update_stats()
 
     def current_attribute(self):
         # Returns if the Attribute Represented by the Currently Selected Scaling Table

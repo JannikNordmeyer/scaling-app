@@ -149,18 +149,6 @@ class MenuService:
         self.frame.PopupMenu(menu)
         menu.Destroy()
 
-    def stats_menu(self):
-
-        menu = wx.Menu()
-        #close = menu.Append(wx.ID_ANY, "Close Stats")
-        #self.frame.Bind(wx.EVT_MENU, self.statservice.close_tab, close)
-
-        recalc = menu.Append(wx.ID_ANY, "Recalculate")
-        self.frame.Bind(wx.EVT_MENU, self.statservice.recalculate, recalc)
-
-        self.frame.PopupMenu(menu)
-        menu.Destroy()
-
     def load_data(self, e):
 
         tkinter.Tk().withdraw()

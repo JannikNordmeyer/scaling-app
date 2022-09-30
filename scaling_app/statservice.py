@@ -66,14 +66,15 @@ class Statservice:
 
             stats_tab.unique_values, stats_tab.value_counts, stats_tab.uncounted_values = self.compile_stats(col)
 
-            # Reload Order Grid and Order Dictionary
-            if stats_tab.sort_grid.GetNumberCols() > 0:
-                tableservice.delete_cols(stats_tab.sort_grid)
-            for i in range(len(stats_tab.unique_values)):
-                stats_tab.sort_grid.AppendCols(1)
-                stats_tab.sort_grid.SetColLabelValue(i, str(stats_tab.unique_values[i]))
+            # Reload Order Grid and Order Dictionary if it Exists
+            if stats_tab.order_dict != None:
+                if stats_tab.sort_grid.GetNumberCols() > 0:
+                    tableservice.delete_cols(stats_tab.sort_grid)
+                for i in range(len(stats_tab.unique_values)):
+                    stats_tab.sort_grid.AppendCols(1)
+                    stats_tab.sort_grid.SetColLabelValue(i, str(stats_tab.unique_values[i]))
 
-            stats_tab.update_order()
+                stats_tab.update_order()
 
             stats_tab.load_stats(stats_tab.selection)
 
