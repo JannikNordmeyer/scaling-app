@@ -1,13 +1,11 @@
 import collections
 import math
-
 import statistics
 import wx
 import wx.grid as grid
 import seaborn as sns
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_wxagg import FigureCanvasWxAgg as FigureCanvas
-from matplotlib.backend_bases import MouseButton
 from scaling_app import constants, tableservice
 
 

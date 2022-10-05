@@ -18,16 +18,16 @@ RESULT = "result"
 # Levels of Measurement
 
 LEVEL_NOM = "nominal"
-LEVEL_NOM_COLOR = "#C4CDE7"
+LEVEL_NOM_COLOR = "#A0A0A0"
 
 LEVEL_ORD = "ordinal"
-LEVEL_ORD_COLOR = "#A1BBE7"
+LEVEL_ORD_COLOR = "#FFEC6E"
 
 LEVEL_INT = "interval"
-LEVEL_INT_COLOR = "#6FADE7"
+LEVEL_INT_COLOR = "#8177FF"
 
 LEVEL_RAT = "ratio"
-LEVEL_RAT_COLOR = "#4B9AE7"
+LEVEL_RAT_COLOR = "#FF6969"
 
 
 def color_conv(level):

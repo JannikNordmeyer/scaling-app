@@ -375,7 +375,7 @@ class TableService:
             evt.Skip()
 
     def get_col_entries(self, col):
-        # Returns all Unique Values from Specified Attribute in Main Grid
+        # Returns all Unique Values from Specified Attribute in Main Grid and Sorts Them
         entries = set()
         for i in range(self.frame.main_grid.GetNumberRows()):
             value = self.frame.main_grid.GetCellValue(i, col)
