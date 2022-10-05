@@ -1,9 +1,9 @@
 import collections
 import math
 import statistics
+import seaborn as sns
 import wx
 import wx.grid as grid
-import seaborn as sns
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_wxagg import FigureCanvasWxAgg as FigureCanvas
 from scaling_app import constants, tableservice
