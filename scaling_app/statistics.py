@@ -1,5 +1,7 @@
 import collections
 import math
+import random
+
 import statistics
 import seaborn as sns
 import wx
@@ -32,7 +34,7 @@ class StatsPanel(wx.Panel):
 
         self.canvas = FigureCanvas(self, -1, self.figure)
 
-        options = ['Histogram', 'Expanded Histogram', 'Pie Chart', 'Order']
+        options = ['Histogram', 'Expanded Histogram', 'Pie Chart', 'Custom Order']
         self.combobox = wx.ComboBox(self, choices=options, style=wx.CB_READONLY)
         self.combobox.SetSelection(0)
 
@@ -57,24 +59,35 @@ class StatsPanel(wx.Panel):
         self.sort_grid.Hide()
         self.sort_grid.Bind(grid.EVT_GRID_COL_MOVE, self.order_changed)
 
-        self.hsizer = wx.BoxSizer(wx.HORIZONTAL)
-        self.hsizer.Add(self.combobox, 1, wx.TOP | wx.LEFT)
-        self.hsizer.Add(self.infotext, 1, wx.TOP | wx.LEFT)
-        self.hsizer.Add(self.binselector, 1, wx.TOP | wx.RIGHT)
+        self.hsizer_top = wx.BoxSizer(wx.HORIZONTAL)
+        self.hsizer_top.Add(self.combobox, 1, wx.TOP | wx.LEFT)
+        self.hsizer_top.Add(self.infotext, 1, wx.TOP | wx.LEFT)
+        self.hsizer_top.Add(self.binselector, 1, wx.TOP | wx.RIGHT)
+
+        # Sorting Option Buttons
+        self.button_numeric = wx.Button(self)
+        self.button_numeric.SetLabel("Numeric")
+        self.button_numeric.Bind(wx.EVT_BUTTON, self.order_numeric)
+        self.button_alphabetical = wx.Button(self)
+        self.button_alphabetical.SetLabel("Alphabetical")
+        self.button_alphabetical.Bind(wx.EVT_BUTTON, self.order_alphabetical)
+        self.button_random = wx.Button(self)
+        self.button_random.SetLabel("Random")
+        self.hsizer_bot = wx.BoxSizer(wx.HORIZONTAL)
+        self.hsizer_bot.Add(self.button_numeric, 1, wx.TOP | wx.LEFT)
+        self.hsizer_bot.Add(self.button_alphabetical, 1, wx.TOP | wx.LEFT)
+        self.hsizer_bot.Add(self.button_random, 1, wx.TOP | wx.LEFT)
 
         self.sizer = wx.BoxSizer(wx.VERTICAL)
-        self.sizer.Add(self.hsizer, 1, wx.TOP | wx.LEFT)
+        self.sizer.Add(self.hsizer_top, 1, wx.TOP | wx.LEFT)
         self.sizer.Add(self.canvas, 15, wx.TOP | wx.LEFT | wx.EXPAND)
         self.sizer.Add(self.sort_text, wx.TOP | wx.LEFT)
         self.sizer.Add(self.sort_grid, wx.TOP | wx.LEFT | wx.EXPAND)
+        self.sizer.Add(self.hsizer_bot, 1, wx.TOP | wx.LEFT | wx.EXPAND)
         self.SetSizer(self.sizer)
         self.Fit()
 
         self.combobox.Bind(wx.EVT_COMBOBOX, self.select)
-        self.Bind(wx.EVT_RIGHT_UP, self.onclick)
-        self.sort_grid.Bind(grid.EVT_GRID_LABEL_RIGHT_CLICK, self.onclick)
-        self.sort_grid.Bind(grid.EVT_GRID_CELL_RIGHT_CLICK, self.onclick)
-
         self.binselector.Bind(wx.EVT_TEXT, self.bin_change)
 
     def order_changed(self, evt):
@@ -103,26 +116,37 @@ class StatsPanel(wx.Panel):
             bin_number = min(int(self.binselector.GetLineText(0)), len(self.unique_values))
             self.load_histplot(self.uncounted_values, bin_number)
 
-    def onclick(self, evt=None):
-        if self.selection == 3:
-            if self.isnumeric():
-                menu = wx.Menu()
+    def order_numeric(self, evt=None):
+        if self.isnumeric():
+            for i in range(len(self.unique_values)):
+                self.unique_values[i] = float(self.unique_values[i])
+            self.unique_values.sort(key=float)
+            for j in range(len(self.uncounted_values)):
+                self.uncounted_values[j] = float(self.uncounted_values[j])
+            new_counts = dict()
+            for key in self.value_counts:
+                new_counts[float(key)] = self.value_counts[key]
+            self.value_counts = new_counts
+            self.uncounted_values.sort(key=float)
+            self.order_dict = None
+            self.load_stats(self.selection)
 
-                reset = menu.Append(wx.ID_ANY, "Reset to Numeric Order")
-                self.Bind(wx.EVT_MENU, self.reset_to_numeric, reset)
-
-                self.PopupMenu(menu)
-                menu.Destroy()
-
-    def reset_to_numeric(self, evt=None):
+    def order_alphabetical(self, evt=None):
         for i in range(len(self.unique_values)):
-            self.unique_values[i] = float(self.unique_values[i])
-        self.unique_values.sort(key=float)
+            self.unique_values[i] = str(self.unique_values[i])
+        self.unique_values.sort()
         for j in range(len(self.uncounted_values)):
-            self.uncounted_values[j] = float(self.uncounted_values[j])
-        self.uncounted_values.sort(key=float)
+            self.uncounted_values[j] = str(self.uncounted_values[j])
+        new_counts = dict()
+        for key in self.value_counts:
+            new_counts[str(key)] = self.value_counts[key]
+        self.value_counts = new_counts
+        self.uncounted_values.sort()
         self.order_dict = None
-        self.reload_order_grid()
+        self.load_stats(self.selection)
+
+    def order_random(self, evt=None):
+        pass
 
     def isnumeric(self):
         numeric = True
@@ -194,7 +218,6 @@ class StatsPanel(wx.Panel):
         plt.figure(self.figure.number)
         plt.clf()
 
-        print(self.order_dict)
         if self.order_dict is not None:
             uncounted_values.sort(key=lambda val: self.order_dict[str(val)])
             for i in range(len(uncounted_values)):
@@ -264,6 +287,9 @@ class StatsPanel(wx.Panel):
             for count in range(self.value_counts[i]):
                 values.append(float(i))
 
+        print(self.unique_values)
+        print(self.value_counts)
+        print(values)
         return values[math.ceil(len(values)/2)]
 
     def mean(self):
