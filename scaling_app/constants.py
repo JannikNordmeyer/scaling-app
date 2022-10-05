@@ -27,7 +27,7 @@ LEVEL_INT = "interval"
 LEVEL_INT_COLOR = "#8177FF"
 
 LEVEL_RAT = "ratio"
-LEVEL_RAT_COLOR = "#FF6969"
+LEVEL_RAT_COLOR = "#FF5656"
 
 
 def color_conv(level):

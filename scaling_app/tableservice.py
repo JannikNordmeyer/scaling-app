@@ -457,7 +457,7 @@ class TableService:
                 attribute = self.frame.main_grid.GetColLabelValue(labelevent.GetCol())
                 self.get_delete_selected_scaling(attribute)()
 
-            self.current_grid.DeleteCols(pos=labelevent.GetCol(), updateLabels=False)
+            self.current_grid.DeleteCols(pos=self.current_grid.GetColPos(labelevent.GetCol()), updateLabels=False)
             self.datastorage.set_edited()
             self.table_edited()
 
