@@ -73,6 +73,7 @@ class StatsPanel(wx.Panel):
         self.button_alphabetical.Bind(wx.EVT_BUTTON, self.order_alphabetical)
         self.button_random = wx.Button(self)
         self.button_random.SetLabel("Random")
+        self.button_random.Bind(wx.EVT_BUTTON, self.order_random)
         self.hsizer_bot = wx.BoxSizer(wx.HORIZONTAL)
         self.hsizer_bot.Add(self.button_numeric, 1, wx.TOP | wx.LEFT)
         self.hsizer_bot.Add(self.button_alphabetical, 1, wx.TOP | wx.LEFT)
@@ -144,7 +145,9 @@ class StatsPanel(wx.Panel):
         self.load_stats(self.selection)
 
     def order_random(self, evt=None):
-        pass
+        random.shuffle(self.unique_values)
+        self.reload_order_grid()
+        self.update_order()
 
     def isnumeric(self):
         numeric = True
@@ -216,7 +219,6 @@ class StatsPanel(wx.Panel):
         plt.figure(self.figure.number)
         plt.clf()
 
-        print(uncounted_values)
         if self.order_dict is not None:
             uncounted_values.sort(key=lambda val: self.order_dict[str(val)])
             for i in range(len(uncounted_values)):
