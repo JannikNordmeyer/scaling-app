@@ -1,7 +1,6 @@
 import collections
 import math
 import random
-
 import statistics
 import seaborn as sns
 import wx
@@ -13,13 +12,14 @@ from scaling_app import constants, tableservice
 
 class StatsPanel(wx.Panel):
 
-    def __init__(self, panel, datastorage, menuservice, tableservice, attribute):
+    def __init__(self, panel, datastorage, menuservice, tableservice, statservice, attribute):
         wx.Panel.__init__(self, panel, -1)
 
         self.parent = panel
         self.storage = datastorage
         self.mservice = menuservice
         self.tservice = tableservice
+        self.sservice = statservice
 
         self.attribute = attribute
 
@@ -97,12 +97,8 @@ class StatsPanel(wx.Panel):
 
         new_order = list()
         order_dict = dict()
-        numeric = self.isnumeric()
         for i in range(self.sort_grid.GetNumberCols()):
-            if numeric:
-                new_order.append(float(self.sort_grid.GetColLabelValue(self.sort_grid.GetColAt(i))))
-            else:
-                new_order.append(self.sort_grid.GetColLabelValue(self.sort_grid.GetColAt(i)))
+            new_order.append(self.sort_grid.GetColLabelValue(self.sort_grid.GetColAt(i)))
 
             order_dict[self.sort_grid.GetColLabelValue(self.sort_grid.GetColAt(i))] = i
 
@@ -118,30 +114,32 @@ class StatsPanel(wx.Panel):
 
     def order_numeric(self, evt=None):
         if self.isnumeric():
-            for i in range(len(self.unique_values)):
-                self.unique_values[i] = float(self.unique_values[i])
+            self.sservice.update_stats()
+            unique_values_new = [float(i) for i in self.unique_values]
+            self.unique_values = unique_values_new
             self.unique_values.sort(key=float)
-            for j in range(len(self.uncounted_values)):
-                self.uncounted_values[j] = float(self.uncounted_values[j])
-            new_counts = dict()
-            for key in self.value_counts:
-                new_counts[float(key)] = self.value_counts[key]
-            self.value_counts = new_counts
+            uncounted_values_new = [float(i) for i in self.uncounted_values]
+            self.uncounted_values = uncounted_values_new
             self.uncounted_values.sort(key=float)
+            value_counts_new = dict()
+            for key in self.value_counts:
+                value_counts_new[float(key)] = self.value_counts[key]
+            self.value_counts = value_counts_new
             self.order_dict = None
             self.load_stats(self.selection)
 
     def order_alphabetical(self, evt=None):
-        for i in range(len(self.unique_values)):
-            self.unique_values[i] = str(self.unique_values[i])
+        self.sservice.update_stats()
+        unique_values_new = [str(i) for i in self.unique_values]
+        self.unique_values = unique_values_new
         self.unique_values.sort()
-        for j in range(len(self.uncounted_values)):
-            self.uncounted_values[j] = str(self.uncounted_values[j])
-        new_counts = dict()
-        for key in self.value_counts:
-            new_counts[str(key)] = self.value_counts[key]
-        self.value_counts = new_counts
+        uncounted_values_new = [str(i) for i in self.uncounted_values]
+        self.uncounted_values = uncounted_values_new
         self.uncounted_values.sort()
+        value_counts_new = dict()
+        for key in self.value_counts:
+            value_counts_new[str(key)] = self.value_counts[key]
+        self.value_counts = value_counts_new
         self.order_dict = None
         self.load_stats(self.selection)
 
@@ -218,6 +216,7 @@ class StatsPanel(wx.Panel):
         plt.figure(self.figure.number)
         plt.clf()
 
+        print(uncounted_values)
         if self.order_dict is not None:
             uncounted_values.sort(key=lambda val: self.order_dict[str(val)])
             for i in range(len(uncounted_values)):
@@ -286,11 +285,7 @@ class StatsPanel(wx.Panel):
         for i in self.unique_values:
             for count in range(self.value_counts[i]):
                 values.append(float(i))
-
-        print(self.unique_values)
-        print(self.value_counts)
-        print(values)
-        return values[math.ceil(len(values)/2)]
+        return values[math.ceil(len(values)/2) - 1]
 
     def mean(self):
 

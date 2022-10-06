@@ -25,11 +25,10 @@ class Statservice:
 
             self.datastorage.stats_visible.add(attribute)
 
-            statistics_new = statistics.StatsPanel(self.frame.tabs, self.datastorage, self.menuservice, self.tableservice, attribute)
+            statistics_new = statistics.StatsPanel(self.frame.tabs, self.datastorage, self.menuservice, self.tableservice, self, attribute)
             self.datastorage.stats.append(statistics_new)
 
             statistics_new.uncounted_values = uncounted_values
-
             statistics_new.load_histogram(unique_values, height)
             self.frame.tabs.AddPage(statistics_new, "Stats: " + attribute)
 
@@ -46,10 +45,7 @@ class Statservice:
         for i in range(self.frame.main_grid.GetNumberRows()):
             value = self.frame.main_grid.GetCellValue(i, col)
             if value != "":
-                if self.tableservice.check_numeric_col(col):
-                    values.append(float(self.frame.main_grid.GetCellValue(i, col)))
-                else:
-                    values.append(self.frame.main_grid.GetCellValue(i, col))
+                values.append(self.frame.main_grid.GetCellValue(i, col))
 
         unique_values = list(set(values))
         unique_values.sort()
