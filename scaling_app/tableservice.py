@@ -76,7 +76,7 @@ class TableService:
             # Assigns Level of Measurement to Attribute
             self.datastorage.table.attribute_levels[attribute] = level
             self.dye_col(col, constants.color_conv(level))
-            self.sservice.update_stats()
+            self.sservice.update_stats(attribute=attribute)
         return set_level
 
     def dye_col(self, col, color):
@@ -302,7 +302,6 @@ class TableService:
                 self.get_to_scaling(labelevent=None, type=None)()
         self.current_grid = self.datastorage.tabs[self.frame.csvtabs.GetSelection()]
         self.load_expanded()
-        self.sservice.update_stats()
 
     def load_from_storage(self, target):
         # Loads Specified Table from Storage

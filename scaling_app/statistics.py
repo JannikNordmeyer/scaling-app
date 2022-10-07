@@ -91,6 +91,23 @@ class StatsPanel(wx.Panel):
         self.combobox.Bind(wx.EVT_COMBOBOX, self.select)
         self.binselector.Bind(wx.EVT_TEXT, self.bin_change)
 
+        self.Bind(wx.EVT_RIGHT_UP, self.onClick)
+        self.sort_grid.Bind(wx.EVT_RIGHT_UP, self.onClick)
+        self.canvas.Bind(wx.EVT_RIGHT_UP, self.onClick)
+
+    def onClick(self, evt):
+        evt.Skip()
+        menu = wx.Menu()
+        close = menu.Append(wx.ID_ANY, "Close Tabs")
+        self.Bind(wx.EVT_MENU, self.close, close)
+        self.PopupMenu(menu)
+        menu.Destroy()
+
+
+    def close(self, evt=None):
+        self.sservice.close_tab(self.attribute)
+
+
     def order_changed(self, evt):
         wx.CallAfter(self.update_order)
 

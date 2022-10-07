@@ -16,14 +16,20 @@ class Statservice:
             # Add Stats Header for Selected Attribute
 
             self.tableservice.get_save_to_storage()()
+            attribute = (self.frame.main_grid.GetColLabelValue(labelevent.GetCol()))
+
+            self.datastorage.stats_visible.add(attribute)
+
+            # Restore Old Tab if Exists
+            for tab in self.datastorage.stats:
+                if tab.attribute == attribute:
+                    self.frame.tabs.AddPage(tab, "Stats: " + attribute)
+                    return
 
             unique_values, height, uncounted_values = self.compile_stats(labelevent.GetCol())
 
             if len(unique_values) == 0:
                 return
-            attribute = (self.frame.main_grid.GetColLabelValue(labelevent.GetCol()))
-
-            self.datastorage.stats_visible.add(attribute)
 
             statistics_new = statistics.StatsPanel(self.frame.tabs, self.datastorage, self.menuservice, self.tableservice, self, attribute)
             self.datastorage.stats.append(statistics_new)
@@ -34,10 +40,12 @@ class Statservice:
 
         return add_stats
 
-    def close_tab(self, evt=None):
+    def close_tab(self, attribute):
         selection = self.frame.tabs.GetSelection()
         self.frame.tabs.SetSelection(selection-1)
-        self.frame.tabs.DeletePage(selection)
+        self.frame.tabs.RemovePage(selection)
+        self.datastorage.stats_visible.remove(attribute)
+        print(self.datastorage.stats)
 
     def compile_stats(self, col):
         # Computes Unique Values and Respective Occurrence Counts from Selected Attribute
