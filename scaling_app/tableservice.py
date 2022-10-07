@@ -139,7 +139,8 @@ class TableService:
             self.get_save_to_storage(self.frame.csvtabs.GetSelection())()
 
             self.new_tab(self.frame.main_grid.GetColLabelValue(labelevent.GetCol()))
-            self.current_grid.SetCornerLabelValue(self.frame.main_grid.GetColLabelValue(labelevent.GetCol()))
+            attribute = self.frame.main_grid.GetColLabelValue(labelevent.GetCol())
+            self.current_grid.SetCornerLabelValue(attribute)
 
             # Generate Scaling Based on Selected Type
 
@@ -162,7 +163,7 @@ class TableService:
             if type == constants.DIAGONAL or type == constants.ORDINAL:
 
                 # Add Attribute Labels to Table
-                columns_actual = self.get_col_entries(labelevent.GetCol())
+                columns_actual = self.get_col_entries(labelevent.GetCol(), attribute)
                 delete_cols(self.current_grid)
                 self.current_grid.AppendCols(len(columns_actual))
                 self.current_grid.DeleteRows(0, self.frame.main_grid.GetNumberRows())
@@ -176,18 +177,15 @@ class TableService:
                     row_value = self.current_grid.GetRowLabelValue(i)
                     for j in range(self.current_grid.GetNumberCols()):
                         col_value = self.current_grid.GetColLabelValue(j)
-                        if type == constants.ORDINAL and float(row_value) > float(col_value):
+                        if type == constants.ORDINAL and columns_actual.index(row_value) >= columns_actual.index(col_value):
                             self.current_grid.SetCellValue(i, j, "✘")
-                        if type == constants.ORDINAL:
-                            if float(row_value) == float(col_value):
-                                self.current_grid.SetCellValue(i, j, "✘")
                         if type == constants.DIAGONAL:
                             if row_value == col_value:
                                 self.current_grid.SetCellValue(i, j, "✘")
 
             if type == constants.INTERORDINAL:
 
-                columns_actual = self.get_col_entries(labelevent.GetCol())
+                columns_actual = self.get_col_entries(labelevent.GetCol(), attribute)
                 delete_cols(self.current_grid)
                 self.current_grid.AppendCols(2*len(columns_actual))
                 self.current_grid.DeleteRows(0, self.frame.main_grid.GetNumberRows())
@@ -374,7 +372,7 @@ class TableService:
         else:
             evt.Skip()
 
-    def get_col_entries(self, col):
+    def get_col_entries(self, col, attribute):
         # Returns all Unique Values from Specified Attribute in Main Grid and Sorts Them
         entries = set()
         for i in range(self.frame.main_grid.GetNumberRows()):
@@ -382,7 +380,14 @@ class TableService:
             if value != "":
                 entries.add(value)
         entries = list(entries)
-        if self.check_numeric_col(col):
+
+        affected_tab = None
+        for stats_tab in self.datastorage.stats:
+            if stats_tab.attribute == attribute:
+                affected_tab = stats_tab
+        if affected_tab is not None and affected_tab.order_dict is not None:
+            entries.sort(key=lambda val: affected_tab.order_dict[val])
+        elif self.check_numeric_col(col):
             entries.sort(key=float)
         else:
             entries.sort()
