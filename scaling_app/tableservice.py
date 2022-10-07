@@ -302,6 +302,7 @@ class TableService:
                 self.get_to_scaling(labelevent=None, type=None)()
         self.current_grid = self.datastorage.tabs[self.frame.csvtabs.GetSelection()]
         self.load_expanded()
+        self.sservice.update_all()
 
     def load_from_storage(self, target):
         # Loads Specified Table from Storage

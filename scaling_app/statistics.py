@@ -205,6 +205,13 @@ class StatsPanel(wx.Panel):
 
     def load_stats(self, selection):
 
+        if not self.unique_values:
+            self.infotext.SetLabel("No Statistics Available")
+            plt.figure(self.figure.number)
+            plt.clf()
+            self.figure.canvas.draw()
+            return
+
         if selection == 0:
             self.load_histogram(self.unique_values, self.value_counts)
         if selection == 1:
@@ -287,6 +294,8 @@ class StatsPanel(wx.Panel):
 
     def set_tendencies(self):
 
+        if not self.unique_values:
+            return
         text = "  Mode : " + str(self.mode())
 
         if self.attribute in self.storage.table.attribute_levels:

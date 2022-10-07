@@ -60,6 +60,10 @@ class Statservice:
 
         return unique_values, Counter(list(values)), values
 
+    def update_all(self):
+        for stats in self.datastorage.stats:
+            self.update_stats(attribute=stats.attribute)
+
     def update_stats(self, evt=None, attribute=None):
         # Should be Called with Either an Event or the Columns Attribute to Ascertain which Column is Affected
 
