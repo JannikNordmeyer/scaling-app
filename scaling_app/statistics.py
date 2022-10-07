@@ -145,9 +145,14 @@ class StatsPanel(wx.Panel):
         self.load_stats(self.selection)
 
     def order_random(self, evt=None):
+        value_counts_new = dict()
+        for key in self.value_counts:
+            value_counts_new[str(key)] = self.value_counts[key]
+        self.value_counts = value_counts_new
         random.shuffle(self.unique_values)
         self.reload_order_grid()
         self.update_order()
+        self.load_stats(self.selection)
 
     def isnumeric(self):
         numeric = True
@@ -283,6 +288,8 @@ class StatsPanel(wx.Panel):
 
     def median(self):
 
+        print(self.unique_values)
+        print(self.value_counts)
         values = list()
         for i in self.unique_values:
             for count in range(self.value_counts[i]):
