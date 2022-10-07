@@ -52,27 +52,46 @@ class Statservice:
 
         return unique_values, Counter(list(values)), values
 
-    def update_stats(self):
-        # Recompiles and Display Stats for each Stats Header
+    def update_stats(self, evt=None, attribute=None):
+        # Should be Called with Either an Event or the Columns Attribute to Ascertain which Column is Affected
 
+        # Ascertain Affected Column
+        if attribute is None:
+            attribute = self.frame.main_grid.GetColLabelValue(evt.GetCol())
+
+        affected_tab = None
         for stats_tab in self.datastorage.stats:
+            if stats_tab.attribute == attribute:
+                affected_tab = stats_tab
 
-            attribute = stats_tab.attribute
+        # Recompile all Values if Attribute was Input
+        if evt is None:
             col = self.datastorage.table.col_labels.index(attribute)
+            affected_tab.unique_values, affected_tab.value_counts, affected_tab.uncounted_values = self.compile_stats(col)
+        else:
+            compiled_stats = self.compile_stats(evt.GetCol())
+            affected_tab.value_counts = compiled_stats[1]
+            affected_tab.uncounted_values = compiled_stats[2]
 
-            stats_tab.unique_values, stats_tab.value_counts, stats_tab.uncounted_values = self.compile_stats(col)
+            new_entry = self.frame.main_grid.GetCellValue(evt.GetRow(), evt.GetCol())
+            if len(affected_tab.unique_values) == 0:
+                affected_tab.unique_values.append(str(new_entry))
+            elif type(affected_tab.unique_values[0]) is str and new_entry not in affected_tab.unique_values:
+                affected_tab.unique_values.append(str(new_entry))
+            elif type(affected_tab.unique_values[0]) is float and float(new_entry) not in affected_tab.unique_values:
+                affected_tab.unique_values.append(float(new_entry))
 
-            # Reload Order Grid and Order Dictionary if it Exists
-            if stats_tab.order_dict is not None:
-                if stats_tab.sort_grid.GetNumberCols() > 0:
-                    tableservice.delete_cols(stats_tab.sort_grid)
-                for i in range(len(stats_tab.unique_values)):
-                    stats_tab.sort_grid.AppendCols(1)
-                    stats_tab.sort_grid.SetColLabelValue(i, str(stats_tab.unique_values[i]))
+        # Reload Order Grid and Order Dictionary if it Exists
+        if affected_tab.order_dict is not None:
+            if affected_tab.sort_grid.GetNumberCols() > 0:
+                tableservice.delete_cols(affected_tab.sort_grid)
+            for i in range(len(affected_tab.unique_values)):
+                affected_tab.sort_grid.AppendCols(1)
+                affected_tab.sort_grid.SetColLabelValue(i, str(affected_tab.unique_values[i]))
 
-                stats_tab.update_order()
+            affected_tab.update_order()
 
-            stats_tab.load_stats(stats_tab.selection)
+        affected_tab.load_stats(affected_tab.selection)
 
     def clear_stats(self):
         self.datastorage.stats_visible.clear()

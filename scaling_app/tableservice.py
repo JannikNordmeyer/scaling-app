@@ -716,7 +716,7 @@ class TableService:
                 errortext = 'The Value has been Added to the Scaling.'
                 dialog = wx.MessageDialog(None, errortext, 'Entered Value is not Part of the Attributes Scaling', wx.ICON_WARNING | wx.OK)
                 dialog.ShowModal()
-        self.sservice.update_stats()
+        self.sservice.update_stats(evt=evt)
 
     def current_attribute(self):
         # Returns if the Attribute Represented by the Currently Selected Scaling Table
