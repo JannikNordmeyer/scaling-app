@@ -8,7 +8,9 @@ import wx.grid as grid
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_wxagg import FigureCanvasWxAgg as FigureCanvas
 from scaling_app import constants, tableservice
+import gettext
 
+_ = gettext.gettext
 
 class StatsPanel(wx.Panel):
 
@@ -34,7 +36,7 @@ class StatsPanel(wx.Panel):
 
         self.canvas = FigureCanvas(self, -1, self.figure)
 
-        options = ['Histogram', 'Expanded Histogram', 'Pie Chart', 'Custom Order']
+        options = [_('Histogram'), _('Expanded Histogram'), _('Pie Chart'), _('Custom Order')]
         self.combobox = wx.ComboBox(self, choices=options, style=wx.CB_READONLY)
         self.combobox.SetSelection(0)
 
@@ -50,7 +52,7 @@ class StatsPanel(wx.Panel):
 
         # Pseudogrid for Set Ordering
         self.sort_text = wx.StaticText(self)
-        self.sort_text.SetLabel("Move Below Elements Into a Total Order:")
+        self.sort_text.SetLabel(_("Move Below Elements Into a Total Order:"))
         self.sort_text.Hide()
         self.sort_grid = grid.Grid(self)
         self.sort_grid.CreateGrid(0, 0)
@@ -66,13 +68,13 @@ class StatsPanel(wx.Panel):
 
         # Sorting Option Buttons
         self.button_numeric = wx.Button(self)
-        self.button_numeric.SetLabel("Numeric")
+        self.button_numeric.SetLabel(_("Numeric"))
         self.button_numeric.Bind(wx.EVT_BUTTON, self.order_numeric)
         self.button_alphabetical = wx.Button(self)
-        self.button_alphabetical.SetLabel("Alphabetical")
+        self.button_alphabetical.SetLabel(_("Alphabetical"))
         self.button_alphabetical.Bind(wx.EVT_BUTTON, self.order_alphabetical)
         self.button_random = wx.Button(self)
-        self.button_random.SetLabel("Random")
+        self.button_random.SetLabel(_("Random"))
         self.button_random.Bind(wx.EVT_BUTTON, self.order_random)
         self.hsizer_bot = wx.BoxSizer(wx.HORIZONTAL)
         self.hsizer_bot.Add(self.button_numeric, 1, wx.TOP | wx.LEFT)
@@ -98,15 +100,13 @@ class StatsPanel(wx.Panel):
     def onClick(self, evt):
         evt.Skip()
         menu = wx.Menu()
-        close = menu.Append(wx.ID_ANY, "Close Tabs")
+        close = menu.Append(wx.ID_ANY, _("Close Tabs"))
         self.Bind(wx.EVT_MENU, self.close, close)
         self.PopupMenu(menu)
         menu.Destroy()
 
-
     def close(self, evt=None):
         self.sservice.close_tab(self.attribute)
-
 
     def order_changed(self, evt):
         wx.CallAfter(self.update_order)
@@ -206,7 +206,7 @@ class StatsPanel(wx.Panel):
     def load_stats(self, selection):
 
         if not self.unique_values:
-            self.infotext.SetLabel("No Statistics Available")
+            self.infotext.SetLabel(_("No Statistics Available"))
             plt.figure(self.figure.number)
             plt.clf()
             self.figure.canvas.draw()

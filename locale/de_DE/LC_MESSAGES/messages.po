@@ -1,0 +1,90 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2022-10-12 12:23+0200\n"
+"PO-Revision-Date: 2022-10-12 10:36+0000\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: German (Germany)\n"
+"Language: de-DE\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Loco-Source-Locale: de_DE\n"
+"Generated-By: Babel 2.10.3\n"
+"\n"
+"X-Loco-Parser: loco_parse_po\n"
+"X-Generator: Loco https://localise.biz/"
+
+#: main.py:18
+msgid "Load Data"
+msgstr "Daten laden"
+
+#: main.py:19
+msgid "Load Lattice"
+msgstr "Diagramm laden"
+
+#: main.py:20
+msgid "Save Data"
+msgstr "Speichern"
+
+#: main.py:22
+msgid "Empty Frame"
+msgstr "Frame leeren"
+
+#: main.py:23
+msgid "Data"
+msgstr "Daten"
+
+#: main.py:30
+msgid "About"
+msgstr "Beschreibung"
+
+#: main.py:31
+msgid "Manual"
+msgstr "Anleitung"
+
+#: main.py:32
+msgid "Help"
+msgstr "Hilfe"
+
+#: main.py:37
+msgid "Compute Concepts"
+msgstr "Konzepte Berechnen"
+
+#: main.py:38
+msgid "Compute Implications"
+msgstr "Implikationen Berechnen"
+
+#: main.py:39
+msgid "Compute Rules"
+msgstr "Regeln Berechnen"
+
+#: main.py:40
+msgid "Compute"
+msgstr "Berechnen"
+
+#: main.py:46 main.py:47
+msgid "Quit Scaling"
+msgstr "Verlassen"
+
+#: main.py:82
+msgid "Dataset"
+msgstr "Datensatz"
+
+#: main.py:90
+msgid "Scaled Context"
+msgstr "Skalierter Kontext"
+
+#: main.py:102
+msgid "Concepts"
+msgstr "Konzepte"
+
+#: main.py:103
+msgid "Implications"
+msgstr "Implikationen"
+
+#: main.py:104
+msgid "Rules"
+msgstr "Regeln"

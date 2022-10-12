@@ -1,47 +1,59 @@
 import wx
 import wx.grid as grid
-from scaling_app import menuservice, tableservice, graphservice, datastorage, graphpanel, statistics, statservice
+from scaling_app import menuservice, tableservice, graphservice, datastorage, graphpanel, statservice
 from scaling_app import concepts
 from scaling_app import implications
 from scaling_app import rules
+import gettext
+import locale
 
 
 def build_ui():
+
+    """if locale.getlocale()[0] != 'en_US':
+
+        lang = gettext.translation('messages', localedir='locale', languages=[locale.getlocale()[0]])
+        lang.install()
+
+        _ = lang.gettext
+    else:
+        _ = gettext.gettext"""
+    _ = gettext.gettext
 
     # Top Menus
     menu_bar = wx.MenuBar()
 
     file_menu = wx.Menu()
-    file_load = file_menu.Append(wx.ID_ANY, 'Load Data', 'Load Data')
-    graph_load = file_menu.Append(wx.ID_ANY, 'Load Lattice', 'Load Lattice')
-    file_save = file_menu.Append(wx.ID_ANY, 'Save Data', 'Save Data')
+    file_load = file_menu.Append(wx.ID_ANY, _('Load Data'), _('Load Data'))
+    graph_load = file_menu.Append(wx.ID_ANY, _('Load Lattice'), _('Load Lattice'))
+    file_save = file_menu.Append(wx.ID_ANY, _('Save Data'), _('Save Data'))
     file_menu.AppendSeparator()
-    file_quit = file_menu.Append(wx.ID_ANY, 'Empty Frame', 'Empty Frame')
-    menu_bar.Append(file_menu, 'Data')
+    file_quit = file_menu.Append(wx.ID_ANY, _('Empty Frame'), _('Empty Frame'))
+    menu_bar.Append(file_menu, _('Data'))
     frame.Bind(wx.EVT_MENU, mservice.load_data, file_load)
     frame.Bind(wx.EVT_MENU, mservice.load_lattice, graph_load)
     frame.Bind(wx.EVT_MENU, mservice.save_data, file_save)
     frame.Bind(wx.EVT_MENU, mservice.empty_frame, file_quit)
 
     help_menu = wx.Menu()
-    help_about = help_menu.Append(wx.ID_ANY, 'About', 'About')
-    help_manual = help_menu.Append(wx.ID_ANY, 'Manual', 'Manual')
-    menu_bar.Append(help_menu, 'Help')
+    help_about = help_menu.Append(wx.ID_ANY, _('About'), _('About'))
+    help_manual = help_menu.Append(wx.ID_ANY, _('Manual'), _('Manual'))
+    menu_bar.Append(help_menu, _('Help'))
     frame.Bind(wx.EVT_MENU, mservice.about, help_about)
     frame.Bind(wx.EVT_MENU, mservice.manual, help_manual)
 
     comp_menu = wx.Menu()
-    comp_concepts = comp_menu.Append(wx.ID_ANY, 'Compute Concepts', 'Compute Concepts')
-    comp_implications = comp_menu.Append(wx.ID_ANY, 'Compute Implications', 'Compute Implications')
-    comp_rules = comp_menu.Append(wx.ID_ANY, 'Compute Rules', 'Compute Rules')
-    menu_bar.Append(comp_menu, 'Compute')
+    comp_concepts = comp_menu.Append(wx.ID_ANY, _('Compute Concepts'), _('Compute Concepts'))
+    comp_implications = comp_menu.Append(wx.ID_ANY, _('Compute Implications'), _('Compute Implications'))
+    comp_rules = comp_menu.Append(wx.ID_ANY, _('Compute Rules'), _('Compute Rules'))
+    menu_bar.Append(comp_menu, _('Compute'))
     frame.Bind(wx.EVT_MENU, mservice.comp_concepts, comp_concepts)
     frame.Bind(wx.EVT_MENU, mservice.comp_implications, comp_implications)
     frame.Bind(wx.EVT_MENU, mservice.comp_rules, comp_rules)
 
     quit_menu = wx.Menu()
-    quit_quit_scaling = quit_menu.Append(wx.ID_EXIT, 'Quit Scaling', 'Quit Scaling')
-    menu_bar.Append(quit_menu, 'Quit Scaling')
+    quit_quit_scaling = quit_menu.Append(wx.ID_EXIT, _('Quit Scaling'), _('Quit Scaling'))
+    menu_bar.Append(quit_menu, _('Quit Scaling'))
     frame.Bind(wx.EVT_MENU, mservice.quit_scaling, quit_quit_scaling)
 
     frame.SetMenuBar(menu_bar)
@@ -76,7 +88,7 @@ def build_ui():
     frame.sizer.Add(frame.main_grid, 1, wx.EXPAND | wx.ALL, 5)
 
     frame.main_grid.Bind(grid.EVT_GRID_CELL_LEFT_CLICK, tservice.check_toggle)
-    frame.csvtabs.AddPage(frame.main_grid, "Dataset")
+    frame.csvtabs.AddPage(frame.main_grid, _("Dataset"))
     storage.tabs.append(frame.main_grid)
     tservice.current_grid = frame.main_grid
 
@@ -84,7 +96,7 @@ def build_ui():
     frame.result_grid.CreateGrid(16, 8)
     frame.result_grid.EnableEditing(False)
 
-    frame.csvtabs.AddPage(frame.result_grid, "Scaled Context")
+    frame.csvtabs.AddPage(frame.result_grid, _("Scaled Context"))
     storage.tabs.append(frame.result_grid)
 
     frame.csvtabs.Bind(wx.EVT_NOTEBOOK_PAGE_CHANGED, tservice.get_save_to_storage())
@@ -96,9 +108,9 @@ def build_ui():
     tab2 = implications.Implications(frame.tabs)
     tab3 = rules.Rules(frame.tabs)
 
-    frame.tabs.AddPage(tab1, "Concepts")
-    frame.tabs.AddPage(tab2, "Implications")
-    frame.tabs.AddPage(tab3, "Rules")
+    frame.tabs.AddPage(tab1, _("Concepts"))
+    frame.tabs.AddPage(tab2, _("Implications"))
+    frame.tabs.AddPage(tab3, _("Rules"))
 
     frame.csvbox.Add(frame.csvtabs, wx.ID_ANY, wx.EXPAND)
     frame.panelTop.SetSizer(frame.csvbox)
