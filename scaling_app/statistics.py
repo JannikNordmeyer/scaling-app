@@ -337,6 +337,7 @@ class StatsPanel(wx.Panel):
 
     def set_tendencies(self):
 
+
         if not self.unique_values:
             return
         text = "  Mode : " + str(self.mode())
