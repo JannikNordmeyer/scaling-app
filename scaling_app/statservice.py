@@ -35,6 +35,7 @@ class Statservice:
             self.datastorage.stats.append(statistics_new)
 
             statistics_new.uncounted_values = uncounted_values
+            statistics_new.raw_data = uncounted_values
             statistics_new.load_histogram(unique_values, height)
             self.frame.tabs.AddPage(statistics_new, "Stats: " + attribute)
 
@@ -79,7 +80,11 @@ class Statservice:
         # Recompile all Values if Attribute was Input
         if evt is None:
             col = self.datastorage.table.col_labels.index(attribute)
-            affected_tab.unique_values, affected_tab.value_counts, affected_tab.uncounted_values = self.compile_stats(col)
+            compiled_stats = self.compile_stats(col)
+            affected_tab.unique_values = compiled_stats[0]
+            affected_tab.value_counts = compiled_stats[1]
+            affected_tab.uncounted_values = compiled_stats[2]
+            affected_tab.raw_data = compiled_stats[2]
         else:
             compiled_stats = self.compile_stats(evt.GetCol())
             affected_tab.value_counts = compiled_stats[1]
@@ -92,6 +97,7 @@ class Statservice:
                 affected_tab.unique_values.append(str(new_entry))
             elif type(affected_tab.unique_values[0]) is float and float(new_entry) not in affected_tab.unique_values:
                 affected_tab.unique_values.append(float(new_entry))
+            affected_tab.raw_data = compiled_stats[2]
 
         # Reload Order Grid and Order Dictionary if it Exists
         if affected_tab.order_dict is not None:

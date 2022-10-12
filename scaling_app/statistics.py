@@ -1,8 +1,6 @@
 import collections
 import math
 import random
-from functools import cmp_to_key
-
 import statistics
 import seaborn as sns
 import wx
@@ -10,9 +8,11 @@ import wx.grid as grid
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_wxagg import FigureCanvasWxAgg as FigureCanvas
 from scaling_app import constants, tableservice
+from collections import Counter
 import gettext
 
 _ = gettext.gettext
+
 
 class StatsPanel(wx.Panel):
 
@@ -27,7 +27,7 @@ class StatsPanel(wx.Panel):
 
         self.attribute = attribute
 
-        self.is_numeric = False
+        self.raw_data = None
         self.unique_values = None
         self.value_counts = None
         self.uncounted_values = None
@@ -114,6 +114,11 @@ class StatsPanel(wx.Panel):
         self.sort_grid.Bind(wx.EVT_RIGHT_UP, self.onClick)
         self.canvas.Bind(wx.EVT_RIGHT_UP, self.onClick)
 
+    def restore_raw(self):
+        self.uncounted_values = self.raw_data
+        self.unique_values = list(set(self.raw_data))
+        self.value_counts = Counter(list(self.raw_data))
+
     def onClick(self, evt):
         evt.Skip()
         menu = wx.Menu()
@@ -130,10 +135,15 @@ class StatsPanel(wx.Panel):
 
     def update_order(self):
 
+        currently_numeric = type(self.unique_values[0]) == float
+
         new_order = list()
         order_dict = dict()
         for i in range(self.sort_grid.GetNumberCols()):
-            new_order.append(self.sort_grid.GetColLabelValue(self.sort_grid.GetColAt(i)))
+            if currently_numeric:
+                new_order.append(float(self.sort_grid.GetColLabelValue(self.sort_grid.GetColAt(i))))
+            else:
+                new_order.append(self.sort_grid.GetColLabelValue(self.sort_grid.GetColAt(i)))
 
             order_dict[self.sort_grid.GetColLabelValue(self.sort_grid.GetColAt(i))] = i
 
@@ -149,7 +159,7 @@ class StatsPanel(wx.Panel):
 
     def order_numeric(self, evt=None):
         if self.isnumeric():
-            self.sservice.update_stats(attribute=self.attribute)
+            self.restore_raw()
             unique_values_new = [float(i) for i in self.unique_values]
             self.unique_values = unique_values_new
             self.unique_values.sort(key=float)
@@ -164,7 +174,7 @@ class StatsPanel(wx.Panel):
             self.load_stats(self.selection)
 
     def order_alphabetical(self, evt=None):
-        self.sservice.update_stats(attribute=self.attribute)
+        self.restore_raw()
         unique_values_new = [str(i) for i in self.unique_values]
         self.unique_values = unique_values_new
         self.unique_values.sort()
@@ -178,7 +188,7 @@ class StatsPanel(wx.Panel):
         self.load_stats(self.selection)
 
     def order_random(self, evt=None):
-        self.sservice.update_stats(attribute=self.attribute)
+        self.restore_raw()
         value_counts_new = dict()
         for key in self.value_counts:
             value_counts_new[str(key)] = self.value_counts[key]
@@ -190,7 +200,7 @@ class StatsPanel(wx.Panel):
 
     def get_order_other(self, comparator, evt=None):
         def order_other(evt=None):
-            self.sservice.update_stats(attribute=self.attribute)
+            self.restore_raw()
             unique_values_new = [str(i) for i in self.unique_values]
             self.unique_values = unique_values_new
             self.unique_values = constants.topological_sort(self.unique_values, comparator)
