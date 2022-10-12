@@ -61,11 +61,11 @@ def substring(a, b):
 
 
 def prefix(a, b):
-    return a.startswith(b)
+    return b.startswith(a)
 
 
 def postfix(a, b):
-    return a.endswith(b)
+    return b.endswith(a)
 
 
 def topological_sort(values, comparator):

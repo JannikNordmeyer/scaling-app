@@ -170,7 +170,6 @@ class StatsPanel(wx.Panel):
         self.unique_values.sort()
         uncounted_values_new = [str(i) for i in self.uncounted_values]
         self.uncounted_values = uncounted_values_new
-        self.uncounted_values.sort()
         value_counts_new = dict()
         for key in self.value_counts:
             value_counts_new[str(key)] = self.value_counts[key]
@@ -191,7 +190,19 @@ class StatsPanel(wx.Panel):
 
     def get_order_other(self, comparator, evt=None):
         def order_other(evt=None):
-            constants.topological_sort(self.unique_values, comparator)
+            self.sservice.update_stats(attribute=self.attribute)
+            unique_values_new = [str(i) for i in self.unique_values]
+            self.unique_values = unique_values_new
+            self.unique_values = constants.topological_sort(self.unique_values, comparator)
+            uncounted_values_new = [str(i) for i in self.uncounted_values]
+            self.uncounted_values = uncounted_values_new
+            value_counts_new = dict()
+            for key in self.value_counts:
+                value_counts_new[str(key)] = self.value_counts[key]
+            self.value_counts = value_counts_new
+            self.reload_order_grid()
+            self.update_order()
+            self.load_stats(self.selection)
         return order_other
 
     def isnumeric(self):
