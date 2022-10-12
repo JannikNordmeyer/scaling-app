@@ -74,9 +74,11 @@ class TableService:
     def get_set_level(self, col, attribute, level):
         def set_level(evt=None):
             # Assigns Level of Measurement to Attribute
+            if not self.check_numeric_col(col) and level == constants.LEVEL_ORD:
+                self.sservice.get_add_stats(col=col, attribute=attribute)()
+
             self.datastorage.table.attribute_levels[attribute] = level
             self.dye_col(col, constants.color_conv(level))
-            self.sservice.update_stats(attribute=attribute)
         return set_level
 
     def dye_col(self, col, color):

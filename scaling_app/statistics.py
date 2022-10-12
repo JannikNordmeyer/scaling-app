@@ -361,7 +361,7 @@ class StatsPanel(wx.Panel):
         values = list()
         for i in self.unique_values:
             for count in range(self.value_counts[i]):
-                values.append(float(i))
+                values.append(i)
         return values[math.ceil(len(values)/2) - 1]
 
     def mean(self):

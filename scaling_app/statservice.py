@@ -11,12 +11,14 @@ class Statservice:
         self.datastorage = datastorage
         self.menuservice = None
 
-    def get_add_stats(self, labelevent):
+    def get_add_stats(self, col, attribute):
         def add_stats(evt=None):
             # Add Stats Header for Selected Attribute
 
+            if attribute in self.datastorage.stats_visible:
+                return
+
             self.tableservice.get_save_to_storage()()
-            attribute = (self.frame.main_grid.GetColLabelValue(labelevent.GetCol()))
 
             self.datastorage.stats_visible.add(attribute)
 
@@ -24,9 +26,10 @@ class Statservice:
             for tab in self.datastorage.stats:
                 if tab.attribute == attribute:
                     self.frame.tabs.AddPage(tab, "Stats: " + attribute)
+                    self.frame.tabs.SetSelection(self.frame.tabs.GetPageCount() - 1)
                     return
 
-            unique_values, height, uncounted_values = self.compile_stats(labelevent.GetCol())
+            unique_values, height, uncounted_values = self.compile_stats(col)
 
             if len(unique_values) == 0:
                 return
@@ -38,6 +41,7 @@ class Statservice:
             statistics_new.raw_data = uncounted_values
             statistics_new.load_histogram(unique_values, height)
             self.frame.tabs.AddPage(statistics_new, "Stats: " + attribute)
+            self.frame.tabs.SetSelection(self.frame.tabs.GetPageCount()-1)
 
         return add_stats
 

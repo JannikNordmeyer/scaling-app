@@ -81,17 +81,17 @@ class MenuService:
             if self.frame.main_grid.GetColLabelValue(evt.GetCol()) not in self.datastorage.stats_visible:
                 menu.AppendSeparator()
                 stats = menu.Append(wx.ID_ANY, _("Display Statistics"))
-                self.frame.Bind(wx.EVT_MENU, self.statservice.get_add_stats(evt), stats)
+                self.frame.Bind(wx.EVT_MENU, self.statservice.get_add_stats(evt.GetCol(), self.frame.main_grid.GetColLabelValue(evt.GetCol())), stats)
 
             level = wx.Menu()
             level_nom = wx.MenuItem(menu, -1, _("Nominal"))
             level_nom.SetBackgroundColour(constants.LEVEL_NOM_COLOR)
             level.Append(level_nom)
             self.frame.Bind(wx.EVT_MENU, self.tableservice.get_set_level(evt.GetCol(), attribute, constants.LEVEL_NOM), level_nom)
+            level_ord = level.Append(wx.ID_ANY, _("Ordinal"))
+            level_ord.SetBackgroundColour(constants.LEVEL_ORD_COLOR)
+            self.frame.Bind(wx.EVT_MENU, self.tableservice.get_set_level(evt.GetCol(), attribute, constants.LEVEL_ORD), level_ord)
             if self.tableservice.check_numeric_col(evt.GetCol()):
-                level_ord = level.Append(wx.ID_ANY, _("Ordinal"))
-                level_ord.SetBackgroundColour(constants.LEVEL_ORD_COLOR)
-                self.frame.Bind(wx.EVT_MENU, self.tableservice.get_set_level(evt.GetCol(), attribute, constants.LEVEL_ORD), level_ord)
                 level_int = level.Append(wx.ID_ANY, _("Interval"))
                 level_int.SetBackgroundColour(constants.LEVEL_INT_COLOR)
                 self.frame.Bind(wx.EVT_MENU, self.tableservice.get_set_level(evt.GetCol(), attribute, constants.LEVEL_INT), level_int)
