@@ -1,6 +1,8 @@
 import collections
 import math
 import random
+from functools import cmp_to_key
+
 import statistics
 import seaborn as sns
 import wx
@@ -76,17 +78,32 @@ class StatsPanel(wx.Panel):
         self.button_random = wx.Button(self)
         self.button_random.SetLabel(_("Random"))
         self.button_random.Bind(wx.EVT_BUTTON, self.order_random)
-        self.hsizer_bot = wx.BoxSizer(wx.HORIZONTAL)
-        self.hsizer_bot.Add(self.button_numeric, 1, wx.TOP | wx.LEFT)
-        self.hsizer_bot.Add(self.button_alphabetical, 1, wx.TOP | wx.LEFT)
-        self.hsizer_bot.Add(self.button_random, 1, wx.TOP | wx.LEFT)
+        self.hsizer_bot1 = wx.BoxSizer(wx.HORIZONTAL)
+        self.hsizer_bot1.Add(self.button_numeric, 1, wx.TOP | wx.LEFT)
+        self.hsizer_bot1.Add(self.button_alphabetical, 1, wx.TOP | wx.LEFT)
+        self.hsizer_bot1.Add(self.button_random, 1, wx.TOP | wx.LEFT)
+
+        self.button_substring = wx.Button(self)
+        self.button_substring.SetLabel(_("Substring"))
+        self.button_substring.Bind(wx.EVT_BUTTON, self.get_order_other(constants.substring))
+        self.button_prefix = wx.Button(self)
+        self.button_prefix.SetLabel(_("Prefix"))
+        self.button_prefix.Bind(wx.EVT_BUTTON, self.get_order_other(constants.prefix))
+        self.button_postfix = wx.Button(self)
+        self.button_postfix.SetLabel(_("Postfix"))
+        self.button_postfix.Bind(wx.EVT_BUTTON, self.get_order_other(constants.postfix))
+        self.hsizer_bot2 = wx.BoxSizer(wx.HORIZONTAL)
+        self.hsizer_bot2.Add(self.button_substring, 1, wx.TOP | wx.LEFT)
+        self.hsizer_bot2.Add(self.button_prefix, 1, wx.TOP | wx.LEFT)
+        self.hsizer_bot2.Add(self.button_postfix, 1, wx.TOP | wx.LEFT)
 
         self.sizer = wx.BoxSizer(wx.VERTICAL)
         self.sizer.Add(self.hsizer_top, 1, wx.TOP | wx.LEFT)
         self.sizer.Add(self.canvas, 15, wx.TOP | wx.LEFT | wx.EXPAND)
         self.sizer.Add(self.sort_text, wx.TOP | wx.LEFT)
         self.sizer.Add(self.sort_grid, wx.TOP | wx.LEFT | wx.EXPAND)
-        self.sizer.Add(self.hsizer_bot, 1, wx.TOP | wx.LEFT | wx.EXPAND)
+        self.sizer.Add(self.hsizer_bot1, 1, wx.TOP | wx.LEFT | wx.EXPAND)
+        self.sizer.Add(self.hsizer_bot2, 1, wx.TOP | wx.LEFT | wx.EXPAND)
         self.SetSizer(self.sizer)
         self.Fit()
 
@@ -171,6 +188,11 @@ class StatsPanel(wx.Panel):
         self.reload_order_grid()
         self.update_order()
         self.load_stats(self.selection)
+
+    def get_order_other(self, comparator, evt=None):
+        def order_other(evt=None):
+            constants.topological_sort(self.unique_values, comparator)
+        return order_other
 
     def isnumeric(self):
         numeric = True

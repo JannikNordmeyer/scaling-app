@@ -10,7 +10,7 @@ import locale
 
 def build_ui():
 
-    """if locale.getlocale()[0] != 'en_US':
+    """if locale.getlocale()[0] == 'de_DE':
 
         lang = gettext.translation('messages', localedir='locale', languages=[locale.getlocale()[0]])
         lang.install()

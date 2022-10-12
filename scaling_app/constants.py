@@ -50,3 +50,41 @@ def allows_order(level):
 def allows_mean(level):
 
     return level == LEVEL_INT or level == LEVEL_RAT
+
+
+def substring(a, b):
+
+    if a in b:
+        return True
+
+    return False
+
+
+def prefix(a, b):
+    return a.startswith(b)
+
+
+def postfix(a, b):
+    return a.endswith(b)
+
+
+def topological_sort(values, comparator):
+
+    visited = dict.fromkeys(values, False)
+    order = list()
+
+    def visit(current_value):
+
+        visited[current_value] = True
+        for i in values:
+            if not visited[i] and comparator(current_value, i):
+                visit(i)
+        order.append(current_value)
+
+    for value in values:
+        if not visited[value]:
+            visit(value)
+
+    order.reverse()
+
+    return order
