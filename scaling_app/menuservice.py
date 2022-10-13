@@ -107,7 +107,6 @@ class MenuService:
     def label_menu(self, evt):
 
         evt.Skip()
-        print()
         if self.tableservice.current_attribute() not in self.datastorage.result_visible:
             if evt.GetCol() == -1:
                 self.show_row_menu(evt)

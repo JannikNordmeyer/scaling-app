@@ -132,8 +132,8 @@ class StatsPanel(wx.Panel):
             ordinal = transfer.Append(wx.ID_ANY, _("Ordinal Scaling"))
             self.Bind(wx.EVT_MENU, self.get_transfer_to_scaling(constants.ORDINAL), ordinal)
 
-            # interordinal = transfer.Append(wx.ID_ANY, _("Interordinal Scaling"))
-            # self.Bind(wx.EVT_MENU, self.get_transfer_to_scaling(constants.INTERORDINAL), interordinal)
+            interordinal = transfer.Append(wx.ID_ANY, _("Interordinal Scaling"))
+            self.Bind(wx.EVT_MENU, self.get_transfer_to_scaling(constants.INTERORDINAL), interordinal)
 
             menu.Append(wx.ID_ANY, _("Transfer to Scaling"), transfer)
         self.PopupMenu(menu)
