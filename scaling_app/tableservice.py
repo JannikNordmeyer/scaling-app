@@ -128,6 +128,14 @@ class TableService:
 
         return expand_column
 
+    def get_rescale(self, labelevent, type):
+        def rescale(evt=None):
+            attribute = self.current_grid.GetCornerLabelValue()
+            self.get_delete_selected_scaling(attribute)()
+            self.get_to_scaling(labelevent, type)()
+
+        return rescale
+
     def get_to_scaling(self, labelevent, type):
         def to_scaling(evt=None):
 

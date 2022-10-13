@@ -130,6 +130,23 @@ class MenuService:
             self.frame.Bind(wx.EVT_MENU, self.tableservice.get_to_scaling(evt, None), to_scaling)
         if self.frame.csvtabs.GetSelection() > 0:
             menu.AppendSeparator()
+            attribute = self.tableservice.current_attribute()
+            if attribute in self.datastorage.stats_visible:
+                rescale = wx.Menu()
+                custom = rescale.Append(wx.ID_ANY, _("Custom Scaling"))
+                self.frame.Bind(wx.EVT_MENU, self.tableservice.get_rescale(evt, constants.EMPTY), custom)
+
+                nominal = rescale.Append(wx.ID_ANY, _("Nominal Scaling"))
+                self.frame.Bind(wx.EVT_MENU, self.tableservice.get_rescale(evt, constants.DIAGONAL), nominal)
+
+                ordinal = rescale.Append(wx.ID_ANY, _("Ordinal Scaling"))
+                self.frame.Bind(wx.EVT_MENU, self.tableservice.get_rescale(evt, constants.ORDINAL), ordinal)
+
+                interordinal = rescale.Append(wx.ID_ANY, _("Interordinal Scaling"))
+                self.frame.Bind(wx.EVT_MENU, self.tableservice.get_rescale(evt, constants.INTERORDINAL), interordinal)
+
+                menu.Append(wx.ID_ANY, _("Rescale"), rescale)
+
             delete = menu.Append(wx.ID_ANY, _("Delete Scaling"))
             self.frame.Bind(wx.EVT_MENU, self.tableservice.get_delete_selected_scaling(self.tableservice.current_grid.GetCornerLabelValue()), delete)
 
