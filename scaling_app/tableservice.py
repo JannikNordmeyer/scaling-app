@@ -131,12 +131,17 @@ class TableService:
     def get_rescale(self, labelevent, type):
         def rescale(evt=None):
             attribute = self.current_grid.GetCornerLabelValue()
+            col = 0
+            for i in range(self.frame.main_grid.GetNumberCols()):
+                if self.frame.main_grid.GetColLabelValue(i) == attribute:
+                    col = i
+                    break
             self.get_delete_selected_scaling(attribute)()
-            self.get_to_scaling(labelevent, type)()
+            self.get_to_scaling(col, type)()
 
         return rescale
 
-    def get_to_scaling(self, labelevent, type):
+    def get_to_scaling(self, col, type):
         def to_scaling(evt=None):
 
             # Load Scaling from Storage if it is Selected, in Case Result is Visible
@@ -148,8 +153,8 @@ class TableService:
             # Add New Header if Scaling does not Exist
             self.get_save_to_storage(self.frame.csvtabs.GetSelection())()
 
-            self.new_tab(self.frame.main_grid.GetColLabelValue(labelevent.GetCol()))
-            attribute = self.frame.main_grid.GetColLabelValue(labelevent.GetCol())
+            self.new_tab(self.frame.main_grid.GetColLabelValue(col))
+            attribute = self.frame.main_grid.GetColLabelValue(col)
             self.current_grid.SetCornerLabelValue(attribute)
 
             # Generate Scaling Based on Selected Type
@@ -158,9 +163,9 @@ class TableService:
                 # Ascertain Values
                 values = list()
                 for i in range(self.frame.main_grid.GetNumberRows()):
-                    if self.frame.main_grid.GetCellValue(i, labelevent.GetCol()) not in values:
-                        if self.frame.main_grid.GetCellValue(i, labelevent.GetCol()) != "":
-                            values.append(self.frame.main_grid.GetCellValue(i, labelevent.GetCol()))
+                    if self.frame.main_grid.GetCellValue(i, col) not in values:
+                        if self.frame.main_grid.GetCellValue(i, col) != "":
+                            values.append(self.frame.main_grid.GetCellValue(i, col))
                 # Add Attribute Labels to Table
                 delete_cols(self.current_grid)
                 self.current_grid.DeleteRows(0, self.current_grid.GetNumberRows())
@@ -173,7 +178,7 @@ class TableService:
             if type == constants.DIAGONAL or type == constants.ORDINAL:
 
                 # Add Attribute Labels to Table
-                columns_actual = self.get_col_entries(labelevent.GetCol(), attribute)
+                columns_actual = self.get_col_entries(col, attribute)
                 delete_cols(self.current_grid)
                 self.current_grid.AppendCols(len(columns_actual))
                 self.current_grid.DeleteRows(0, self.frame.main_grid.GetNumberRows())
@@ -195,7 +200,7 @@ class TableService:
 
             if type == constants.INTERORDINAL:
 
-                columns_actual = self.get_col_entries(labelevent.GetCol(), attribute)
+                columns_actual = self.get_col_entries(col, attribute)
                 delete_cols(self.current_grid)
                 self.current_grid.AppendCols(2*len(columns_actual))
                 self.current_grid.DeleteRows(0, self.frame.main_grid.GetNumberRows())

@@ -64,17 +64,17 @@ class MenuService:
                     menu.AppendSeparator()
                     scaling = wx.Menu()
                     custom = scaling.Append(wx.ID_ANY, _("Custom Scaling"))
-                    self.frame.Bind(wx.EVT_MENU, self.tableservice.get_to_scaling(evt, constants.EMPTY), custom)
+                    self.frame.Bind(wx.EVT_MENU, self.tableservice.get_to_scaling(evt.GetCol(), constants.EMPTY), custom)
 
                     nominal = scaling.Append(wx.ID_ANY, _("Nominal Scaling"))
-                    self.frame.Bind(wx.EVT_MENU, self.tableservice.get_to_scaling(evt, constants.DIAGONAL), nominal)
+                    self.frame.Bind(wx.EVT_MENU, self.tableservice.get_to_scaling(evt.GetCol(), constants.DIAGONAL), nominal)
 
                     level = self.datastorage.table.attribute_levels[attribute]
                     if constants.allows_order(level):
                         ordinal = scaling.Append(wx.ID_ANY, _("Ordinal Scaling"))
                         interordinal = scaling.Append(wx.ID_ANY, _("Interordinal Scaling"))
-                        self.frame.Bind(wx.EVT_MENU, self.tableservice.get_to_scaling(evt, constants.ORDINAL), ordinal)
-                        self.frame.Bind(wx.EVT_MENU, self.tableservice.get_to_scaling(evt, constants.INTERORDINAL), interordinal)
+                        self.frame.Bind(wx.EVT_MENU, self.tableservice.get_to_scaling(evt.GetCol(), constants.ORDINAL), ordinal)
+                        self.frame.Bind(wx.EVT_MENU, self.tableservice.get_to_scaling(evt.GetCol(), constants.INTERORDINAL), interordinal)
 
                     menu.Append(wx.ID_ANY, _("Scale Attribute"), scaling)
 
@@ -127,23 +127,23 @@ class MenuService:
         if self.frame.csvtabs.GetSelection() > 0 and self.tableservice.current_attribute() in self.datastorage.result_visible:
             menu.AppendSeparator()
             to_scaling = menu.Append(wx.ID_ANY, _("Go to Scaling"))
-            self.frame.Bind(wx.EVT_MENU, self.tableservice.get_to_scaling(evt, None), to_scaling)
+            self.frame.Bind(wx.EVT_MENU, self.tableservice.get_to_scaling(evt.GetCol(), None), to_scaling)
         if self.frame.csvtabs.GetSelection() > 0:
             menu.AppendSeparator()
             attribute = self.tableservice.current_attribute()
             if attribute in self.datastorage.stats_visible:
                 rescale = wx.Menu()
                 custom = rescale.Append(wx.ID_ANY, _("Custom Scaling"))
-                self.frame.Bind(wx.EVT_MENU, self.tableservice.get_rescale(evt, constants.EMPTY), custom)
+                self.frame.Bind(wx.EVT_MENU, self.tableservice.get_rescale(evt.GetCol(), constants.EMPTY), custom)
 
                 nominal = rescale.Append(wx.ID_ANY, _("Nominal Scaling"))
-                self.frame.Bind(wx.EVT_MENU, self.tableservice.get_rescale(evt, constants.DIAGONAL), nominal)
+                self.frame.Bind(wx.EVT_MENU, self.tableservice.get_rescale(evt.GetCol(), constants.DIAGONAL), nominal)
 
                 ordinal = rescale.Append(wx.ID_ANY, _("Ordinal Scaling"))
-                self.frame.Bind(wx.EVT_MENU, self.tableservice.get_rescale(evt, constants.ORDINAL), ordinal)
+                self.frame.Bind(wx.EVT_MENU, self.tableservice.get_rescale(evt.GetCol(), constants.ORDINAL), ordinal)
 
                 interordinal = rescale.Append(wx.ID_ANY, _("Interordinal Scaling"))
-                self.frame.Bind(wx.EVT_MENU, self.tableservice.get_rescale(evt, constants.INTERORDINAL), interordinal)
+                self.frame.Bind(wx.EVT_MENU, self.tableservice.get_rescale(evt.GetCol(), constants.INTERORDINAL), interordinal)
 
                 menu.Append(wx.ID_ANY, _("Rescale"), rescale)
 
