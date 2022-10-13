@@ -126,9 +126,12 @@ class StatsPanel(wx.Panel):
         self.Bind(wx.EVT_MENU, self.close, close)
         if self.selection == 1 and self.unique_values and type(self.unique_values[0]) == float:
             transfer = menu.Append(wx.ID_ANY, _("Scale Using Current Attributes"))
-            self.Bind(wx.EVT_MENU, self.close, transfer)
+            self.Bind(wx.EVT_MENU, self.transfer_to_scaling, transfer)
         self.PopupMenu(menu)
         menu.Destroy()
+
+    def transfer_to_scaling(self):
+        pass
 
     def close(self, evt=None):
         self.sservice.close_tab(self.attribute)
@@ -156,8 +159,8 @@ class StatsPanel(wx.Panel):
     def bin_change(self, evt=None):
 
         entry = self.binselector.GetLineText(0)
-        if entry != "" and entry.isnumeric() and int(entry) > 0:
-            bin_number = min(int(self.binselector.GetLineText(0)), len(self.unique_values))
+        if entry != "" and entry.isnumeric() and int(entry) > 0 and type(self.unique_values[0]) == float:
+            bin_number = min(int(self.binselector.GetLineText(0)), max(self.unique_values))
             self.load_histplot(self.uncounted_values, bin_number)
 
     def order_numeric(self, evt=None):
