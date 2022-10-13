@@ -124,6 +124,9 @@ class StatsPanel(wx.Panel):
         menu = wx.Menu()
         close = menu.Append(wx.ID_ANY, _("Close Tabs"))
         self.Bind(wx.EVT_MENU, self.close, close)
+        if self.selection == 1 and self.unique_values and type(self.unique_values[0]) == float:
+            transfer = menu.Append(wx.ID_ANY, _("Scale Using Current Attributes"))
+            self.Bind(wx.EVT_MENU, self.close, transfer)
         self.PopupMenu(menu)
         menu.Destroy()
 
@@ -337,9 +340,9 @@ class StatsPanel(wx.Panel):
 
     def set_tendencies(self):
 
-
         if not self.unique_values:
             return
+
         text = "  Mode : " + str(self.mode())
 
         if self.attribute in self.storage.table.attribute_levels:

@@ -81,6 +81,8 @@ class Statservice:
             if stats_tab.attribute == attribute:
                 affected_tab = stats_tab
 
+        currently_numeric = type(affected_tab.unique_values[0]) == float
+
         # Recompile all Values if Attribute was Input
         if evt is None:
             col = self.datastorage.table.col_labels.index(attribute)
@@ -113,6 +115,8 @@ class Statservice:
 
             affected_tab.update_order()
 
+        if currently_numeric:
+            affected_tab.order_numeric()
         affected_tab.load_stats(affected_tab.selection)
 
     def clear_stats(self):
