@@ -124,14 +124,32 @@ class StatsPanel(wx.Panel):
         menu = wx.Menu()
         close = menu.Append(wx.ID_ANY, _("Close Tabs"))
         self.Bind(wx.EVT_MENU, self.close, close)
-        if self.selection == 1 and self.unique_values and type(self.unique_values[0]) == float:
-            transfer = menu.Append(wx.ID_ANY, _("Scale Using Current Attributes"))
-            self.Bind(wx.EVT_MENU, self.transfer_to_scaling, transfer)
+        if self.selection == 1 and self.unique_values and type(self.unique_values[0]) == float and self.attribute in self.sservice.datastorage.table.scalings:
+            transfer = wx.Menu()
+            nominal = transfer.Append(wx.ID_ANY, _("Nominal Scaling"))
+            self.Bind(wx.EVT_MENU, self.get_transfer_to_scaling(constants.DIAGONAL), nominal)
+
+            ordinal = transfer.Append(wx.ID_ANY, _("Ordinal Scaling"))
+            self.Bind(wx.EVT_MENU, self.get_transfer_to_scaling(constants.ORDINAL), ordinal)
+
+            # interordinal = transfer.Append(wx.ID_ANY, _("Interordinal Scaling"))
+            # self.Bind(wx.EVT_MENU, self.get_transfer_to_scaling(constants.INTERORDINAL), interordinal)
+
+            menu.Append(wx.ID_ANY, _("Transfer to Scaling"), transfer)
         self.PopupMenu(menu)
         menu.Destroy()
 
-    def transfer_to_scaling(self):
-        pass
+    def get_transfer_to_scaling(self, type):
+        def transfer_to_scaling(evt=None):
+            bins = min(int(self.binselector.GetLineText(0)), max(self.unique_values))
+            bin_width = (max(self.unique_values) - min(self.unique_values)) / bins
+
+            bin_ranges = list()
+            for i in range(bins):
+                bin_ranges.append((min(self.unique_values) + i*bin_width, min(self.unique_values) + (i+1)*bin_width))
+
+            self.tservice.transfer_bins(self.attribute, bin_ranges, type)
+        return transfer_to_scaling
 
     def close(self, evt=None):
         self.sservice.close_tab(self.attribute)

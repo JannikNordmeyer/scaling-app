@@ -128,7 +128,7 @@ class TableService:
 
         return expand_column
 
-    def get_rescale(self, labelevent, type):
+    def get_rescale(self, type):
         def rescale(evt=None):
             attribute = self.current_grid.GetCornerLabelValue()
             col = 0
@@ -314,10 +314,33 @@ class TableService:
             self.get_save_to_storage(i)()
             if i >= 2:
                 self.current_grid = self.datastorage.tabs[i]
-                self.get_to_scaling(labelevent=None, type=None)()
+                self.get_to_scaling(type=None)()
         self.current_grid = self.datastorage.tabs[self.frame.csvtabs.GetSelection()]
         self.load_expanded()
         self.sservice.update_all()
+
+    def transfer_bins(self, attribute, ranges, type):
+        print(ranges)
+
+        scaling_grid = None
+        for i in range(self.frame.csvtabs.GetPageCount()):
+            if self.frame.csvtabs.GetPage(i).GetCornerLabelValue() == attribute:
+                scaling_grid = self.frame.csvtabs.GetPage(i)
+
+        delete_cols(scaling_grid)
+        for j in range(len(ranges)):
+            scaling_grid.AppendCols(1)
+            scaling_grid.SetColLabelValue(j, str(ranges[j][0]) + " - " + str(ranges[j][1]))
+
+        if type == constants.DIAGONAL or type == constants.ORDINAL:
+            for i in range(scaling_grid.GetNumberRows()):
+                row_value = float(scaling_grid.GetRowLabelValue(i))
+                for j in range(scaling_grid.GetNumberCols()):
+                    if type == constants.ORDINAL and row_value <= ranges[j][1]:
+                        scaling_grid.SetCellValue(i, j, "✘")
+                    if type == constants.DIAGONAL:
+                        if ranges[j][1] >= row_value >= ranges[j][0]:
+                            scaling_grid.SetCellValue(i, j, "✘")
 
     def load_from_storage(self, target):
         # Loads Specified Table from Storage

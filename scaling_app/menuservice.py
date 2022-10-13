@@ -134,16 +134,16 @@ class MenuService:
             if attribute in self.datastorage.stats_visible:
                 rescale = wx.Menu()
                 custom = rescale.Append(wx.ID_ANY, _("Custom Scaling"))
-                self.frame.Bind(wx.EVT_MENU, self.tableservice.get_rescale(evt.GetCol(), constants.EMPTY), custom)
+                self.frame.Bind(wx.EVT_MENU, self.tableservice.get_rescale(constants.EMPTY), custom)
 
                 nominal = rescale.Append(wx.ID_ANY, _("Nominal Scaling"))
-                self.frame.Bind(wx.EVT_MENU, self.tableservice.get_rescale(evt.GetCol(), constants.DIAGONAL), nominal)
+                self.frame.Bind(wx.EVT_MENU, self.tableservice.get_rescale(constants.DIAGONAL), nominal)
 
                 ordinal = rescale.Append(wx.ID_ANY, _("Ordinal Scaling"))
-                self.frame.Bind(wx.EVT_MENU, self.tableservice.get_rescale(evt.GetCol(), constants.ORDINAL), ordinal)
+                self.frame.Bind(wx.EVT_MENU, self.tableservice.get_rescale(constants.ORDINAL), ordinal)
 
                 interordinal = rescale.Append(wx.ID_ANY, _("Interordinal Scaling"))
-                self.frame.Bind(wx.EVT_MENU, self.tableservice.get_rescale(evt.GetCol(), constants.INTERORDINAL), interordinal)
+                self.frame.Bind(wx.EVT_MENU, self.tableservice.get_rescale(constants.INTERORDINAL), interordinal)
 
                 menu.Append(wx.ID_ANY, _("Rescale"), rescale)
 
