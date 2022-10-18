@@ -39,8 +39,12 @@ class StatsPanel(wx.Panel):
         self.canvas = FigureCanvas(self, -1, self.figure)
 
         options = [_('Histogram'), _('Expanded Histogram'), _('Pie Chart'), _('Custom Order')]
-        self.combobox = wx.ComboBox(self, choices=options, style=wx.CB_READONLY)
-        self.combobox.SetSelection(0)
+        self.plot_combobox = wx.ComboBox(self, choices=options, style=wx.CB_READONLY)
+        self.plot_combobox.SetSelection(0)
+
+        sortings = [_('Alphabetical'), _('Numeric'), _('Substring'), _('Prefix'), _('Postfix'), _('Random')]
+        self.order_combobox = wx.ComboBox(self, choices=sortings, style=wx.CB_READONLY)
+        self.order_combobox.SetSelection(0)
 
         # Text for Central Tendencies
         self.infotext = wx.StaticText(self)
@@ -64,50 +68,21 @@ class StatsPanel(wx.Panel):
         self.sort_grid.Bind(grid.EVT_GRID_COL_MOVE, self.order_changed)
 
         self.hsizer_top = wx.BoxSizer(wx.HORIZONTAL)
-        self.hsizer_top.Add(self.combobox, 1, wx.TOP | wx.LEFT)
+        self.hsizer_top.Add(self.plot_combobox, 1, wx.TOP | wx.LEFT)
         self.hsizer_top.Add(self.infotext, 1, wx.TOP | wx.LEFT)
         self.hsizer_top.Add(self.binselector, 1, wx.TOP | wx.RIGHT)
 
-        # Sorting Option Buttons
-        self.button_numeric = wx.Button(self)
-        self.button_numeric.SetLabel(_("Numeric"))
-        self.button_numeric.Bind(wx.EVT_BUTTON, self.order_numeric)
-        self.button_alphabetical = wx.Button(self)
-        self.button_alphabetical.SetLabel(_("Alphabetical"))
-        self.button_alphabetical.Bind(wx.EVT_BUTTON, self.order_alphabetical)
-        self.button_random = wx.Button(self)
-        self.button_random.SetLabel(_("Random"))
-        self.button_random.Bind(wx.EVT_BUTTON, self.order_random)
-        self.hsizer_bot1 = wx.BoxSizer(wx.HORIZONTAL)
-        self.hsizer_bot1.Add(self.button_numeric, 1, wx.TOP | wx.LEFT)
-        self.hsizer_bot1.Add(self.button_alphabetical, 1, wx.TOP | wx.LEFT)
-        self.hsizer_bot1.Add(self.button_random, 1, wx.TOP | wx.LEFT)
-
-        self.button_substring = wx.Button(self)
-        self.button_substring.SetLabel(_("Substring"))
-        self.button_substring.Bind(wx.EVT_BUTTON, self.get_order_other(constants.substring))
-        self.button_prefix = wx.Button(self)
-        self.button_prefix.SetLabel(_("Prefix"))
-        self.button_prefix.Bind(wx.EVT_BUTTON, self.get_order_other(constants.prefix))
-        self.button_postfix = wx.Button(self)
-        self.button_postfix.SetLabel(_("Postfix"))
-        self.button_postfix.Bind(wx.EVT_BUTTON, self.get_order_other(constants.postfix))
-        self.hsizer_bot2 = wx.BoxSizer(wx.HORIZONTAL)
-        self.hsizer_bot2.Add(self.button_substring, 1, wx.TOP | wx.LEFT)
-        self.hsizer_bot2.Add(self.button_prefix, 1, wx.TOP | wx.LEFT)
-        self.hsizer_bot2.Add(self.button_postfix, 1, wx.TOP | wx.LEFT)
-
         self.sizer = wx.BoxSizer(wx.VERTICAL)
         self.sizer.Add(self.hsizer_top, 1, wx.TOP | wx.LEFT)
+        self.sizer.Add(self.order_combobox, 1, wx.TOP | wx.LEFT)
         self.sizer.Add(self.canvas, 15, wx.TOP | wx.LEFT | wx.EXPAND)
         self.sizer.Add(self.sort_text, wx.TOP | wx.LEFT)
         self.sizer.Add(self.sort_grid, wx.TOP | wx.LEFT | wx.EXPAND)
-        self.sizer.Add(self.hsizer_bot1, 1, wx.TOP | wx.LEFT | wx.EXPAND)
-        self.sizer.Add(self.hsizer_bot2, 1, wx.TOP | wx.LEFT | wx.EXPAND)
         self.SetSizer(self.sizer)
         self.Fit()
 
-        self.combobox.Bind(wx.EVT_COMBOBOX, self.select)
+        self.plot_combobox.Bind(wx.EVT_COMBOBOX, self.select_plot)
+        self.order_combobox.Bind(wx.EVT_COMBOBOX, self.select_order)
         self.binselector.Bind(wx.EVT_TEXT, self.bin_change)
 
         self.Bind(wx.EVT_RIGHT_UP, self.onClick)
@@ -265,10 +240,24 @@ class StatsPanel(wx.Panel):
             self.sort_grid.AppendCols(1)
             self.sort_grid.SetColLabelValue(i, str(self.unique_values[i]))
 
-    def select(self, evt):
+    def select_plot(self, evt):
         # Handle Selection via Combobox
         self.selection = evt.GetSelection()
         self.load_stats(evt.GetSelection())
+
+    def select_order(self, evt):
+        if evt.GetSelection() == 0:
+            self.order_alphabetical()
+        if evt.GetSelection() == 1:
+            self.order_numeric()
+        if evt.GetSelection() == 2:
+            self.get_order_other(constants.substring)()
+        if evt.GetSelection() == 3:
+            self.get_order_other(constants.prefix)()
+        if evt.GetSelection() == 4:
+            self.get_order_other(constants.postfix)()
+        if evt.GetSelection() == 5:
+            self.order_random()
 
     def load_stats(self, selection):
 
