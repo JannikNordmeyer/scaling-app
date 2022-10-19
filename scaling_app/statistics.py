@@ -10,6 +10,9 @@ from matplotlib.backends.backend_wxagg import FigureCanvasWxAgg as FigureCanvas
 from scaling_app import constants, tableservice
 from collections import Counter
 import gettext
+from decimal import *
+
+getcontext().prec = 6
 
 _ = gettext.gettext
 
@@ -135,16 +138,22 @@ class StatsPanel(wx.Panel):
 
         return use_partial_scaling
 
-    def get_transfer_to_scaling(self, type):
+    def get_transfer_to_scaling(self, scaling_type):
         def transfer_to_scaling(evt=None):
             bins = min(int(self.binselector.GetLineText(0)), max(self.unique_values))
             bin_width = (max(self.unique_values) - min(self.unique_values)) / bins
 
-            bin_ranges = list()
-            for i in range(bins):
-                bin_ranges.append((min(self.unique_values) + i*bin_width, min(self.unique_values) + (i+1)*bin_width))
+            print("Bin Width: " + str(bin_width))
 
-            self.tservice.transfer_bins(self.attribute, bin_ranges, type)
+            bin_ranges = list()
+
+            for i in range(bins):
+                bin_ranges.append((Decimal(min(self.unique_values) + i*bin_width), Decimal(min(self.unique_values) + (i+1)*bin_width)))
+
+
+            print(bin_ranges)
+
+            self.tservice.transfer_bins(self.attribute, bin_ranges, scaling_type)
         return transfer_to_scaling
 
     def close(self, evt=None):

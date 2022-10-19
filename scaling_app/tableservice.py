@@ -334,7 +334,16 @@ class TableService:
         if type == constants.DIAGONAL or type == constants.ORDINAL:
             for j in range(len(ranges)):
                 scaling_grid.AppendCols(1)
-                scaling_grid.SetColLabelValue(j, str(ranges[j][0]) + " - " + str(ranges[j][1]))
+
+                lim_low = str(ranges[j][0])
+                lim_high = str(ranges[j][1])
+
+                if len(lim_low) > 5:
+                    lim_low = lim_low[0:5] + "..."
+                if len(lim_high) > 5:
+                    lim_high = lim_high[0:5] + "..."
+
+                scaling_grid.SetColLabelValue(j, lim_low + " - " + lim_high)
 
             if type == constants.DIAGONAL or type == constants.ORDINAL:
                 for i in range(scaling_grid.GetNumberRows()):
@@ -350,9 +359,23 @@ class TableService:
             for j in range(2*len(ranges)):
                 scaling_grid.AppendCols(1)
                 if j < len(ranges):
-                    scaling_grid.SetColLabelValue(j, "≤" + str(ranges[j][0]) + " - " + str(ranges[j][1]))
+                    lim_low = str(ranges[j][0])
+                    lim_high = str(ranges[j][1])
+
+                    if len(lim_low) > 5:
+                        lim_low = lim_low[0:5] + "..."
+                    if len(lim_high) > 5:
+                        lim_high = lim_high[0:5] + "..."
+                    scaling_grid.SetColLabelValue(j, "≤" + lim_low + " - " + lim_high)
                 else:
-                    scaling_grid.SetColLabelValue(j, "≥" + str(ranges[j - len(ranges)][0]) + " - " + str(ranges[j - len(ranges)][1]))
+                    lim_low = str(ranges[j - len(ranges)][0])
+                    lim_high = str(ranges[j - len(ranges)][1])
+
+                    if len(lim_low) > 5:
+                        lim_low = lim_low[0:5] + "..."
+                    if len(lim_high) > 5:
+                        lim_high = lim_high[0:5] + "..."
+                    scaling_grid.SetColLabelValue(j, "≥" + lim_low + " - " + lim_high)
 
             for i in range(scaling_grid.GetNumberRows()):
                 row_value = float(scaling_grid.GetRowLabelValue(i))
