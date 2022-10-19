@@ -99,6 +99,18 @@ class StatsPanel(wx.Panel):
         menu = wx.Menu()
         close = menu.Append(wx.ID_ANY, _("Close Tabs"))
         self.Bind(wx.EVT_MENU, self.close, close)
+
+        if 2 <= self.order_combobox.GetSelection() < 5 and self.attribute in self.sservice.datastorage.table.scalings:
+            partial = wx.Menu()
+
+            ordinal = partial.Append(wx.ID_ANY, _("Ordinal Scaling"))
+            self.Bind(wx.EVT_MENU, self.get_use_partial_order(constants.ORDINAL), ordinal)
+
+            interordinal = partial.Append(wx.ID_ANY, _("Interordinal Scaling"))
+            self.Bind(wx.EVT_MENU, self.get_use_partial_order(constants.INTERORDINAL), interordinal)
+
+            menu.Append(wx.ID_ANY, _("Use Partial Scaling"), partial)
+
         if self.selection == 1 and self.unique_values and type(self.unique_values[0]) == float and self.attribute in self.sservice.datastorage.table.scalings:
             transfer = wx.Menu()
             nominal = transfer.Append(wx.ID_ANY, _("Nominal Scaling"))
@@ -113,6 +125,15 @@ class StatsPanel(wx.Panel):
             menu.Append(wx.ID_ANY, _("Transfer to Scaling"), transfer)
         self.PopupMenu(menu)
         menu.Destroy()
+
+    def get_use_partial_order(self, type):
+        def use_partial_scaling(evt=None):
+
+            comparators = (constants.substring, constants.prefix, constants.postfix)
+
+            self.tservice.transfer_partial_order(self.attribute, type, comparators[self.order_combobox.GetSelection() - 2])
+
+        return use_partial_scaling
 
     def get_transfer_to_scaling(self, type):
         def transfer_to_scaling(evt=None):

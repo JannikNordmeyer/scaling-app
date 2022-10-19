@@ -150,6 +150,9 @@ class TableService:
                 self.datastorage.result_visible.discard(self.current_grid.GetCornerLabelValue())
                 return
 
+            partial_order = True
+            comparator = constants.substring
+
             # Add New Header if Scaling does not Exist
             self.get_save_to_storage(self.frame.csvtabs.GetSelection())()
 
@@ -361,7 +364,50 @@ class TableService:
                         if row_value >= ranges[j - len(ranges)][0]:
                             scaling_grid.SetCellValue(i, j, "✘")
 
+    def transfer_partial_order(self, attribute, type, comparator):
 
+        scaling_grid = None
+        for i in range(self.frame.csvtabs.GetPageCount()):
+            if self.frame.csvtabs.GetPage(i).GetCornerLabelValue() == attribute:
+                scaling_grid = self.frame.csvtabs.GetPage(i)
+
+        scaling_grid.ClearGrid()
+
+        if type == constants.ORDINAL:
+
+            for i in range(scaling_grid.GetNumberRows()):
+                row_value = scaling_grid.GetRowLabelValue(i)
+                for j in range(scaling_grid.GetNumberCols()):
+                    col_value = self.current_grid.GetColLabelValue(j)
+                    if comparator(row_value, col_value):
+                        scaling_grid.SetCellValue(i, j, "✘")
+
+        if type == constants.INTERORDINAL:
+
+            cols = list()
+            for i in range(scaling_grid.GetNumberCols()):
+                cols.append(scaling_grid.GetColLabelValue(i))
+
+            delete_cols(scaling_grid)
+
+            for j in range(2*len(cols)):
+                scaling_grid.AppendCols(1)
+                if j < len(cols):
+                    scaling_grid.SetColLabelValue(j, "≤" + str(cols[j]))
+                else:
+                    scaling_grid.SetColLabelValue(j, "≥" + str(cols[j - len(cols)]))
+
+            for i in range(scaling_grid.GetNumberRows()):
+                row_value = scaling_grid.GetRowLabelValue(i)
+                for j in range(scaling_grid.GetNumberCols()):
+                    if j < len(cols):
+                        if comparator(row_value, cols[j]):
+                            scaling_grid.SetCellValue(i, j, "✘")
+                    else:
+                        if comparator(cols[j - len(cols)], row_value):
+                            scaling_grid.SetCellValue(i, j, "✘")
+
+        self.get_save_to_storage()()
 
     def load_from_storage(self, target):
         # Loads Specified Table from Storage
