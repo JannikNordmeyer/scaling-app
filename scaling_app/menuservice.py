@@ -123,6 +123,8 @@ class MenuService:
             menu.AppendSeparator()
             result = menu.Append(wx.ID_ANY, _("View Result"))
             self.frame.Bind(wx.EVT_MENU, self.tableservice.view_result, result)
+            draw = menu.Append(wx.ID_ANY, _("Draw Lattice"))
+            self.frame.Bind(wx.EVT_MENU, self.tableservice.draw_lattice, draw)
         if self.frame.csvtabs.GetSelection() > 0 and self.tableservice.current_attribute() in self.datastorage.result_visible:
             menu.AppendSeparator()
             to_scaling = menu.Append(wx.ID_ANY, _("Go to Scaling"))

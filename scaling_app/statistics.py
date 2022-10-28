@@ -142,16 +142,9 @@ class StatsPanel(wx.Panel):
         def transfer_to_scaling(evt=None):
             bins = min(int(self.binselector.GetLineText(0)), max(self.unique_values))
             bin_width = (max(self.unique_values) - min(self.unique_values)) / bins
-
-            print("Bin Width: " + str(bin_width))
-
             bin_ranges = list()
-
             for i in range(bins):
                 bin_ranges.append((Decimal(min(self.unique_values) + i*bin_width), Decimal(min(self.unique_values) + (i+1)*bin_width)))
-
-
-            print(bin_ranges)
 
             self.tservice.transfer_bins(self.attribute, bin_ranges, scaling_type)
         return transfer_to_scaling

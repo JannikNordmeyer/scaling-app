@@ -2,6 +2,7 @@ import csv
 import wx
 import wx.grid as grid
 from scaling_app import constants
+from scaling_app import api
 
 
 def delete_cols(grid):
@@ -18,6 +19,7 @@ class TableService:
         self.datastorage = datastorage
         self.mservice = None
         self.sservice = None
+        self.gservice = None
 
         self.current_grid = None
 
@@ -150,9 +152,6 @@ class TableService:
                 self.datastorage.result_visible.discard(self.current_grid.GetCornerLabelValue())
                 return
 
-            partial_order = True
-            comparator = constants.substring
-
             # Add New Header if Scaling does not Exist
             self.get_save_to_storage(self.frame.csvtabs.GetSelection())()
 
@@ -228,7 +227,7 @@ class TableService:
     def new_tab(self, name):
         # Created new Grid Tab
         new_grid = grid.Grid(self.frame.csvtabs)
-        new_grid.CreateGrid(16, 8)
+        new_grid.CreateGrid(1, 1)
         new_grid.EnableDragCell()
         new_grid.EnableDragColMove()
         new_grid.Bind(grid.EVT_GRID_CELL_CHANGED, self.datastorage.set_edited)
@@ -856,3 +855,27 @@ class TableService:
     def current_attribute(self):
         # Returns if the Attribute Represented by the Currently Selected Scaling Table
         return self.frame.csvtabs.GetPage(self.frame.csvtabs.GetSelection()).GetCornerLabelValue()
+
+    def draw_lattice(self, evt=None):
+
+        objects = []
+        for i in range(self.current_grid.GetNumberRows()):
+            objects.append(self.current_grid.GetRowLabelValue(i))
+
+        attributes = []
+        for j in range(self.current_grid.GetNumberCols()):
+            attributes.append(self.current_grid.GetColLabelValue(j))
+
+        incidence = []
+        for i in range(self.current_grid.GetNumberRows()):
+            for j in range(self.current_grid.GetNumberCols()):
+                if self.current_grid.GetCellValue(i, j) != "":
+                    incidence.append([self.current_grid.GetRowLabelValue(i), self.current_grid.GetColLabelValue(j)])
+
+        lattice = api.post(objects, attributes, incidence)
+
+        print(lattice)
+        print(lattice['layout']['result'])
+        self.datastorage.lattice = lattice['layout']['result']
+        self.gservice.draw_lattice()
+

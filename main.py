@@ -7,7 +7,6 @@ from scaling_app import rules
 import gettext
 import locale
 
-
 def build_ui():
 
     """if locale.getlocale()[0] == 'de_DE':
@@ -59,8 +58,8 @@ def build_ui():
     frame.SetMenuBar(menu_bar)
 
     # Screen Layout
-    frame.hsplitter = wx.SplitterWindow(frame, style = wx.SP_LIVE_UPDATE)
-    frame.vsplitter = wx.SplitterWindow(frame.hsplitter, style = wx.SP_LIVE_UPDATE)
+    frame.hsplitter = wx.SplitterWindow(frame, style=wx.SP_LIVE_UPDATE)
+    frame.vsplitter = wx.SplitterWindow(frame.hsplitter, style=wx.SP_LIVE_UPDATE)
 
     frame.panelLeft = wx.Panel(frame.hsplitter, wx.ID_ANY, style=wx.BORDER_SUNKEN)
     frame.panelTop = wx.Panel(frame.vsplitter, wx.ID_ANY, style=wx.BORDER_SUNKEN)
@@ -137,8 +136,8 @@ mservice = menuservice.MenuService(frame, storage, tservice, gservice, sservice)
 sservice.menuservice = mservice
 tservice.mservice = mservice
 tservice.sservice = sservice
+tservice.gservice = gservice
 build_ui()
 frame.Show()
 frame.Bind(wx.EVT_CLOSE, mservice.quit_scaling)
 app.MainLoop()
-
