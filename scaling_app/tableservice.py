@@ -874,8 +874,6 @@ class TableService:
 
         lattice = api.post(objects, attributes, incidence)
 
-        print(lattice)
-        print(lattice['layout']['result'])
         self.datastorage.lattice = lattice['layout']['result']
         self.gservice.draw_lattice()
 

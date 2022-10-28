@@ -116,9 +116,14 @@ class MenuService:
     def cell_menu(self, evt):
 
         menu = wx.Menu()
-        purge = menu.Append(wx.ID_ANY, _("Purge Table"))
-        reset = menu.Append(wx.ID_ANY, _("Reset Table"))
-
+        if self.frame.csvtabs.GetSelection() != 1:
+            purge = menu.Append(wx.ID_ANY, _("Purge Table"))
+            reset = menu.Append(wx.ID_ANY, _("Reset Table"))
+            self.frame.Bind(wx.EVT_MENU, self.tableservice.purge_table, purge)
+            self.frame.Bind(wx.EVT_MENU, self.tableservice.reset_table, reset)
+        if self.frame.csvtabs.GetSelection() == 1:
+            draw = menu.Append(wx.ID_ANY, _("Draw Lattice"))
+            self.frame.Bind(wx.EVT_MENU, self.tableservice.draw_lattice, draw)
         if self.frame.csvtabs.GetSelection() > 0 and _("Scaling:") in self.frame.csvtabs.GetPageText(self.frame.csvtabs.GetSelection()):
             menu.AppendSeparator()
             result = menu.Append(wx.ID_ANY, _("View Result"))
@@ -148,11 +153,9 @@ class MenuService:
 
                 menu.Append(wx.ID_ANY, _("Rescale"), rescale)
 
-            delete = menu.Append(wx.ID_ANY, _("Delete Scaling"))
-            self.frame.Bind(wx.EVT_MENU, self.tableservice.get_delete_selected_scaling(self.tableservice.current_grid.GetCornerLabelValue()), delete)
-
-        self.frame.Bind(wx.EVT_MENU, self.tableservice.purge_table, purge)
-        self.frame.Bind(wx.EVT_MENU, self.tableservice.reset_table, reset)
+            if self.frame.csvtabs.GetSelection() != 1:
+                delete = menu.Append(wx.ID_ANY, _("Delete Scaling"))
+                self.frame.Bind(wx.EVT_MENU, self.tableservice.get_delete_selected_scaling(self.tableservice.current_grid.GetCornerLabelValue()), delete)
 
         self.frame.PopupMenu(menu)
         menu.Destroy()

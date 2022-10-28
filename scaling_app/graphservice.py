@@ -23,19 +23,22 @@ class GraphService:
         y_max_node = None
 
         for node in self.datastorage.lattice['positions']:
-            for name, coords in node.items():
+            for node_number, coords in node.items():
                 if coords[0] < x_min:
                     x_min = coords[0]
                 if coords[0] > x_max:
                     x_max = coords[0]
                 if coords[1] <= y_min:
                     y_min = coords[1]
-                    y_min_node = name
+                    y_min_node = node_number
                 if coords[1] >= y_max:
                     y_max = coords[1]
-                    y_max_node = name
+                    y_max_node = node_number
 
-                graph.add_node(name, pos=(coords[0], -coords[1]), color="blue", label=name)
+                name = str(self.datastorage.lattice['shorthand-annotation'][int(node_number)][node_number][0]) + "\n" \
+                       + str(self.datastorage.lattice['shorthand-annotation'][int(node_number)][node_number][1])
+
+                graph.add_node(node_number, pos=(coords[0], -coords[1]), color="blue", label=name)
 
         for edges in self.datastorage.lattice['edges']:
             for origin in edges:
@@ -45,10 +48,10 @@ class GraphService:
         xbuffer = 0.05
         ybuffer = 0.2
 
-        graph.add_node("anchor0", pos=(x_min-xbuffer, -y_min+ybuffer), color="red", label="")
-        graph.add_node("anchor1", pos=(x_max+xbuffer, -y_min+ybuffer), color="red", label="")
-        graph.add_node("anchor2", pos=(x_min-xbuffer, -y_max-ybuffer), color="red", label="")
-        graph.add_node("anchor3", pos=(x_max+xbuffer, -y_max-ybuffer), color="red", label="")
+        graph.add_node("anchor0", pos=(x_min - xbuffer, -y_min + ybuffer), color="red", label="")
+        graph.add_node("anchor1", pos=(x_max + xbuffer, -y_min + ybuffer), color="red", label="")
+        graph.add_node("anchor2", pos=(x_min - xbuffer, -y_max - ybuffer), color="red", label="")
+        graph.add_node("anchor3", pos=(x_max + xbuffer, -y_max - ybuffer), color="red", label="")
 
         self.frame.graph.draw_graph(graph, (x_min, x_max, y_min, y_max), y_min_node, y_max_node)
 
@@ -57,5 +60,3 @@ class GraphService:
         self.datastorage.lattice = None
         graph = nx.Graph()
         self.frame.graph.draw_graph(graph, (0, 0, 0, 0), None, None)
-
-

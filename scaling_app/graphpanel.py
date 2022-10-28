@@ -116,7 +116,7 @@ class GraphPanel(wx.Panel):
             else:
                 self.color_map.append("red")
         nx.draw(graph, pos=self.node_positions, node_color=self.color_map,  with_labels=False, alpha=None)
-        nx.draw_networkx_labels(graph, pos=self.node_positions, labels=self.labels)
+        nx.draw_networkx_labels(graph, pos=self.node_positions, labels=self.labels, font_size=10)
         self.figure.canvas.draw()
 
     def update_borders(self, node):
