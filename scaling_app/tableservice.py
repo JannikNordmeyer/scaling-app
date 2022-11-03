@@ -143,7 +143,7 @@ class TableService:
 
         return rescale
 
-    def get_to_scaling(self, col, type):
+    def get_to_scaling(self, col=None, type=None):
         def to_scaling(evt=None):
 
             # Load Scaling from Storage if it is Selected, in Case Result is Visible
@@ -521,11 +521,11 @@ class TableService:
 
         return entries
 
-    def get_delete_row(self, labelevent):
-        def delete_row(evt):
-            for i in range(self.current_grid.GetNumberRows() - labelevent.GetRow()):
-                self.current_grid.SetRowLabelValue(labelevent.GetRow() + i, self.current_grid.GetRowLabelValue(labelevent.GetRow() + i + 1))
-            self.current_grid.DeleteRows(pos=labelevent.GetRow())
+    def get_delete_row(self, row):
+        def delete_row(evt=None):
+            for i in range(self.current_grid.GetNumberRows() - row):
+                self.current_grid.SetRowLabelValue(row + i, self.current_grid.GetRowLabelValue(row + i + 1))
+            self.current_grid.DeleteRows(pos=row)
             self.datastorage.edited = True
             self.table_edited()
 
@@ -581,15 +581,15 @@ class TableService:
 
         return add_row
 
-    def get_delete_col(self, labelevent):
-        def delete_col(evt):
+    def get_delete_col(self, col):
+        def delete_col(evt=None):
 
             if self.frame.csvtabs.GetSelection() == 0:
 
-                attribute = self.frame.main_grid.GetColLabelValue(labelevent.GetCol())
+                attribute = self.frame.main_grid.GetColLabelValue(col)
                 self.get_delete_selected_scaling(attribute)()
 
-            self.current_grid.DeleteCols(pos=self.current_grid.GetColPos(labelevent.GetCol()), updateLabels=False)
+            self.current_grid.DeleteCols(pos=self.current_grid.GetColPos(col), updateLabels=False)
             self.datastorage.set_edited()
             self.table_edited()
 
@@ -790,6 +790,12 @@ class TableService:
                 return False
         return True
 
+    def row_empty(self, row):
+        for i in range(self.frame.main_grid.GetNumberCols()):
+            if self.frame.main_grid.GetCellValue(row, i) != "":
+                return False
+        return True
+
     def value_in_data(self, value, col):
         # Checks if Specified Value is Part of the Data in the Specified Column in th Main Grid
 
@@ -877,5 +883,22 @@ class TableService:
 
             self.datastorage.lattice = lattice['layout']['result']
             self.gservice.draw_lattice()
+
+            api.request_implications(objects, attributes, incidence)
         return draw_lattice
 
+    def drop_empty_cols(self, evt=None):
+        i = 0
+        while i < self.frame.main_grid.GetNumberCols():
+            if self.col_empty(i):
+                self.get_delete_col(i)()
+                i -= 1
+            i += 1
+
+    def drop_empty_rows(self, evt=None):
+        i = 0
+        while i < self.frame.main_grid.GetNumberRows():
+            if self.row_empty(i):
+                self.get_delete_row(i)()
+                i -= 1
+            i += 1

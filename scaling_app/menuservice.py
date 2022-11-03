@@ -27,7 +27,7 @@ class MenuService:
 
         if not self.tableservice.value_in_data(row_label, col):
             delrow = menu.Append(wx.ID_ANY, _("Delete Object"))
-            self.frame.Bind(wx.EVT_MENU, self.tableservice.get_delete_row(evt), delrow)
+            self.frame.Bind(wx.EVT_MENU, self.tableservice.get_delete_row(evt.GetRow()), delrow)
         purgerow = menu.Append(wx.ID_ANY, _("Purge Object"))
         self.frame.Bind(wx.EVT_MENU, self.tableservice.get_purge_row(evt), purgerow)
         floodrow = menu.Append(wx.ID_ANY, _("Fill Object"))
@@ -45,7 +45,7 @@ class MenuService:
 
         menu = wx.Menu()
         delcol = menu.Append(wx.ID_ANY, _("Delete Attribute"))
-        self.frame.Bind(wx.EVT_MENU, self.tableservice.get_delete_col(evt), delcol)
+        self.frame.Bind(wx.EVT_MENU, self.tableservice.get_delete_col(evt.GetCol()), delcol)
         purgecol = menu.Append(wx.ID_ANY, _("Purge Attribute"))
         self.frame.Bind(wx.EVT_MENU, self.tableservice.get_purge_col(evt), purgecol)
         if self.frame.csvtabs.GetSelection() > 0:
@@ -121,6 +121,11 @@ class MenuService:
             reset = menu.Append(wx.ID_ANY, _("Reset Table"))
             self.frame.Bind(wx.EVT_MENU, self.tableservice.purge_table, purge)
             self.frame.Bind(wx.EVT_MENU, self.tableservice.reset_table, reset)
+        if self.frame.csvtabs.GetSelection() == 0:
+            dropcols = menu.Append(wx.ID_ANY, _("Drop Empty Columns"))
+            droprows = menu.Append(wx.ID_ANY, _("Drop Empty Rows"))
+            self.frame.Bind(wx.EVT_MENU, self.tableservice.drop_empty_cols, dropcols)
+            self.frame.Bind(wx.EVT_MENU, self.tableservice.drop_empty_rows, droprows)
         if self.frame.csvtabs.GetSelection() == 1:
             draw = wx.Menu()
             dim = draw.Append(wx.ID_ANY, _("Dim Draw"))
