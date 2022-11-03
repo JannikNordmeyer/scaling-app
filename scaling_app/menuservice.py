@@ -122,14 +122,38 @@ class MenuService:
             self.frame.Bind(wx.EVT_MENU, self.tableservice.purge_table, purge)
             self.frame.Bind(wx.EVT_MENU, self.tableservice.reset_table, reset)
         if self.frame.csvtabs.GetSelection() == 1:
-            draw = menu.Append(wx.ID_ANY, _("Draw Lattice"))
-            self.frame.Bind(wx.EVT_MENU, self.tableservice.draw_lattice, draw)
+            draw = wx.Menu()
+            dim = draw.Append(wx.ID_ANY, _("Dim Draw"))
+            self.frame.Bind(wx.EVT_MENU, self.tableservice.get_draw_lattice(constants.dim), dim)
+
+            freese = draw.Append(wx.ID_ANY, _("Freese Draw"))
+            self.frame.Bind(wx.EVT_MENU, self.tableservice.get_draw_lattice(constants.freese), freese)
+
+            standard = draw.Append(wx.ID_ANY, _("Standard Draw"))
+            self.frame.Bind(wx.EVT_MENU, self.tableservice.get_draw_lattice(constants.standard), standard)
+
+            infadd = draw.Append(wx.ID_ANY, _("Inf-Additive Draw"))
+            self.frame.Bind(wx.EVT_MENU, self.tableservice.get_draw_lattice(constants.inf), infadd)
+
+            menu.Append(wx.ID_ANY, _("Draw Lattice"), draw)
         if self.frame.csvtabs.GetSelection() > 0 and _("Scaling:") in self.frame.csvtabs.GetPageText(self.frame.csvtabs.GetSelection()):
             menu.AppendSeparator()
             result = menu.Append(wx.ID_ANY, _("View Result"))
             self.frame.Bind(wx.EVT_MENU, self.tableservice.view_result, result)
-            draw = menu.Append(wx.ID_ANY, _("Draw Lattice"))
-            self.frame.Bind(wx.EVT_MENU, self.tableservice.draw_lattice, draw)
+            draw = wx.Menu()
+            dim = draw.Append(wx.ID_ANY, _("Dim Draw"))
+            self.frame.Bind(wx.EVT_MENU, self.tableservice.get_draw_lattice(constants.dim), dim)
+
+            freese = draw.Append(wx.ID_ANY, _("Freese Draw"))
+            self.frame.Bind(wx.EVT_MENU, self.tableservice.get_draw_lattice(constants.freese), freese)
+
+            standard = draw.Append(wx.ID_ANY, _("Standard Draw"))
+            self.frame.Bind(wx.EVT_MENU, self.tableservice.get_draw_lattice(constants.standard), standard)
+
+            infadd = draw.Append(wx.ID_ANY, _("Inf-Additive Draw"))
+            self.frame.Bind(wx.EVT_MENU, self.tableservice.get_draw_lattice(constants.inf), infadd)
+
+            menu.Append(wx.ID_ANY, _("Draw Lattice"), draw)
         if self.frame.csvtabs.GetSelection() > 0 and self.tableservice.current_attribute() in self.datastorage.result_visible:
             menu.AppendSeparator()
             to_scaling = menu.Append(wx.ID_ANY, _("Go to Scaling"))

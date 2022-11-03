@@ -29,6 +29,13 @@ LEVEL_INT_COLOR = "#8177FF"
 LEVEL_RAT = "ratio"
 LEVEL_RAT_COLOR = "#FF5656"
 
+# Lattice Draw Types
+
+dim = "dim-draw-layout"
+freese = "freese-layout"
+standard = "standard-layout"
+inf = "inf-additive-layout"
+
 
 def color_conv(level):
 

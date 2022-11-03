@@ -856,24 +856,26 @@ class TableService:
         # Returns if the Attribute Represented by the Currently Selected Scaling Table
         return self.frame.csvtabs.GetPage(self.frame.csvtabs.GetSelection()).GetCornerLabelValue()
 
-    def draw_lattice(self, evt=None):
+    def get_draw_lattice(self, draw_type, evt=None):
+        def draw_lattice(evt=None):
 
-        objects = []
-        for i in range(self.current_grid.GetNumberRows()):
-            objects.append(self.current_grid.GetRowLabelValue(i))
+            objects = []
+            for i in range(self.current_grid.GetNumberRows()):
+                objects.append(self.current_grid.GetRowLabelValue(i))
 
-        attributes = []
-        for j in range(self.current_grid.GetNumberCols()):
-            attributes.append(self.current_grid.GetColLabelValue(j))
-
-        incidence = []
-        for i in range(self.current_grid.GetNumberRows()):
+            attributes = []
             for j in range(self.current_grid.GetNumberCols()):
-                if self.current_grid.GetCellValue(i, j) != "":
-                    incidence.append([self.current_grid.GetRowLabelValue(i), self.current_grid.GetColLabelValue(j)])
+                attributes.append(self.current_grid.GetColLabelValue(j))
 
-        lattice = api.post(objects, attributes, incidence)
+            incidence = []
+            for i in range(self.current_grid.GetNumberRows()):
+                for j in range(self.current_grid.GetNumberCols()):
+                    if self.current_grid.GetCellValue(i, j) != "":
+                        incidence.append([self.current_grid.GetRowLabelValue(i), self.current_grid.GetColLabelValue(j)])
 
-        self.datastorage.lattice = lattice['layout']['result']
-        self.gservice.draw_lattice()
+            lattice = api.request_lattice(objects, attributes, incidence, draw_type)
+
+            self.datastorage.lattice = lattice['layout']['result']
+            self.gservice.draw_lattice()
+        return draw_lattice
 
