@@ -4,11 +4,12 @@ from scaling_app import tableservice, api
 
 
 class Rules(wx.Panel):
-    def __init__(self, parent, frame):
+    def __init__(self, parent, frame, mservice):
         wx.Panel.__init__(self, parent)
 
         self.parent = parent
         self.frame = frame
+        self.mservice = mservice
 
         self.compute_button = wx.Button(self, -1, "Compute", size=wx.Size(100, 25))
         self.compute_button.Bind(wx.EVT_BUTTON, self.compute)
@@ -41,7 +42,7 @@ class Rules(wx.Panel):
         except:
             return
 
-        rules = api.request_rules(objects, attributes, incidence, supp, conf)
+        rules = api.request_rules(self.mservice.api_address, objects, attributes, incidence, supp, conf)
         impl_str = ""
         for i in rules["rules"]["result"]:
             impl_str += str(i[0]) + "->" + str(i[1]) + "\n"

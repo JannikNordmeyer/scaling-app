@@ -16,6 +16,8 @@ class MenuService:
         self.graphservice = graphservice
         self.statservice = statservice
 
+        self.api_address = "http://127.0.0.1:8080"
+
     def show_row_menu(self, evt):
 
         menu = wx.Menu()
@@ -301,11 +303,13 @@ class MenuService:
     def comp_concepts(self, e):
         print("Compute Concepts")
 
-    def comp_implications(self, e):
-        print("Compute Implications")
+    def connect(self, evt=None):
 
-    def comp_rules(self, e):
-        print("Compute Rules")
+        dialog = wx.TextEntryDialog(None, "Enter API Address:", value=self.api_address)
+        answer = dialog.ShowModal()
+        if answer == wx.ID_OK:
+            self.api_address = dialog.GetValue()
+        dialog.Destroy()
 
     def quit_scaling(self, e=None):
         if not self.datastorage.edited:
@@ -317,3 +321,4 @@ class MenuService:
             if answer == wx.ID_YES:
                 dialog.Destroy()
                 sys.exit(0)
+            dialog.Destroy()

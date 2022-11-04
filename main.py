@@ -7,6 +7,7 @@ from scaling_app import rules
 import gettext
 import locale
 
+
 def build_ui():
 
     """if locale.getlocale()[0] == 'de_DE':
@@ -46,9 +47,11 @@ def build_ui():
     comp_implications = comp_menu.Append(wx.ID_ANY, _('Compute Implications'), _('Compute Implications'))
     comp_rules = comp_menu.Append(wx.ID_ANY, _('Compute Rules'), _('Compute Rules'))
     menu_bar.Append(comp_menu, _('Compute'))
-    frame.Bind(wx.EVT_MENU, mservice.comp_concepts, comp_concepts)
-    frame.Bind(wx.EVT_MENU, mservice.comp_implications, comp_implications)
-    frame.Bind(wx.EVT_MENU, mservice.comp_rules, comp_rules)
+
+    connect_menu = wx.Menu()
+    connect = connect_menu.Append(wx.ID_ANY, _('Connect to API'), _('Connect to API'))
+    frame.Bind(wx.EVT_MENU, mservice.connect, connect)
+    menu_bar.Append(connect_menu, _('Connect to API'))
 
     quit_menu = wx.Menu()
     quit_quit_scaling = quit_menu.Append(wx.ID_EXIT, _('Quit Scaling'), _('Quit Scaling'))
@@ -104,13 +107,17 @@ def build_ui():
     # Bottom Tabs
     frame.tabpane = wx.BoxSizer()
     frame.tabs = wx.Notebook(frame.panelBottom)
-    tab1 = concepts.Concepts(frame.tabs)
-    tab2 = implications.Implications(frame.tabs, frame)
-    tab3 = rules.Rules(frame.tabs, frame)
+    concepts_tab = concepts.Concepts(frame.tabs)
+    implications_tab = implications.Implications(frame.tabs, frame, mservice)
+    rules_tab = rules.Rules(frame.tabs, frame, mservice)
 
-    frame.tabs.AddPage(tab1, _("Concepts"))
-    frame.tabs.AddPage(tab2, _("Implications"))
-    frame.tabs.AddPage(tab3, _("Rules"))
+    frame.Bind(wx.EVT_MENU, mservice.comp_concepts, comp_concepts)
+    frame.Bind(wx.EVT_MENU, implications_tab.compute, comp_implications)
+    frame.Bind(wx.EVT_MENU, rules_tab.compute, comp_rules)
+
+    frame.tabs.AddPage(concepts_tab, _("Concepts"))
+    frame.tabs.AddPage(implications_tab, _("Implications"))
+    frame.tabs.AddPage(rules_tab, _("Rules"))
 
     frame.csvbox.Add(frame.csvtabs, wx.ID_ANY, wx.EXPAND)
     frame.panelTop.SetSizer(frame.csvbox)

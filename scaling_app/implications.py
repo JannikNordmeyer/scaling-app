@@ -4,11 +4,12 @@ from scaling_app import tableservice, api
 
 
 class Implications(wx.Panel):
-    def __init__(self, parent, frame):
+    def __init__(self, parent, frame, mservice):
         wx.Panel.__init__(self, parent)
 
         self.parent = parent
         self.frame = frame
+        self.mservice = mservice
 
         self.compute_button = wx.Button(self, -1, "Compute", size=wx.Size(100, 1))
         self.compute_button.Bind(wx.EVT_BUTTON, self.compute)
@@ -22,7 +23,7 @@ class Implications(wx.Panel):
 
     def compute(self, evt=None):
         objects, attributes, incidence = tableservice.get_grid_data(self.frame.result_grid)
-        implications = api.request_implications(objects, attributes, incidence)
+        implications = api.request_implications(self.mservice.api_address, objects, attributes, incidence)
 
         impl_str = ""
         for i in implications["implications"]["result"]:

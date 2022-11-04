@@ -887,7 +887,7 @@ class TableService:
 
             objects, attributes, incidence = get_grid_data(self.current_grid)
 
-            lattice = api.request_lattice(objects, attributes, incidence, draw_type)
+            lattice = api.request_lattice(self.mservice.api_address, objects, attributes, incidence, draw_type)
 
             self.datastorage.lattice = lattice['layout']['result']
             self.gservice.draw_lattice()
