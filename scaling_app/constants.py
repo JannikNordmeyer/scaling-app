@@ -36,6 +36,9 @@ freese = "freese-layout"
 standard = "standard-layout"
 inf = "inf-additive-layout"
 
+# API
+api_version = "2.3.0-SNAPSHOT"
+
 
 def color_conv(level):
 

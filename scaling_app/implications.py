@@ -1,6 +1,6 @@
 import wx
 
-from scaling_app import tableservice, api
+from scaling_app import tableservice, api, menuservice
 
 
 class Implications(wx.Panel):
@@ -24,6 +24,10 @@ class Implications(wx.Panel):
     def compute(self, evt=None):
         objects, attributes, incidence = tableservice.get_grid_data(self.frame.result_grid)
         implications = api.request_implications(self.mservice.api_address, objects, attributes, incidence)
+
+        if implications is None:
+            menuservice.connection_error_dialog()
+            return
 
         impl_str = ""
         for i in implications["implications"]["result"]:

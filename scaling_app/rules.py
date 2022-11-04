@@ -1,6 +1,6 @@
 import wx
 
-from scaling_app import tableservice, api
+from scaling_app import tableservice, api, menuservice
 
 
 class Rules(wx.Panel):
@@ -43,6 +43,11 @@ class Rules(wx.Panel):
             return
 
         rules = api.request_rules(self.mservice.api_address, objects, attributes, incidence, supp, conf)
+
+        if rules is None:
+            menuservice.connection_error_dialog()
+            return
+
         impl_str = ""
         for i in rules["rules"]["result"]:
             impl_str += str(i[0]) + "->" + str(i[1]) + "\n"

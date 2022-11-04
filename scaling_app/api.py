@@ -1,6 +1,8 @@
 import requests
 import json
 
+from scaling_app import constants
+
 
 def request_lattice(address, objects, attributes, incidence, draw_type="freese-layout"):
     data = {
@@ -40,9 +42,11 @@ def request_implications(address, objects, attributes, incidence):
     }
     headers = {"Content-Type": "application/json"}
 
-    response = requests.post(address, data=json.dumps(data, indent=4), headers=headers)
-
-    return response.json()
+    try:
+        response = requests.post(address, data=json.dumps(data, indent=4), headers=headers)
+        return response.json()
+    except:
+        return None
 
 
 def request_rules(address, objects, attributes, incidence, minsupp, minconf):
@@ -63,6 +67,26 @@ def request_rules(address, objects, attributes, incidence, minsupp, minconf):
     }
     headers = {"Content-Type": "application/json"}
 
-    response = requests.post(address, data=json.dumps(data, indent=4), headers=headers)
+    try:
+        response = requests.post(address, data=json.dumps(data, indent=4), headers=headers)
+        return response.json()
+    except:
+        return None
 
-    return response.json()
+
+def check_connection(address):
+
+    data = {
+        "id": "Establish Connection",
+        "version": {"type": "function",
+                  "name": "conexp-version",
+                  "args": []},
+    }
+    headers = {"Content-Type": "application/json"}
+    try:
+        response = requests.post(address, data=json.dumps(data, indent=4), headers=headers)
+        return response.json()["version"]["result"] == constants.api_version
+
+    except:
+        return False
+

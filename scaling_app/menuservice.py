@@ -2,10 +2,21 @@ import json
 import wx
 import sys
 import tkinter.filedialog
-from scaling_app import constants
+from scaling_app import constants, api
 import gettext
 
 _ = gettext.gettext
+
+
+def connection_error_dialog(address=None):
+    if address:
+        errortext = _("Connection to API (" + address + ") could not be established")
+    else:
+        errortext = _("API could not be reached")
+    dialog = wx.MessageDialog(None, errortext, _('Connection Error'), wx.ICON_WARNING | wx.OK)
+    dialog.ShowModal()
+    dialog.Destroy()
+
 
 class MenuService:
 
@@ -308,7 +319,10 @@ class MenuService:
         dialog = wx.TextEntryDialog(None, "Enter API Address:", value=self.api_address)
         answer = dialog.ShowModal()
         if answer == wx.ID_OK:
-            self.api_address = dialog.GetValue()
+            if api.check_connection(dialog.GetValue()):
+                self.api_address = dialog.GetValue()
+            else:
+                connection_error_dialog(dialog.GetValue())
         dialog.Destroy()
 
     def quit_scaling(self, e=None):
@@ -322,3 +336,4 @@ class MenuService:
                 dialog.Destroy()
                 sys.exit(0)
             dialog.Destroy()
+
