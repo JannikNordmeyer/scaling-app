@@ -12,6 +12,26 @@ def delete_cols(grid):
         grid.DeleteCols(0, grid.GetNumberCols())
 
 
+def get_grid_data(grid):
+    # Reads Data Necessary for API Requests from Input Grid
+
+    objects = []
+    for i in range(grid.GetNumberRows()):
+        objects.append(grid.GetRowLabelValue(i))
+
+    attributes = []
+    for j in range(grid.GetNumberCols()):
+        attributes.append(grid.GetColLabelValue(j))
+
+    incidence = []
+    for i in range(grid.GetNumberRows()):
+        for j in range(grid.GetNumberCols()):
+            if grid.GetCellValue(i, j) != "":
+                incidence.append([grid.GetRowLabelValue(i), grid.GetColLabelValue(j)])
+
+    return objects, attributes, incidence
+
+
 class TableService:
 
     def __init__(self, frame, datastorage):
@@ -119,7 +139,7 @@ class TableService:
             col_offset = self.frame.result_grid.GetNumberCols()
             self.frame.result_grid.AppendCols(len(col_labels))
             for new_col in range(len(col_labels)):
-                self.frame.result_grid.SetColLabelValue(col_offset + new_col, self.frame.main_grid.GetColLabelValue(col) + ":\n" + col_labels[new_col])
+                self.frame.result_grid.SetColLabelValue(col_offset + new_col, self.frame.main_grid.GetColLabelValue(col) + ": " + col_labels[new_col])
 
             # Fill in Cells from Dataset
             for i in range(self.frame.main_grid.GetNumberRows()):
@@ -865,26 +885,13 @@ class TableService:
     def get_draw_lattice(self, draw_type, evt=None):
         def draw_lattice(evt=None):
 
-            objects = []
-            for i in range(self.current_grid.GetNumberRows()):
-                objects.append(self.current_grid.GetRowLabelValue(i))
-
-            attributes = []
-            for j in range(self.current_grid.GetNumberCols()):
-                attributes.append(self.current_grid.GetColLabelValue(j))
-
-            incidence = []
-            for i in range(self.current_grid.GetNumberRows()):
-                for j in range(self.current_grid.GetNumberCols()):
-                    if self.current_grid.GetCellValue(i, j) != "":
-                        incidence.append([self.current_grid.GetRowLabelValue(i), self.current_grid.GetColLabelValue(j)])
+            objects, attributes, incidence = get_grid_data(self.current_grid)
 
             lattice = api.request_lattice(objects, attributes, incidence, draw_type)
 
             self.datastorage.lattice = lattice['layout']['result']
             self.gservice.draw_lattice()
 
-            api.request_implications(objects, attributes, incidence)
         return draw_lattice
 
     def drop_empty_cols(self, evt=None):

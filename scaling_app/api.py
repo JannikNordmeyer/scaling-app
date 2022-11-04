@@ -37,13 +37,34 @@ def request_implications(objects, attributes, incidence):
                          "incidence": incidence}},
 
         "implications": {"type": "function",
-                         "name": "approx-canonical-base",
+                         "name": "canonical-base",
                          "args": ["context"]},
     }
     headers = {"Content-Type": "application/json"}
 
     response = requests.post('http://127.0.0.1:8080', data=json.dumps(data, indent=4), headers=headers)
 
-    print(response.json())
+    return response.json()
+
+
+def request_rules(objects, attributes, incidence, minsupp, minconf):
+    data = {
+        "id": "Request",
+        "context": {"type": "context",  # call function
+                    "data":
+                        {"objects": objects,
+                         "attributes": attributes,
+                         "incidence": incidence}},
+        "minsupp": {"type": "float",
+                    "data": minsupp},
+        "minconf": {"type": "float",
+                    "data": minconf},
+        "rules": {"type": "function",
+                  "name": "luxenburger-base",
+                  "args": ["context", "minsupp", "minconf"]},
+    }
+    headers = {"Content-Type": "application/json"}
+
+    response = requests.post('http://127.0.0.1:8080', data=json.dumps(data, indent=4), headers=headers)
 
     return response.json()

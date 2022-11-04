@@ -105,8 +105,8 @@ def build_ui():
     frame.tabpane = wx.BoxSizer()
     frame.tabs = wx.Notebook(frame.panelBottom)
     tab1 = concepts.Concepts(frame.tabs)
-    tab2 = implications.Implications(frame.tabs)
-    tab3 = rules.Rules(frame.tabs)
+    tab2 = implications.Implications(frame.tabs, frame)
+    tab3 = rules.Rules(frame.tabs, frame)
 
     frame.tabs.AddPage(tab1, _("Concepts"))
     frame.tabs.AddPage(tab2, _("Implications"))
