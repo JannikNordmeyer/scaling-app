@@ -30,7 +30,7 @@ def request_lattice(address, objects, attributes, incidence, draw_type="freese-l
 def request_implications(address, objects, attributes, incidence):
     data = {
         "id": "Request",
-        "context": {"type": "context",  # call function
+        "context": {"type": "context",
                     "data":
                         {"objects": objects,
                          "attributes": attributes,
@@ -52,7 +52,7 @@ def request_implications(address, objects, attributes, incidence):
 def request_rules(address, objects, attributes, incidence, minsupp, minconf):
     data = {
         "id": "Request",
-        "context": {"type": "context",  # call function
+        "context": {"type": "context",
                     "data":
                         {"objects": objects,
                          "attributes": attributes,
@@ -74,13 +74,33 @@ def request_rules(address, objects, attributes, incidence, minsupp, minconf):
         return None
 
 
-def check_connection(address):
+def request_concepts(address, objects, attributes, incidence):
+    data = {
+        "id": "Request",
+        "context": {"type": "context",
+                    "data":
+                        {"objects": objects,
+                         "attributes": attributes,
+                         "incidence": incidence}},
+        "concepts": {"type": "function",
+                     "name": "concepts",
+                     "args": ["context"]},
+    }
+    headers = {"Content-Type": "application/json"}
 
+    try:
+        response = requests.post(address, data=json.dumps(data, indent=4), headers=headers)
+        return response.json()
+    except:
+        return None
+
+
+def check_connection(address):
     data = {
         "id": "Establish Connection",
         "version": {"type": "function",
-                  "name": "conexp-version",
-                  "args": []},
+                    "name": "conexp-version",
+                    "args": []},
     }
     headers = {"Content-Type": "application/json"}
     try:
@@ -89,4 +109,3 @@ def check_connection(address):
 
     except:
         return False
-

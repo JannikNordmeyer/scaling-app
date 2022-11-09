@@ -26,10 +26,14 @@ class Rules(wx.Panel):
         self.top_sizer.Add(self.conf_selector, 1, wx.TOP | wx.LEFT)
 
         self.status_text = wx.StaticText(self, -1, "Rules not yet computed.", (20, 20))
+        self.list = wx.ListCtrl(self, -1, style=wx.LC_REPORT)
+        self.list.InsertColumn(0, "Premise", width=750)
+        self.list.InsertColumn(1, "Conclusion", width=750)
 
         self.sizer = wx.BoxSizer(wx.VERTICAL)
         self.sizer.Add(self.top_sizer, 1, wx.TOP | wx.LEFT)
-        self.sizer.Add(self.status_text, 8, wx.TOP | wx.LEFT)
+        self.sizer.Add(self.status_text, 1, wx.LEFT)
+        self.sizer.Add(self.list, 8, wx.TOP | wx.LEFT)
 
         self.SetSizer(self.sizer)
 
@@ -48,8 +52,11 @@ class Rules(wx.Panel):
             menuservice.connection_error_dialog()
             return
 
-        impl_str = ""
+        row_counter = 0
         for i in rules["rules"]["result"]:
-            impl_str += str(i[0]) + "->" + str(i[1]) + "\n"
+            self.list.InsertItem(row_counter, str(i[0]))
+            self.list.SetItem(row_counter, 1, "->  " + str(i[1]))
+            row_counter += 1
 
-        self.status_text.SetLabel(impl_str)
+        self.status_text.SetLabel("Association Rules:")
+

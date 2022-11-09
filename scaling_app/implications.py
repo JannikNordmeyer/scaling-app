@@ -14,10 +14,14 @@ class Implications(wx.Panel):
         self.compute_button = wx.Button(self, -1, "Compute", size=wx.Size(100, 1))
         self.compute_button.Bind(wx.EVT_BUTTON, self.compute)
         self.status_text = wx.StaticText(self, -1, "Implication not yet computed.", (20, 20))
+        self.list = wx.ListCtrl(self, -1, style=wx.LC_REPORT)
+        self.list.InsertColumn(0, "Premise", width=750)
+        self.list.InsertColumn(1, "Conclusion", width=750)
 
         self.sizer = wx.BoxSizer(wx.VERTICAL)
         self.sizer.Add(self.compute_button, 1, wx.TOP | wx.LEFT)
-        self.sizer.Add(self.status_text, 8, wx.TOP | wx.LEFT)
+        self.sizer.Add(self.status_text, 1, wx.LEFT)
+        self.sizer.Add(self.list, 8, wx.TOP | wx.LEFT)
 
         self.SetSizer(self.sizer)
 
@@ -29,9 +33,11 @@ class Implications(wx.Panel):
             menuservice.connection_error_dialog()
             return
 
-        impl_str = ""
+        row_counter = 0
         for i in implications["implications"]["result"]:
-            impl_str += str(i[0]) + "->" + str(i[1]) + "\n"
 
-        self.status_text.SetLabel(impl_str)
+            self.list.InsertItem(row_counter, str(i[0]))
+            self.list.SetItem(row_counter, 1, "->  " + str(i[1]))
+            row_counter += 1
 
+        self.status_text.SetLabel("Implications:")

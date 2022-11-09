@@ -107,7 +107,7 @@ def build_ui():
     # Bottom Tabs
     frame.tabpane = wx.BoxSizer()
     frame.tabs = wx.Notebook(frame.panelBottom)
-    concepts_tab = concepts.Concepts(frame.tabs)
+    concepts_tab = concepts.Concepts(frame.tabs, frame, mservice)
     implications_tab = implications.Implications(frame.tabs, frame, mservice)
     rules_tab = rules.Rules(frame.tabs, frame, mservice)
 
