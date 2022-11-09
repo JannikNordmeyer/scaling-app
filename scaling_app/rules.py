@@ -52,6 +52,10 @@ class Rules(wx.Panel):
             menuservice.connection_error_dialog()
             return
 
+        self.list.ClearAll()
+        self.list.InsertColumn(0, "Premise", width=750)
+        self.list.InsertColumn(1, "Conclusion", width=750)
+
         row_counter = 0
         for i in rules["rules"]["result"]:
             self.list.InsertItem(row_counter, str(i[0]))

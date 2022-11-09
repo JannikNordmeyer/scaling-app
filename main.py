@@ -112,7 +112,7 @@ def build_ui():
     rules_tab = rules.Rules(frame.tabs, frame, mservice)
 
     frame.Bind(wx.EVT_MENU, mservice.comp_concepts, comp_concepts)
-    frame.Bind(wx.EVT_MENU, implications_tab.compute, comp_implications)
+    frame.Bind(wx.EVT_MENU, implications_tab.compute_canon, comp_implications)
     frame.Bind(wx.EVT_MENU, rules_tab.compute, comp_rules)
 
     frame.tabs.AddPage(concepts_tab, _("Concepts"))

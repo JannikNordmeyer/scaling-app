@@ -15,7 +15,6 @@ class Concepts(wx.Panel):
         self.compute_button.Bind(wx.EVT_BUTTON, self.compute)
         self.status_text = wx.StaticText(self, -1, "Concepts not yet computed.", (20, 20))
         self.list = wx.ListCtrl(self, -1, style=wx.LC_REPORT)
-        self.list.InsertColumn(0, "", width=1500)
 
         self.sizer = wx.BoxSizer(wx.VERTICAL)
         self.sizer.Add(self.compute_button, 1, wx.TOP | wx.LEFT)
@@ -31,6 +30,9 @@ class Concepts(wx.Panel):
         if implications is None:
             menuservice.connection_error_dialog()
             return
+
+        self.list.ClearAll()
+        self.list.InsertColumn(0, "", width=1500)
 
         row_counter = 0
         for i in implications["concepts"]["result"]:

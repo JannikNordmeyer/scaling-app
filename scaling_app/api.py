@@ -27,7 +27,7 @@ def request_lattice(address, objects, attributes, incidence, draw_type="freese-l
     return response.json()
 
 
-def request_implications(address, objects, attributes, incidence):
+def request_implications_canonical(address, objects, attributes, incidence):
     data = {
         "id": "Request",
         "context": {"type": "context",
@@ -39,6 +39,31 @@ def request_implications(address, objects, attributes, incidence):
         "implications": {"type": "function",
                          "name": "canonical-base",
                          "args": ["context"]},
+    }
+    headers = {"Content-Type": "application/json"}
+
+    try:
+        response = requests.post(address, data=json.dumps(data, indent=4), headers=headers)
+        return response.json()
+    except:
+        return None
+
+
+def request_implications_ganter(address, objects, attributes, incidence):
+    data = {
+        "id": "Request",
+        "context": {"type": "context",
+                    "data":
+                        {"objects": objects,
+                         "attributes": attributes,
+                         "incidence": incidence}},
+
+        "implications_canon": {"type": "function",
+                               "name": "canonical-base",
+                               "args": ["context"]},
+        "implications_ganter": {"type": "function",
+                                "name": "ganter-base",
+                                "args": ["implications_canon"]},
     }
     headers = {"Content-Type": "application/json"}
 
