@@ -29,6 +29,11 @@ class MenuService:
 
         self.api_address = "http://127.0.0.1:8080"
 
+    def csv_tab_changed(self, evt=None):
+        self.tableservice.get_save_to_storage()()
+        self.frame.menupanel.page_changed(self.frame.csvtabs.GetSelection())
+        evt.Skip()
+
     def show_row_menu(self, evt):
 
         menu = wx.Menu()

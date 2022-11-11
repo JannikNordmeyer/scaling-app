@@ -6,7 +6,7 @@ from scaling_app import implications
 from scaling_app import rules
 import gettext
 import locale
-
+from scaling_app.context_menu import ContextMenu
 
 def build_ui():
 
@@ -63,17 +63,22 @@ def build_ui():
     # Screen Layout
     frame.hsplitter = wx.SplitterWindow(frame, style=wx.SP_LIVE_UPDATE)
     frame.vsplitter = wx.SplitterWindow(frame.hsplitter, style=wx.SP_LIVE_UPDATE)
+    frame.gridsplitter = wx.SplitterWindow(frame.vsplitter, style=wx.SP_LIVE_UPDATE)
 
     frame.panelLeft = wx.Panel(frame.hsplitter, wx.ID_ANY, style=wx.BORDER_SUNKEN)
-    frame.panelTop = wx.Panel(frame.vsplitter, wx.ID_ANY, style=wx.BORDER_SUNKEN)
+    frame.panelTop = wx.Panel(frame.gridsplitter, wx.ID_ANY, style=wx.BORDER_SUNKEN)
     frame.panelBottom = wx.Panel(frame.vsplitter, wx.ID_ANY, style=wx.BORDER_SUNKEN)
+    frame.menupanel = ContextMenu(frame.gridsplitter, frame, mservice, tservice)
 
-    frame.vsplitter.SplitHorizontally(frame.panelTop, frame.panelBottom)
+    frame.gridsplitter.SplitVertically(frame.panelTop, frame.menupanel)
+    frame.gridsplitter.SetMinimumPaneSize(100)
+    frame.gridsplitter.SetSashPosition(2000)
+    frame.vsplitter.SplitHorizontally(frame.gridsplitter, frame.panelBottom)
+    frame.vsplitter.SetMinimumPaneSize(100)
+    frame.vsplitter.SetSashPosition(400)
     frame.hsplitter.SplitVertically(frame.panelLeft, frame.vsplitter)
     frame.hsplitter.SetMinimumPaneSize(100)
     frame.hsplitter.SetSashPosition(400)
-    frame.vsplitter.SetMinimumPaneSize(100)
-    frame.vsplitter.SetSashPosition(400)
 
     # Table Headers
     frame.csvbox = wx.BoxSizer(wx.VERTICAL)
@@ -102,7 +107,7 @@ def build_ui():
     frame.csvtabs.AddPage(frame.result_grid, _("Scaled Context"))
     storage.tabs.append(frame.result_grid)
 
-    frame.csvtabs.Bind(wx.EVT_NOTEBOOK_PAGE_CHANGED, tservice.get_save_to_storage())
+    frame.csvtabs.Bind(wx.EVT_NOTEBOOK_PAGE_CHANGED, mservice.csv_tab_changed)
 
     # Bottom Tabs
     frame.tabpane = wx.BoxSizer()
@@ -136,6 +141,7 @@ def build_ui():
 app = wx.App()
 frame = wx.Frame(None, title='FCA', size=(1200, 750))
 frame.Center()
+frame.Maximize(True)
 storage = datastorage.DataStorage()
 tservice = tableservice.TableService(frame, storage)
 gservice = graphservice.GraphService(frame, storage)

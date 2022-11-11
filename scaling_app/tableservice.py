@@ -768,7 +768,7 @@ class TableService:
             self.current_grid.SetCellValue(i, a, self.current_grid.GetCellValue(i, b))
             self.current_grid.SetCellValue(i, b, temp)
 
-    def purge_table(self, evt):
+    def purge_table(self, evt=None):
         if not self.is_empty():
             self.datastorage.set_edited()
             self.current_grid.ClearGrid()
