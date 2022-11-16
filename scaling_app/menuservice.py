@@ -2,7 +2,10 @@ import json
 import wx
 import sys
 import tkinter.filedialog
-from scaling_app import constants, api
+
+from wx import grid
+
+from scaling_app import constants, api, tableservice
 import gettext
 
 _ = gettext.gettext
@@ -219,7 +222,7 @@ class MenuService:
         self.frame.PopupMenu(menu)
         menu.Destroy()
 
-    def load_data(self, e):
+    def load_data(self, evt=None):
 
         tkinter.Tk().withdraw()
         filepath = tkinter.filedialog.askopenfilename(filetypes=[("CSV files", "*.csv")])
@@ -248,7 +251,51 @@ class MenuService:
             dialog.Destroy()
             self.datastorage.data = storage_backup
 
-    def load_lattice(self, e):
+    def load_fca(self, evt=None):
+        tkinter.Tk().withdraw()
+        filepath = tkinter.filedialog.askopenfilename(filetypes=[("JSON files", "*.json")])
+        if filepath == "":
+            return
+        fca = json.load(open(filepath))
+
+        self.frame.main_grid.DeleteRows(0, self.frame.main_grid.GetNumberRows())
+        tableservice.delete_cols(self.frame.main_grid)
+
+        attributes = fca["context"]["attributes"]
+        i = 0
+        for a in attributes:
+            self.frame.main_grid.AppendCols(1)
+            self.frame.main_grid.SetColLabelValue(i, a)
+            i += 1
+
+        adj_list = fca["context"]["adjacency-list"]
+        j = 0
+        for b in adj_list:
+            self.frame.main_grid.AppendRows(1)
+            self.frame.main_grid.SetRowLabelValue(j, b["object"])
+            intent = b["attributes"]
+            for i in range(len(attributes)):
+                if attributes[i] in intent:
+                    self.frame.main_grid.SetCellValue(j, i, "True")
+                else:
+                    self.frame.main_grid.SetCellValue(j, i, "False")
+            j += 1
+
+        implications = fca["implication_sets"][0]["implications"]
+        implications_formatted = list()
+        for i in implications:
+            implications_formatted.append((i["premise"], i["conclusion"]))
+        self.datastorage.implications_tab.display(implications_formatted)
+
+        self.datastorage.clear_table()
+        self.tableservice.clear_scalings()
+        self.statservice.clear_stats()
+
+        self.frame.main_grid.SetRowLabelSize(grid.GRID_AUTOSIZE)
+        self.frame.main_grid.SetCornerLabelValue("")
+        self.tableservice.check_attribute_levels()
+
+    def load_lattice(self, evt=None):
 
         tkinter.Tk().withdraw()
         filepath = tkinter.filedialog.askopenfilename(filetypes=[("JSON files", "*.json")])

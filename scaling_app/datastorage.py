@@ -19,6 +19,10 @@ class DataStorage:
     data = None
     table = Table()
 
+    concepts_tab = None
+    implications_tab= None
+    rules_tab = None
+
     # Grid Tabs
     tabs = list()
     # Stat Tabs

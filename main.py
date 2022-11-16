@@ -26,12 +26,14 @@ def build_ui():
     file_menu = wx.Menu()
     file_load = file_menu.Append(wx.ID_ANY, _('Load Data'), _('Load Data'))
     graph_load = file_menu.Append(wx.ID_ANY, _('Load Lattice'), _('Load Lattice'))
+    fca_load = file_menu.Append(wx.ID_ANY, _('Load FCA'), _('Load FCA'))
     file_save = file_menu.Append(wx.ID_ANY, _('Save Data'), _('Save Data'))
     file_menu.AppendSeparator()
     file_quit = file_menu.Append(wx.ID_ANY, _('Empty Frame'), _('Empty Frame'))
     menu_bar.Append(file_menu, _('Data'))
     frame.Bind(wx.EVT_MENU, mservice.load_data, file_load)
     frame.Bind(wx.EVT_MENU, mservice.load_lattice, graph_load)
+    frame.Bind(wx.EVT_MENU, mservice.load_fca, fca_load)
     frame.Bind(wx.EVT_MENU, mservice.save_data, file_save)
     frame.Bind(wx.EVT_MENU, mservice.empty_frame, file_quit)
 
@@ -123,6 +125,10 @@ def build_ui():
     frame.tabs.AddPage(concepts_tab, _("Concepts"))
     frame.tabs.AddPage(implications_tab, _("Implications"))
     frame.tabs.AddPage(rules_tab, _("Rules"))
+
+    storage.concepts_tab = concepts_tab
+    storage.implications_tab = implications_tab
+    storage.rules_tab = rules_tab
 
     frame.csvbox.Add(frame.csvtabs, wx.ID_ANY, wx.EXPAND)
     frame.panelTop.SetSizer(frame.csvbox)

@@ -27,6 +27,21 @@ def request_lattice(address, objects, attributes, incidence, draw_type="freese-l
     return response.json()
 
 
+def request_layout_from_lattice(address, lattice):
+    data = {
+        "id": "Request",
+
+        "layout": {"type": "function",
+                   "name": constants.dim,
+                   "args": [lattice]},
+    }
+    headers = {"Content-Type": "application/json"}
+
+    response = requests.post(address, data=json.dumps(data, indent=4), headers=headers)
+
+    return response.json()
+
+
 def request_implications_canonical(address, objects, attributes, incidence):
     data = {
         "id": "Request",

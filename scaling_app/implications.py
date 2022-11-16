@@ -36,7 +36,7 @@ class Implications(wx.Panel):
             menuservice.connection_error_dialog()
             return
 
-        self.display(implications)
+        self.display(implications["implications"]["result"])
 
     def compute_ganter(self, evt=None):
         objects, attributes, incidence = tableservice.get_grid_data(self.frame.result_grid)
@@ -46,7 +46,7 @@ class Implications(wx.Panel):
             menuservice.connection_error_dialog()
             return
 
-        self.display(implications)
+        self.display(implications["implications"]["result"])
 
     def display(self, implications):
 
@@ -55,7 +55,7 @@ class Implications(wx.Panel):
         self.list.InsertColumn(1, "Conclusion", width=750)
 
         row_counter = 0
-        for i in implications["implications"]["result"]:
+        for i in implications:
 
             self.list.InsertItem(row_counter, str(i[0]))
             self.list.SetItem(row_counter, 1, "->  " + str(i[1]))
