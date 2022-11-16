@@ -38,20 +38,20 @@ class GraphService:
                 name = str(self.datastorage.lattice['shorthand-annotation'][int(node_number)][node_number][0]) + "\n" \
                        + str(self.datastorage.lattice['shorthand-annotation'][int(node_number)][node_number][1])
 
-                graph.add_node(node_number, pos=(coords[0], -coords[1]), color="blue", label=name)
+                graph.add_node(node_number, pos=(coords[0], coords[1]), color="blue", label=name)
 
         for edges in self.datastorage.lattice['edges']:
             for origin in edges:
                 for target in edges[origin]:
                     graph.add_edge(origin, target)
 
-        xbuffer = 0.05
-        ybuffer = 0.2
+        xbuffer = 1
+        ybuffer = 0.8
 
-        graph.add_node("anchor0", pos=(x_min - xbuffer, -y_min + ybuffer), color="red", label="")
-        graph.add_node("anchor1", pos=(x_max + xbuffer, -y_min + ybuffer), color="red", label="")
-        graph.add_node("anchor2", pos=(x_min - xbuffer, -y_max - ybuffer), color="red", label="")
-        graph.add_node("anchor3", pos=(x_max + xbuffer, -y_max - ybuffer), color="red", label="")
+        graph.add_node("anchor0", pos=(x_min - xbuffer, y_min - ybuffer), color="red", label="")
+        graph.add_node("anchor1", pos=(x_max + xbuffer, y_min - ybuffer), color="red", label="")
+        graph.add_node("anchor2", pos=(x_min - xbuffer, y_max + ybuffer), color="red", label="")
+        graph.add_node("anchor3", pos=(x_max + xbuffer, y_max + ybuffer), color="red", label="")
 
         self.frame.graph.draw_graph(graph, (x_min, x_max, y_min, y_max), y_min_node, y_max_node)
 

@@ -43,7 +43,7 @@ class GraphPanel(wx.Panel):
             if event.inaxes and event.button == MouseButton.LEFT:
                 # Determine Selected Node
                 for n in self.graph.nodes:
-                    if euclidiandistance(self.graph.nodes[n]["pos"], (event.xdata, event.ydata)) < 0.1:
+                    if euclidiandistance(self.graph.nodes[n]["pos"], (event.xdata, event.ydata)) < 0.3:
                         if "anchor" in n:
                             return
                         self.selectednode = n
@@ -60,21 +60,24 @@ class GraphPanel(wx.Panel):
                 x = event.xdata
                 y = event.ydata
 
-                node_buffer = 0.2
+                node_buffer = 0.0
 
+                # x_min
                 if x < self.drag_borders[0]:
                     x = self.drag_borders[0]
+                # x_max
                 if x > self.drag_borders[1]:
                     x = self.drag_borders[1]
-                if y > self.drag_borders[2] - node_buffer:
+                # y_min
+                if y < self.drag_borders[2] + node_buffer:
                     if self.selectednode == self.y_min_node:
-                        y = -self.borders[2]
+                        y = self.borders[2]
                     else:
                         y = self.drag_borders[2] - node_buffer
-
-                if y < self.drag_borders[3] + node_buffer:
+                # y_max
+                if y > self.drag_borders[3] - node_buffer:
                     if self.selectednode == self.y_max_node:
-                        y = -self.borders[3]
+                        y = self.borders[3]
                     else:
                         y = self.drag_borders[3] + node_buffer
 
@@ -112,7 +115,7 @@ class GraphPanel(wx.Panel):
         self.color_map.clear()
         for i in range(self.graph.number_of_nodes()):
             if i >= self.graph.number_of_nodes()-4:
-                self.color_map.append("None")
+                self.color_map.append("blue")
             else:
                 self.color_map.append("red")
         nx.draw(graph, pos=self.node_positions, node_color=self.color_map,  with_labels=False, alpha=None)
@@ -124,21 +127,21 @@ class GraphPanel(wx.Panel):
 
         x_min = self.borders[0]
         x_max = self.borders[1]
-        y_min = -self.borders[2]
-        y_max = -self.borders[3]
+        y_min = self.borders[2]
+        y_max = self.borders[3]
 
         #y_min
         for edge in self.storage.lattice['edges']:
             for start, targets in edge.items():
                 if node in targets:
-                    if self.node_positions[start][1] < y_min:
+                    if self.node_positions[start][1] > y_min:
                         y_min = self.node_positions[start][1]
         # y_max
         for edge in self.storage.lattice['edges']:
             for start, targets in edge.items():
                 if start == node:
                     for target in targets:
-                        if self.node_positions[target][1] > y_max:
+                        if self.node_positions[target][1] < y_max:
                             y_max = self.node_positions[target][1]
 
         self.drag_borders = (x_min, x_max, y_min, y_max)

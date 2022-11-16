@@ -29,6 +29,7 @@ class Implications(wx.Panel):
         self.SetSizer(self.sizer)
 
     def compute_canon(self, evt=None):
+        self.list.ClearAll()
         objects, attributes, incidence = tableservice.get_grid_data(self.frame.result_grid)
         implications = api.request_implications_canonical(self.mservice.api_address, objects, attributes, incidence)
 
@@ -39,6 +40,7 @@ class Implications(wx.Panel):
         self.display(implications["implications"]["result"])
 
     def compute_ganter(self, evt=None):
+        self.list.ClearAll()
         objects, attributes, incidence = tableservice.get_grid_data(self.frame.result_grid)
         implications = api.request_implications_ganter(self.mservice.api_address, objects, attributes, incidence)
 
@@ -50,7 +52,6 @@ class Implications(wx.Panel):
 
     def display(self, implications):
 
-        self.list.ClearAll()
         self.list.InsertColumn(0, "Premise", width=750)
         self.list.InsertColumn(1, "Conclusion", width=750)
 
