@@ -115,7 +115,7 @@ class GraphPanel(wx.Panel):
         self.color_map.clear()
         for i in range(self.graph.number_of_nodes()):
             if i >= self.graph.number_of_nodes()-4:
-                self.color_map.append("blue")
+                self.color_map.append("none")
             else:
                 self.color_map.append("red")
         nx.draw(graph, pos=self.node_positions, node_color=self.color_map,  with_labels=False, alpha=None)

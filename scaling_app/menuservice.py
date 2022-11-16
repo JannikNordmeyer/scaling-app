@@ -305,15 +305,14 @@ class MenuService:
         storage_backup = self.datastorage.lattice
         self.datastorage.lattice = json.load(file)
 
-        self.graphservice.draw_lattice()
-        """try:
+        try:
             self.graphservice.draw_lattice()
         except:
             errortext = _('An error has occurred loading the lattice from the selected file. The file may be poorly formatted.')
             dialog = wx.MessageDialog(None, errortext, _('Error Loading Lattice'), wx.OK)
             dialog.ShowModal()
             dialog.Destroy()
-            self.datastorage.lattice = storage_backup"""
+            self.datastorage.lattice = storage_backup
 
     def save_data(self, e):
 
