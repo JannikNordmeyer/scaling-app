@@ -1,7 +1,7 @@
 import csv
 import wx
 import wx.grid as grid
-from scaling_app import constants
+from scaling_app import constants, menuservice
 from scaling_app import api
 
 
@@ -885,12 +885,20 @@ class TableService:
     def get_draw_lattice(self, draw_type, evt=None):
         def draw_lattice(evt=None):
 
+            wx.BeginBusyCursor()
             objects, attributes, incidence = get_grid_data(self.current_grid)
 
-            lattice = api.request_lattice(self.mservice.api_address, objects, attributes, incidence, draw_type)
+            try:
+
+                lattice = api.request_lattice_layout(self.mservice.api_address, objects, attributes, incidence, draw_type)
+            except:
+                menuservice.connection_error_dialog()
+                wx.EndBusyCursor()
+                return
 
             self.datastorage.lattice = lattice['layout']['result']
             self.gservice.draw_lattice()
+            wx.EndBusyCursor()
 
         return draw_lattice
 

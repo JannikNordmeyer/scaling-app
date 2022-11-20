@@ -4,7 +4,7 @@ import json
 from scaling_app import constants
 
 
-def request_lattice(address, objects, attributes, incidence, draw_type="freese-layout"):
+def request_lattice_layout(address, objects, attributes, incidence, draw_type="freese-layout"):
     data = {
         "id": "Request",
         "context": {"type": "context",
@@ -19,21 +19,6 @@ def request_lattice(address, objects, attributes, incidence, draw_type="freese-l
         "layout": {"type": "function",
                    "name": draw_type,
                    "args": ["lattice"]},
-    }
-    headers = {"Content-Type": "application/json"}
-
-    response = requests.post(address, data=json.dumps(data, indent=4), headers=headers)
-
-    return response.json()
-
-
-def request_layout_from_lattice(address, lattice):
-    data = {
-        "id": "Request",
-
-        "layout": {"type": "function",
-                   "name": constants.dim,
-                   "args": [lattice]},
     }
     headers = {"Content-Type": "application/json"}
 

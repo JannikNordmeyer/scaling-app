@@ -14,9 +14,9 @@ class Rules(wx.Panel):
         self.compute_button = wx.Button(self, -1, "Compute", size=wx.Size(100, 25))
         self.compute_button.Bind(wx.EVT_BUTTON, self.compute)
         self.supp_label = wx.StaticText(self, -1, "  Minimum Support:   ", (20, 20))
-        self.supp_selector = wx.TextCtrl(self, size=wx.Size(1, 25))
+        self.supp_selector = wx.TextCtrl(self, value="0.5", size=wx.Size(1, 25))
         self.conf_label = wx.StaticText(self, -1, "  Minimum Confidence:   ", (20, 20))
-        self.conf_selector = wx.TextCtrl(self, size=wx.Size(1, 25))
+        self.conf_selector = wx.TextCtrl(self, value="0.5", size=wx.Size(1, 25))
 
         self.top_sizer = wx.BoxSizer(wx.HORIZONTAL)
         self.top_sizer.Add(self.compute_button, 1, wx.TOP | wx.LEFT)
@@ -46,10 +46,12 @@ class Rules(wx.Panel):
         except:
             return
 
+        wx.BeginBusyCursor()
         rules = api.request_rules(self.mservice.api_address, objects, attributes, incidence, supp, conf)
 
         if rules is None:
             menuservice.connection_error_dialog()
+            wx.EndBusyCursor()
             return
 
         self.list.ClearAll()
@@ -63,4 +65,5 @@ class Rules(wx.Panel):
             row_counter += 1
 
         self.status_text.SetLabel("Association Rules:")
+        wx.EndBusyCursor()
 

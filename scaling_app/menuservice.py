@@ -371,10 +371,12 @@ class MenuService:
         dialog = wx.TextEntryDialog(None, "Enter API Address:", value=self.api_address)
         answer = dialog.ShowModal()
         if answer == wx.ID_OK:
+            wx.BeginBusyCursor()
             if api.check_connection(dialog.GetValue()):
                 self.api_address = dialog.GetValue()
             else:
                 connection_error_dialog(dialog.GetValue())
+            wx.EndBusyCursor()
         dialog.Destroy()
 
     def quit_scaling(self, e=None):

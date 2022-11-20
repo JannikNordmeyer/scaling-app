@@ -29,26 +29,32 @@ class Implications(wx.Panel):
         self.SetSizer(self.sizer)
 
     def compute_canon(self, evt=None):
+        wx.BeginBusyCursor()
         self.list.ClearAll()
         objects, attributes, incidence = tableservice.get_grid_data(self.frame.result_grid)
         implications = api.request_implications_canonical(self.mservice.api_address, objects, attributes, incidence)
 
         if implications is None:
             menuservice.connection_error_dialog()
+            wx.EndBusyCursor()
             return
 
         self.display(implications["implications"]["result"])
+        wx.EndBusyCursor()
 
     def compute_ganter(self, evt=None):
+        wx.BeginBusyCursor()
         self.list.ClearAll()
         objects, attributes, incidence = tableservice.get_grid_data(self.frame.result_grid)
         implications = api.request_implications_ganter(self.mservice.api_address, objects, attributes, incidence)
 
         if implications is None:
             menuservice.connection_error_dialog()
+            wx.EndBusyCursor()
             return
 
         self.display(implications["implications"]["result"])
+        wx.EndBusyCursor()
 
     def display(self, implications):
 

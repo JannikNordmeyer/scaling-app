@@ -24,11 +24,13 @@ class Concepts(wx.Panel):
         self.SetSizer(self.sizer)
 
     def compute(self, evt=None):
+        wx.BeginBusyCursor()
         objects, attributes, incidence = tableservice.get_grid_data(self.frame.result_grid)
         implications = api.request_concepts(self.mservice.api_address, objects, attributes, incidence)
 
         if implications is None:
             menuservice.connection_error_dialog()
+            wx.EndBusyCursor()
             return
 
         self.list.ClearAll()
@@ -41,3 +43,4 @@ class Concepts(wx.Panel):
             row_counter += 1
 
         self.status_text.SetLabel("Concepts:")
+        wx.EndBusyCursor()
