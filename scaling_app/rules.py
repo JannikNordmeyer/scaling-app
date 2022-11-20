@@ -26,14 +26,14 @@ class Rules(wx.Panel):
         self.top_sizer.Add(self.conf_selector, 1, wx.TOP | wx.LEFT)
 
         self.status_text = wx.StaticText(self, -1, "Rules not yet computed.", (20, 20))
-        self.list = wx.ListCtrl(self, -1, style=wx.LC_REPORT)
+        self.list = wx.ListCtrl(self, -1, style=wx.LC_REPORT, size=wx.Size(2000, 550))
         self.list.InsertColumn(0, "Premise", width=750)
         self.list.InsertColumn(1, "Conclusion", width=750)
 
         self.sizer = wx.BoxSizer(wx.VERTICAL)
-        self.sizer.Add(self.top_sizer, 1, wx.TOP | wx.LEFT)
-        self.sizer.Add(self.status_text, 1, wx.LEFT)
-        self.sizer.Add(self.list, 8, wx.TOP | wx.LEFT)
+        self.sizer.Add(self.top_sizer, 0, wx.TOP | wx.LEFT)
+        self.sizer.Add(self.status_text, 0, wx.LEFT)
+        self.sizer.Add(self.list, 0, wx.TOP | wx.LEFT)
 
         self.SetSizer(self.sizer)
 

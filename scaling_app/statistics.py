@@ -46,7 +46,7 @@ class StatsPanel(wx.Panel):
         self.plot_combobox.SetSelection(0)
 
         sortings = [_('Alphabetical'), _('Numeric'), _('Substring'), _('Prefix'), _('Postfix'), _('Random')]
-        self.order_combobox = wx.ComboBox(self, choices=sortings, style=wx.CB_READONLY)
+        self.order_combobox = wx.ComboBox(self, choices=sortings, style=wx.CB_READONLY, size=wx.Size(100, 25))
         self.order_combobox.SetSelection(0)
 
         # Text for Central Tendencies
@@ -76,8 +76,8 @@ class StatsPanel(wx.Panel):
         self.hsizer_top.Add(self.binselector, 1, wx.TOP | wx.RIGHT)
 
         self.sizer = wx.BoxSizer(wx.VERTICAL)
-        self.sizer.Add(self.hsizer_top, 1, wx.TOP | wx.LEFT)
-        self.sizer.Add(self.order_combobox, 1, wx.TOP | wx.LEFT)
+        self.sizer.Add(self.hsizer_top, 0, wx.TOP | wx.LEFT)
+        self.sizer.Add(self.order_combobox, 0, wx.TOP | wx.LEFT)
         self.sizer.Add(self.canvas, 15, wx.TOP | wx.LEFT | wx.EXPAND)
         self.sizer.Add(self.sort_text, wx.TOP | wx.LEFT)
         self.sizer.Add(self.sort_grid, wx.TOP | wx.LEFT | wx.EXPAND)
