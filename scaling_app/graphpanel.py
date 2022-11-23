@@ -60,6 +60,7 @@ class GraphPanel(wx.Panel):
                 x = event.xdata
                 y = event.ydata
 
+                # Buffer distance to other nodes. Currently unused.
                 node_buffer = 0.0
 
                 # x_min

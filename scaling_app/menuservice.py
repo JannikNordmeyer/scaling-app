@@ -148,38 +148,12 @@ class MenuService:
             self.frame.Bind(wx.EVT_MENU, self.tableservice.drop_empty_cols, dropcols)
             self.frame.Bind(wx.EVT_MENU, self.tableservice.drop_empty_rows, droprows)
         if self.frame.csvtabs.GetSelection() == 1:
-            draw = wx.Menu()
-            dim = draw.Append(wx.ID_ANY, _("Dim Draw"))
-            self.frame.Bind(wx.EVT_MENU, self.tableservice.get_draw_lattice(constants.dim), dim)
+            self.add_draw_types(menu)
 
-            freese = draw.Append(wx.ID_ANY, _("Freese Draw"))
-            self.frame.Bind(wx.EVT_MENU, self.tableservice.get_draw_lattice(constants.freese), freese)
-
-            standard = draw.Append(wx.ID_ANY, _("Standard Draw"))
-            self.frame.Bind(wx.EVT_MENU, self.tableservice.get_draw_lattice(constants.standard), standard)
-
-            infadd = draw.Append(wx.ID_ANY, _("Inf-Additive Draw"))
-            self.frame.Bind(wx.EVT_MENU, self.tableservice.get_draw_lattice(constants.inf), infadd)
-
-            menu.Append(wx.ID_ANY, _("Draw Lattice"), draw)
         if self.frame.csvtabs.GetSelection() > 0 and _("Scaling:") in self.frame.csvtabs.GetPageText(self.frame.csvtabs.GetSelection()):
             menu.AppendSeparator()
-            result = menu.Append(wx.ID_ANY, _("View Result"))
-            self.frame.Bind(wx.EVT_MENU, self.tableservice.view_result, result)
-            draw = wx.Menu()
-            dim = draw.Append(wx.ID_ANY, _("Dim Draw"))
-            self.frame.Bind(wx.EVT_MENU, self.tableservice.get_draw_lattice(constants.dim), dim)
+            self.add_draw_types(menu)
 
-            freese = draw.Append(wx.ID_ANY, _("Freese Draw"))
-            self.frame.Bind(wx.EVT_MENU, self.tableservice.get_draw_lattice(constants.freese), freese)
-
-            standard = draw.Append(wx.ID_ANY, _("Standard Draw"))
-            self.frame.Bind(wx.EVT_MENU, self.tableservice.get_draw_lattice(constants.standard), standard)
-
-            infadd = draw.Append(wx.ID_ANY, _("Inf-Additive Draw"))
-            self.frame.Bind(wx.EVT_MENU, self.tableservice.get_draw_lattice(constants.inf), infadd)
-
-            menu.Append(wx.ID_ANY, _("Draw Lattice"), draw)
         if self.frame.csvtabs.GetSelection() > 0 and self.tableservice.current_attribute() in self.datastorage.result_visible:
             menu.AppendSeparator()
             to_scaling = menu.Append(wx.ID_ANY, _("Go to Scaling"))
@@ -210,13 +184,30 @@ class MenuService:
         self.frame.PopupMenu(menu)
         menu.Destroy()
 
+    def add_draw_types(self, menu):
+
+        draw = wx.Menu()
+        dim = draw.Append(wx.ID_ANY, _("Dim Draw"))
+        self.frame.Bind(wx.EVT_MENU, self.tableservice.get_draw_lattice(constants.dim), dim)
+
+        freese = draw.Append(wx.ID_ANY, _("Freese Draw"))
+        self.frame.Bind(wx.EVT_MENU, self.tableservice.get_draw_lattice(constants.freese), freese)
+
+        standard = draw.Append(wx.ID_ANY, _("Standard Draw"))
+        self.frame.Bind(wx.EVT_MENU, self.tableservice.get_draw_lattice(constants.standard), standard)
+
+        infadd = draw.Append(wx.ID_ANY, _("Inf-Additive Draw"))
+        self.frame.Bind(wx.EVT_MENU, self.tableservice.get_draw_lattice(constants.inf), infadd)
+
+        menu.Append(wx.ID_ANY, _("Draw Lattice"), draw)
+
     def graph_menu(self):
 
         menu = wx.Menu()
         redraw = menu.Append(wx.ID_ANY, _("Redraw Lattice"))
         clear = menu.Append(wx.ID_ANY, _("Clear Lattice"))
 
-        self.frame.Bind(wx.EVT_MENU, self.graphservice.draw_lattice, redraw)
+        self.frame.Bind(wx.EVT_MENU, self.graphservice.create_lattice_graph, redraw)
         self.frame.Bind(wx.EVT_MENU, self.graphservice.clear, clear)
 
         self.frame.PopupMenu(menu)
@@ -306,7 +297,7 @@ class MenuService:
         self.datastorage.lattice = json.load(file)
 
         try:
-            self.graphservice.draw_lattice()
+            self.graphservice.create_lattice_graph()
         except:
             errortext = _('An error has occurred loading the lattice from the selected file. The file may be poorly formatted.')
             dialog = wx.MessageDialog(None, errortext, _('Error Loading Lattice'), wx.OK)
@@ -362,9 +353,6 @@ class MenuService:
 
     def about(self, e):
         self.datastorage.status()
-
-    def comp_concepts(self, e):
-        print("Compute Concepts")
 
     def connect(self, evt=None):
 

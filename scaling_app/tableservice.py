@@ -897,7 +897,7 @@ class TableService:
                 return
 
             self.datastorage.lattice = lattice['layout']['result']
-            self.gservice.draw_lattice()
+            self.gservice.create_lattice_graph()
             wx.EndBusyCursor()
 
         return draw_lattice
