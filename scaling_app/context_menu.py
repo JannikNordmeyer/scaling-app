@@ -18,10 +18,10 @@ class ContextMenu(wx.Panel):
         self.button_draw.Hide()
 
         self.button_purge = wx.Button(self, -1, "Purge Table", size=wx.Size(100, 25))
-        self.button_purge.Bind(wx.EVT_BUTTON, self.tservice.purge_table)
+        self.button_purge.Bind(wx.EVT_BUTTON, self.tservice.s.purge_table)
 
         self.button_reset = wx.Button(self, -1, "Reset Table", size=wx.Size(100, 25))
-        self.button_reset.Bind(wx.EVT_BUTTON, self.tservice.reset_table)
+        self.button_reset.Bind(wx.EVT_BUTTON, self.tservice.s.reset_table)
 
         self.sizer = wx.BoxSizer(wx.VERTICAL)
         self.sizer.Add(self.button_purge, 0, wx.TOP | wx.LEFT)

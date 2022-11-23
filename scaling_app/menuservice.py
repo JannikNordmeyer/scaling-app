@@ -46,18 +46,18 @@ class MenuService:
             selected_scaling = self.datastorage.tabs[self.frame.csvtabs.GetSelection()].GetCornerLabelValue()
             col = self.datastorage.table.col_labels.index(selected_scaling)
 
-        if not self.tableservice.value_in_data(row_label, col):
+        if not self.tableservice.s.value_in_data(row_label, col):
             delrow = menu.Append(wx.ID_ANY, _("Delete Object"))
-            self.frame.Bind(wx.EVT_MENU, self.tableservice.get_delete_row(evt.GetRow()), delrow)
+            self.frame.Bind(wx.EVT_MENU, self.tableservice.s.get_delete_row(evt.GetRow()), delrow)
         purgerow = menu.Append(wx.ID_ANY, _("Purge Object"))
-        self.frame.Bind(wx.EVT_MENU, self.tableservice.get_purge_row(evt), purgerow)
+        self.frame.Bind(wx.EVT_MENU, self.tableservice.s.get_purge_row(evt), purgerow)
         floodrow = menu.Append(wx.ID_ANY, _("Fill Object"))
-        self.frame.Bind(wx.EVT_MENU, self.tableservice.get_flood_row(evt), floodrow)
-        if not self.tableservice.value_in_data(row_label, col):
+        self.frame.Bind(wx.EVT_MENU, self.tableservice.s.get_flood_row(evt), floodrow)
+        if not self.tableservice.s.value_in_data(row_label, col):
             edit = menu.Append(wx.ID_ANY, _("Edit Label"))
-            self.frame.Bind(wx.EVT_MENU, self.tableservice.get_edit_row_label(evt), edit)
+            self.frame.Bind(wx.EVT_MENU, self.tableservice.s.get_edit_row_label(evt), edit)
         new = menu.Append(wx.ID_ANY, _("Add Object"))
-        self.frame.Bind(wx.EVT_MENU, self.tableservice.get_add_row(evt), new)
+        self.frame.Bind(wx.EVT_MENU, self.tableservice.s.get_add_row(evt), new)
 
         self.frame.PopupMenu(menu)
         menu.Destroy()
@@ -66,22 +66,22 @@ class MenuService:
 
         menu = wx.Menu()
         delcol = menu.Append(wx.ID_ANY, _("Delete Attribute"))
-        self.frame.Bind(wx.EVT_MENU, self.tableservice.get_delete_col(evt.GetCol()), delcol)
+        self.frame.Bind(wx.EVT_MENU, self.tableservice.s.get_delete_col(evt.GetCol()), delcol)
         purgecol = menu.Append(wx.ID_ANY, _("Purge Attribute"))
-        self.frame.Bind(wx.EVT_MENU, self.tableservice.get_purge_col(evt), purgecol)
+        self.frame.Bind(wx.EVT_MENU, self.tableservice.s.get_purge_col(evt), purgecol)
         if self.frame.csvtabs.GetSelection() > 0:
             floodcol = menu.Append(wx.ID_ANY, _("Fill Attribute"))
-            self.frame.Bind(wx.EVT_MENU, self.tableservice.get_flood_col(evt), floodcol)
+            self.frame.Bind(wx.EVT_MENU, self.tableservice.s.get_flood_col(evt), floodcol)
         edit = menu.Append(wx.ID_ANY, _("Edit Label"))
-        self.frame.Bind(wx.EVT_MENU, self.tableservice.get_edit_col_label(evt), edit)
+        self.frame.Bind(wx.EVT_MENU, self.tableservice.s.get_edit_col_label(evt), edit)
         new = menu.Append(wx.ID_ANY, _("Add Attribute"))
-        self.frame.Bind(wx.EVT_MENU, self.tableservice.get_add_col(evt), new)
+        self.frame.Bind(wx.EVT_MENU, self.tableservice.s.get_add_col(evt), new)
 
         attribute = self.frame.main_grid.GetColLabelValue(evt.GetCol())
 
         if self.frame.csvtabs.GetSelection() == 0:
             if attribute not in self.datastorage.table.scalings and attribute in self.datastorage.table.attribute_levels:
-                if not self.tableservice.col_empty(evt.GetCol()):
+                if not self.tableservice.s.col_empty(evt.GetCol()):
                     menu.AppendSeparator()
                     scaling = wx.Menu()
                     custom = scaling.Append(wx.ID_ANY, _("Custom Scaling"))
@@ -112,7 +112,7 @@ class MenuService:
             level_ord = level.Append(wx.ID_ANY, _("Ordinal"))
             level_ord.SetBackgroundColour(constants.LEVEL_ORD_COLOR)
             self.frame.Bind(wx.EVT_MENU, self.tableservice.get_set_level(evt.GetCol(), attribute, constants.LEVEL_ORD), level_ord)
-            if self.tableservice.check_numeric_col(evt.GetCol()):
+            if self.tableservice.s.check_numeric_col(evt.GetCol()):
                 level_int = level.Append(wx.ID_ANY, _("Interval"))
                 level_int.SetBackgroundColour(constants.LEVEL_INT_COLOR)
                 self.frame.Bind(wx.EVT_MENU, self.tableservice.get_set_level(evt.GetCol(), attribute, constants.LEVEL_INT), level_int)
@@ -128,7 +128,7 @@ class MenuService:
     def label_menu(self, evt):
 
         evt.Skip()
-        if self.tableservice.current_attribute() not in self.datastorage.result_visible:
+        if self.tableservice.s.current_attribute() not in self.datastorage.result_visible:
             if evt.GetCol() == -1:
                 self.show_row_menu(evt)
             else:
@@ -140,27 +140,29 @@ class MenuService:
         if self.frame.csvtabs.GetSelection() != 1:
             purge = menu.Append(wx.ID_ANY, _("Purge Table"))
             reset = menu.Append(wx.ID_ANY, _("Reset Table"))
-            self.frame.Bind(wx.EVT_MENU, self.tableservice.purge_table, purge)
-            self.frame.Bind(wx.EVT_MENU, self.tableservice.reset_table, reset)
+            self.frame.Bind(wx.EVT_MENU, self.tableservice.s.purge_table, purge)
+            self.frame.Bind(wx.EVT_MENU, self.tableservice.s.reset_table, reset)
         if self.frame.csvtabs.GetSelection() == 0:
             dropcols = menu.Append(wx.ID_ANY, _("Drop Empty Columns"))
             droprows = menu.Append(wx.ID_ANY, _("Drop Empty Rows"))
-            self.frame.Bind(wx.EVT_MENU, self.tableservice.drop_empty_cols, dropcols)
-            self.frame.Bind(wx.EVT_MENU, self.tableservice.drop_empty_rows, droprows)
+            self.frame.Bind(wx.EVT_MENU, self.tableservice.s.drop_empty_cols, dropcols)
+            self.frame.Bind(wx.EVT_MENU, self.tableservice.s.drop_empty_rows, droprows)
         if self.frame.csvtabs.GetSelection() == 1:
             self.add_draw_types(menu)
 
         if self.frame.csvtabs.GetSelection() > 0 and _("Scaling:") in self.frame.csvtabs.GetPageText(self.frame.csvtabs.GetSelection()):
             menu.AppendSeparator()
+            result = menu.Append(wx.ID_ANY, _("View Result"))
+            self.frame.Bind(wx.EVT_MENU, self.tableservice.view_result, result)
             self.add_draw_types(menu)
 
-        if self.frame.csvtabs.GetSelection() > 0 and self.tableservice.current_attribute() in self.datastorage.result_visible:
+        if self.frame.csvtabs.GetSelection() > 0 and self.tableservice.s.current_attribute() in self.datastorage.result_visible:
             menu.AppendSeparator()
             to_scaling = menu.Append(wx.ID_ANY, _("Go to Scaling"))
             self.frame.Bind(wx.EVT_MENU, self.tableservice.get_to_scaling(evt.GetCol(), None), to_scaling)
         if self.frame.csvtabs.GetSelection() > 0:
             menu.AppendSeparator()
-            attribute = self.tableservice.current_attribute()
+            attribute = self.tableservice.s.current_attribute()
             if attribute in self.datastorage.stats_visible:
                 rescale = wx.Menu()
                 custom = rescale.Append(wx.ID_ANY, _("Custom Scaling"))
