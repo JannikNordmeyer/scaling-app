@@ -28,6 +28,7 @@ def build_ui():
     graph_load = file_menu.Append(wx.ID_ANY, _('Load Lattice'), _('Load Lattice'))
     fca_load = file_menu.Append(wx.ID_ANY, _('Load FCA'), _('Load FCA'))
     file_save = file_menu.Append(wx.ID_ANY, _('Save Data'), _('Save Data'))
+    save_json = file_menu.Append(wx.ID_ANY, _('Save to JSON'), _('Save to JSON'))
     file_menu.AppendSeparator()
     file_quit = file_menu.Append(wx.ID_ANY, _('Empty Frame'), _('Empty Frame'))
     menu_bar.Append(file_menu, _('Data'))
@@ -35,6 +36,7 @@ def build_ui():
     frame.Bind(wx.EVT_MENU, mservice.load_lattice, graph_load)
     frame.Bind(wx.EVT_MENU, mservice.load_fca, fca_load)
     frame.Bind(wx.EVT_MENU, mservice.save_data, file_save)
+    frame.Bind(wx.EVT_MENU, mservice.save_json, save_json)
     frame.Bind(wx.EVT_MENU, mservice.empty_frame, file_quit)
 
     help_menu = wx.Menu()

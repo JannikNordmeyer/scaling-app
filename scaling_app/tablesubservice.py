@@ -211,31 +211,32 @@ class TableSubService:
                 self.datastorage.set_edited()
 
                 # Replace All Occurrences of the Original Name with the New One
-                level = self.datastorage.table.attribute_levels.pop(old_name)
-                self.datastorage.table.attribute_levels[name] = level
+                if self.frame.csvtabs.GetSelection() == 0:
+                    level = self.datastorage.table.attribute_levels.pop(old_name)
+                    self.datastorage.table.attribute_levels[name] = level
 
-                if old_name in self.datastorage.table.scalings:
-                    scaling = self.datastorage.table.scalings[old_name]
-                    self.datastorage.table.scalings[name] = scaling
+                    if old_name in self.datastorage.table.scalings:
+                        scaling = self.datastorage.table.scalings[old_name]
+                        self.datastorage.table.scalings[name] = scaling
 
-                    for i in range(self.frame.csvtabs.GetPageCount()):
+                        for i in range(self.frame.csvtabs.GetPageCount()):
 
-                        if self.frame.csvtabs.GetPageText(i) == "Scaling:" + old_name:
-                            self.frame.csvtabs.SetPageText(i, "Scaling:" + name)
-                            self.datastorage.tabs[i].SetCornerLabelValue(name)
-                            break
-                        if self.frame.csvtabs.GetPageText(i) == "Result:" + old_name:
-                            self.frame.csvtabs.SetPageText(i, "Result:" + name)
-                            self.datastorage.tabs[i].SetCornerLabelValue(name)
-                            break
+                            if self.frame.csvtabs.GetPageText(i) == "Scaling:" + old_name:
+                                self.frame.csvtabs.SetPageText(i, "Scaling:" + name)
+                                self.datastorage.tabs[i].SetCornerLabelValue(name)
+                                break
+                            if self.frame.csvtabs.GetPageText(i) == "Result:" + old_name:
+                                self.frame.csvtabs.SetPageText(i, "Result:" + name)
+                                self.datastorage.tabs[i].SetCornerLabelValue(name)
+                                break
 
-                if old_name in self.datastorage.stats_visible:
-                    for i in range(self.frame.tabs.GetPageCount()):
-                        if self.frame.tabs.GetPageText(i) == "Stats: " + old_name:
-                            self.frame.tabs.SetPageText(i, "Stats: " + name)
-                            numberspecialtabs = 3
-                            self.datastorage.stats[i - numberspecialtabs].attribute = name
-                            break
+                    if old_name in self.datastorage.stats_visible:
+                        for i in range(self.frame.tabs.GetPageCount()):
+                            if self.frame.tabs.GetPageText(i) == "Stats: " + old_name:
+                                self.frame.tabs.SetPageText(i, "Stats: " + name)
+                                numberspecialtabs = 3
+                                self.datastorage.stats[i - numberspecialtabs].attribute = name
+                                break
 
             self.frame.csvtabs.Layout()
             self.frame.csvtabs.Update()

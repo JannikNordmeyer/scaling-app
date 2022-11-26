@@ -134,3 +134,30 @@ def check_connection(address):
 
     except:
         return False
+
+
+def save_json(address, context, lattice, implication_sets):
+    data = {
+        "id": "Request",
+        "path": {"type": "string",
+                 "data": "folder/fca.json"},
+        "context": {"type": "context",
+                    "data":
+                        {"objects": context[0],  # Objects
+                         "attributes": context[1],  # Attributes
+                         "incidence": context[2]}},  # Incidence
+        "map": {"type": "map",
+                "data": {"context": "context",
+                         "lattice": lattice,
+                         "implication_sets": implication_sets}},
+        "write": {"type": "function",
+                  "name": "write-fca",
+                  "args": ["map", "path"]},
+    }
+    headers = {"Content-Type": "application/json"}
+
+    response = requests.post(address, data=json.dumps(data, indent=4), headers=headers)
+    print(response.headers)
+    print(response.status_code)
+    print(response.text)
+    print(response.json())

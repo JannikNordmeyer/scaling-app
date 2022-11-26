@@ -5,7 +5,7 @@ import tkinter.filedialog
 
 from wx import grid
 
-from scaling_app import constants, api, tableservice
+from scaling_app import constants, api, tableservice, tablesubservice
 import gettext
 
 _ = gettext.gettext
@@ -346,6 +346,10 @@ class MenuService:
         f.truncate()
         f.close()
         self.datastorage.clear_edited()
+
+    def save_json(self, evt=None):
+        context = tablesubservice.get_grid_data(self.frame.result_grid)
+        api.save_json(self.api_address, context, None, None)
 
     def empty_frame(self, e):
         print("Empty Frame")
