@@ -168,7 +168,7 @@ class TableService:
                     self.current_grid.SetColLabelValue(i, values[i])
                     self.current_grid.SetRowLabelValue(i, values[i])
 
-            if scaling_type == constants.DIAGONAL or scaling_type == constants.ORDINAL:
+            if scaling_type == constants.NOMINAL or scaling_type == constants.ORDINAL:
 
                 # Add Attribute Labels to Table
                 columns_actual = self.s.get_col_entries(col, attribute)
@@ -187,7 +187,7 @@ class TableService:
                         col_value = self.current_grid.GetColLabelValue(j)
                         if scaling_type == constants.ORDINAL and columns_actual.index(row_value) >= columns_actual.index(col_value):
                             self.current_grid.SetCellValue(i, j, "✘")
-                        if scaling_type == constants.DIAGONAL:
+                        if scaling_type == constants.NOMINAL:
                             if row_value == col_value:
                                 self.current_grid.SetCellValue(i, j, "✘")
 
@@ -310,7 +310,7 @@ class TableService:
 
         delete_cols(scaling_grid)
 
-        if scaling_type == constants.DIAGONAL or scaling_type == constants.ORDINAL:
+        if scaling_type == constants.NOMINAL or scaling_type == constants.ORDINAL:
             for j in range(len(ranges)):
                 scaling_grid.AppendCols(1)
 
@@ -324,13 +324,13 @@ class TableService:
 
                 scaling_grid.SetColLabelValue(j, lim_low + " - " + lim_high)
 
-            if scaling_type == constants.DIAGONAL or scaling_type == constants.ORDINAL:
+            if scaling_type == constants.NOMINAL or scaling_type == constants.ORDINAL:
                 for i in range(scaling_grid.GetNumberRows()):
                     row_value = float(scaling_grid.GetRowLabelValue(i))
                     for j in range(scaling_grid.GetNumberCols()):
                         if scaling_type == constants.ORDINAL and row_value <= ranges[j][1]:
                             scaling_grid.SetCellValue(i, j, "✘")
-                        if scaling_type == constants.DIAGONAL:
+                        if scaling_type == constants.NOMINAL:
                             if ranges[j][1] >= row_value >= ranges[j][0]:
                                 scaling_grid.SetCellValue(i, j, "✘")
 

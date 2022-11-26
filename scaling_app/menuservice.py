@@ -88,7 +88,7 @@ class MenuService:
                     self.frame.Bind(wx.EVT_MENU, self.tableservice.get_to_scaling(evt.GetCol(), constants.EMPTY), custom)
 
                     nominal = scaling.Append(wx.ID_ANY, _("Nominal Scaling"))
-                    self.frame.Bind(wx.EVT_MENU, self.tableservice.get_to_scaling(evt.GetCol(), constants.DIAGONAL), nominal)
+                    self.frame.Bind(wx.EVT_MENU, self.tableservice.get_to_scaling(evt.GetCol(), constants.NOMINAL), nominal)
 
                     level = self.datastorage.table.attribute_levels[attribute]
                     if constants.allows_order(level):
@@ -169,7 +169,7 @@ class MenuService:
                 self.frame.Bind(wx.EVT_MENU, self.tableservice.get_rescale(constants.EMPTY), custom)
 
                 nominal = rescale.Append(wx.ID_ANY, _("Nominal Scaling"))
-                self.frame.Bind(wx.EVT_MENU, self.tableservice.get_rescale(constants.DIAGONAL), nominal)
+                self.frame.Bind(wx.EVT_MENU, self.tableservice.get_rescale(constants.NOMINAL), nominal)
 
                 ordinal = rescale.Append(wx.ID_ANY, _("Ordinal Scaling"))
                 self.frame.Bind(wx.EVT_MENU, self.tableservice.get_rescale(constants.ORDINAL), ordinal)

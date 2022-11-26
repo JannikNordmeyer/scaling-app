@@ -1,9 +1,8 @@
 # Scaling Types
 EMPTY = "empty"
-DIAGONAL = "diagonal"
+NOMINAL = "nominal"
 ORDINAL = "ordinal"
 INTERORDINAL = "interordinal"
-DICHOTOM = "dichotom"
 
 # Scaling Data Type
 INT = "int"

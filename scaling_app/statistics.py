@@ -117,7 +117,7 @@ class StatsPanel(wx.Panel):
         if self.selection == 1 and self.unique_values and type(self.unique_values[0]) == float and self.attribute in self.sservice.datastorage.table.scalings:
             transfer = wx.Menu()
             nominal = transfer.Append(wx.ID_ANY, _("Nominal Scaling"))
-            self.Bind(wx.EVT_MENU, self.get_transfer_to_scaling(constants.DIAGONAL), nominal)
+            self.Bind(wx.EVT_MENU, self.get_transfer_to_scaling(constants.NOMINAL), nominal)
 
             ordinal = transfer.Append(wx.ID_ANY, _("Ordinal Scaling"))
             self.Bind(wx.EVT_MENU, self.get_transfer_to_scaling(constants.ORDINAL), ordinal)
