@@ -4,6 +4,31 @@ import json
 from scaling_app import constants
 
 
+def implications_to_json(implications):
+    pass
+def request_exploration_step(address, objects, attributes, incidence, implications):
+    data = {
+        "id": "Request",
+        "context": {"type": "context",
+                    "data":
+                        {"objects": objects,
+                         "attributes": attributes,
+                         "incidence": incidence}},
+
+        "implications": {"type": "implication_set",
+                         "data":
+                             {"implications": implications}},
+        "step": {"type": "function",
+                 "name": "exploration-step",
+                 "args": ["context", "implications"]},
+    }
+    headers = {"Content-Type": "application/json"}
+
+    response = requests.post(address, data=json.dumps(data, indent=4), headers=headers)
+
+    return response.json()
+
+
 def request_lattice_layout(address, objects, attributes, incidence, draw_type="freese-layout"):
     data = {
         "id": "Request",
@@ -137,6 +162,7 @@ def check_connection(address):
 
 
 def save_json(address, context, lattice, implication_sets):
+    # Writes context to a file in JSON format
     data = {
         "id": "Request",
         "path": {"type": "string",

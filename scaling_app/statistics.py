@@ -93,16 +93,19 @@ class StatsPanel(wx.Panel):
         self.canvas.Bind(wx.EVT_RIGHT_UP, self.onClick)
 
     def restore_raw(self):
+        # restores the saved values to their basic version, based on the main context
         self.uncounted_values = self.raw_data
         self.unique_values = list(set(self.raw_data))
         self.value_counts = Counter(list(self.raw_data))
 
     def onClick(self, evt):
+        # menu options on right click
         evt.Skip()
         menu = wx.Menu()
         close = menu.Append(wx.ID_ANY, _("Close Tabs"))
         self.Bind(wx.EVT_MENU, self.close, close)
 
+        # if non-alphabetical scaling is selected, and a scaling for the attribute has been added
         if 2 <= self.order_combobox.GetSelection() < 5 and self.attribute in self.sservice.datastorage.table.scalings:
             partial = wx.Menu()
 
@@ -114,6 +117,7 @@ class StatsPanel(wx.Panel):
 
             menu.Append(wx.ID_ANY, _("Use Partial Scaling"), partial)
 
+        # if the expanded histogram and numeric ordering is selected and the values are of a numeric type
         if self.selection == 1 and self.unique_values and type(self.unique_values[0]) == float and self.attribute in self.sservice.datastorage.table.scalings:
             transfer = wx.Menu()
             nominal = transfer.Append(wx.ID_ANY, _("Nominal Scaling"))
@@ -131,6 +135,7 @@ class StatsPanel(wx.Panel):
 
     def get_use_partial_order(self, type):
         def use_partial_scaling(evt=None):
+            # transfers the user defined partial ordering to the scalings
 
             comparators = (constants.substring, constants.prefix, constants.postfix)
 
@@ -140,6 +145,7 @@ class StatsPanel(wx.Panel):
 
     def get_transfer_to_scaling(self, scaling_type):
         def transfer_to_scaling(evt=None):
+            # transfers the division of the order into bins to the scaling
             bins = min(int(self.binselector.GetLineText(0)), max(self.unique_values))
             bin_width = (max(self.unique_values) - min(self.unique_values)) / bins
             bin_ranges = list()
@@ -150,12 +156,15 @@ class StatsPanel(wx.Panel):
         return transfer_to_scaling
 
     def close(self, evt=None):
+        # closes the tab
         self.sservice.close_tab(self.attribute)
 
     def order_changed(self, evt):
+        # fires when the pseudogrid for the custom order is rearranged
         wx.CallAfter(self.update_order)
 
     def update_order(self):
+        # reads and stores the order selected in the pseudogrid
 
         currently_numeric = type(self.unique_values[0]) == float
 
@@ -173,13 +182,15 @@ class StatsPanel(wx.Panel):
         self.order_dict = order_dict
 
     def bin_change(self, evt=None):
-
+        # fires when text is entered into the bis selector
+        # recomputes the division of the order into bins
         entry = self.binselector.GetLineText(0)
         if entry != "" and entry.isnumeric() and int(entry) > 0 and type(self.unique_values[0]) == float:
             bin_number = min(int(self.binselector.GetLineText(0)), max(self.unique_values))
             self.load_histplot(self.uncounted_values, bin_number)
 
     def order_numeric(self, evt=None):
+        # computes numeric ordering, if attribute is numeric
         if self.isnumeric():
             self.restore_raw()
             unique_values_new = [float(i) for i in self.unique_values]
@@ -196,6 +207,7 @@ class StatsPanel(wx.Panel):
             self.load_stats(self.selection)
 
     def order_alphabetical(self, evt=None):
+        # computes alphabetical ordering
         self.restore_raw()
         unique_values_new = [str(i) for i in self.unique_values]
         self.unique_values = unique_values_new
@@ -210,6 +222,7 @@ class StatsPanel(wx.Panel):
         self.load_stats(self.selection)
 
     def order_random(self, evt=None):
+        # computes random ordering
         self.restore_raw()
         value_counts_new = dict()
         for key in self.value_counts:
@@ -222,6 +235,7 @@ class StatsPanel(wx.Panel):
 
     def get_order_other(self, comparator, evt=None):
         def order_other(evt=None):
+            # computes order based on provided comparator
             self.restore_raw()
             unique_values_new = [str(i) for i in self.unique_values]
             self.unique_values = unique_values_new
@@ -238,6 +252,7 @@ class StatsPanel(wx.Panel):
         return order_other
 
     def isnumeric(self):
+        # computes weather all values of the attribute are numeric
         numeric = True
         for value in self.unique_values:
             try:
@@ -248,6 +263,7 @@ class StatsPanel(wx.Panel):
         return numeric
 
     def load_order(self):
+        # loads custom order screen
         self.binselector.Hide()
         self.infotext.Hide()
         self.sort_grid.Hide()
@@ -257,6 +273,7 @@ class StatsPanel(wx.Panel):
         self.reload_order_grid()
 
     def reload_order_grid(self):
+        # loads order pseudogrid
         if self.sort_grid.GetNumberCols() > 0:
             tableservice.delete_cols(self.sort_grid)
         for i in range(len(self.unique_values)):
@@ -269,6 +286,7 @@ class StatsPanel(wx.Panel):
         self.load_stats(evt.GetSelection())
 
     def select_order(self, evt):
+        # displays selected ordering type
         if evt.GetSelection() == 0:
             self.order_alphabetical()
         if evt.GetSelection() == 1:
@@ -283,7 +301,7 @@ class StatsPanel(wx.Panel):
             self.order_random()
 
     def load_stats(self, selection):
-
+        # displays statistics tab based on selection
         if not self.unique_values:
             self.infotext.SetLabel(_("No Statistics Available"))
             plt.figure(self.figure.number)
@@ -303,7 +321,7 @@ class StatsPanel(wx.Panel):
         self.Layout()
 
     def load_histogram(self, values, counts):
-
+        # renders histogram display
         plt.figure(self.figure.number)
         plt.clf()
 
@@ -325,6 +343,7 @@ class StatsPanel(wx.Panel):
         self.figure.canvas.draw()
 
     def load_histplot(self, uncounted_values, bins=None):
+        # renders expanded histogram display
         plt.figure(self.figure.number)
         plt.clf()
 
@@ -350,7 +369,7 @@ class StatsPanel(wx.Panel):
         self.figure.canvas.draw()
 
     def load_pie(self, values, counts):
-
+        # renders pie chart display
         plt.figure(self.figure.number)
         plt.clf()
 
@@ -372,7 +391,7 @@ class StatsPanel(wx.Panel):
         self.figure.canvas.draw()
 
     def set_tendencies(self):
-
+        # displays mode, median and mean if possible
         if not self.unique_values:
             return
 
@@ -390,11 +409,11 @@ class StatsPanel(wx.Panel):
         self.infotext.SetLabel(text)
 
     def mode(self):
-
+        # computes mode of the values of the attribute
         return collections.Counter.most_common(self.value_counts)[0][0]
 
     def median(self):
-
+        # computes median of the values of the attribute
         values = list()
         for i in self.unique_values:
             for count in range(self.value_counts[i]):
@@ -402,7 +421,7 @@ class StatsPanel(wx.Panel):
         return values[math.ceil(len(values)/2) - 1]
 
     def mean(self):
-
+        # computes mean of the values of the attribute
         values = list()
         for i in self.unique_values:
             for count in range(self.value_counts[i]):

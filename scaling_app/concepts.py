@@ -24,6 +24,7 @@ class Concepts(wx.Panel):
         self.SetSizer(self.sizer)
 
     def compute(self, evt=None):
+        # Computes concepts via API and displays them
         wx.BeginBusyCursor()
         objects, attributes, incidence = tableservice.get_grid_data(self.frame.result_grid)
         implications = api.request_concepts(self.mservice.api_address, objects, attributes, incidence)

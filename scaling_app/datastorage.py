@@ -1,5 +1,6 @@
 
 class Table:
+    # table to hold main formal context and scalings
     original = dict()
     col_labels = list()
     row_labels = list()
@@ -7,9 +8,11 @@ class Table:
     attribute_levels = dict()
 
     def set_scaling(self, attribute, row_labels, col_labels, table):
+        # Adds scaling to specified attribute
         self.scalings[attribute] = (row_labels, col_labels, table)
 
     def get_scaling(self, attribute):
+        # returns the scaling of the specified attribute
         return self.scalings[attribute]
 
 
@@ -20,7 +23,7 @@ class DataStorage:
     table = Table()
 
     concepts_tab = None
-    implications_tab= None
+    implications_tab = None
     rules_tab = None
 
     # Grid Tabs
@@ -34,12 +37,15 @@ class DataStorage:
     stats_visible = set()
 
     def set_edited(self, evt=None):
+        # Sets edited flag
         self.edited = True
 
     def clear_edited(self, evt=None):
+        # removes edited flag
         self.edited = False
 
     def clear_table(self):
+        # clears main context and removes associated data
         self.table.original.clear()
         self.table.col_labels.clear()
         self.table.row_labels.clear()

@@ -38,6 +38,7 @@ class Rules(wx.Panel):
         self.SetSizer(self.sizer)
 
     def compute(self, evt=None):
+        # computes and displays association rules
         objects, attributes, incidence = tableservice.get_grid_data(self.frame.result_grid)
 
         try:

@@ -46,6 +46,7 @@ class Statservice:
         return add_stats
 
     def close_tab(self, attribute):
+        # closes the current tab
         selection = self.frame.tabs.GetSelection()
         self.frame.tabs.SetSelection(selection-1)
         self.frame.tabs.RemovePage(selection)
@@ -66,10 +67,12 @@ class Statservice:
         return unique_values, Counter(list(values)), values
 
     def update_all(self):
+        # updates the stats for all attributes
         for stats in self.datastorage.stats:
             self.update_stats(attribute=stats.attribute)
 
     def update_stats(self, evt=None, attribute=None):
+
         # Should be Called with Either an Event or the Columns Attribute to Ascertain which Column is Affected
 
         # Ascertain Affected Column
@@ -120,6 +123,7 @@ class Statservice:
         affected_tab.load_stats(affected_tab.selection)
 
     def clear_stats(self):
+        # deletes the stats for all attributes
         self.datastorage.stats_visible.clear()
         self.datastorage.stats.clear()
 

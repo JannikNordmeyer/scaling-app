@@ -15,7 +15,6 @@ SCALING = "scaling"
 RESULT = "result"
 
 # Levels of Measurement
-
 LEVEL_NOM = "nominal"
 LEVEL_NOM_COLOR = "#A0A0A0"
 
@@ -40,7 +39,7 @@ api_version = "2.3.0-SNAPSHOT"
 
 
 def color_conv(level):
-
+    # returns the color valie corresponding to the input level of measurement
     if level == LEVEL_NOM:
         return LEVEL_NOM_COLOR
     if level == LEVEL_ORD:
@@ -52,17 +51,17 @@ def color_conv(level):
 
 
 def allows_order(level):
-
+    # returns true, if the level of measurement is of a type that allows ordering
     return level == LEVEL_ORD or level == LEVEL_INT or level == LEVEL_RAT
 
 
 def allows_mean(level):
-
+    # returns true, if the level of measurement allows computation of a mean
     return level == LEVEL_INT or level == LEVEL_RAT
 
 
 def substring(a, b):
-
+    # returns true, if a is a substring of b
     if a in b:
         return True
 
@@ -70,14 +69,17 @@ def substring(a, b):
 
 
 def prefix(a, b):
+    # returns true, if b is prefixed with a
     return b.startswith(a)
 
 
 def postfix(a, b):
+    # returns true, if b is postfixed with a
     return b.endswith(a)
 
 
 def topological_sort(values, comparator):
+    # returns a topological order
 
     visited = dict.fromkeys(values, False)
     order = list()

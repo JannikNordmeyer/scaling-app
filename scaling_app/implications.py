@@ -29,6 +29,7 @@ class Implications(wx.Panel):
         self.SetSizer(self.sizer)
 
     def compute_canon(self, evt=None):
+        # computes and displays the canonical implication base of the results context
         wx.BeginBusyCursor()
         self.list.ClearAll()
         objects, attributes, incidence = tableservice.get_grid_data(self.frame.result_grid)
@@ -43,6 +44,7 @@ class Implications(wx.Panel):
         wx.EndBusyCursor()
 
     def compute_ganter(self, evt=None):
+        # computes and displays the ganter implication base of the results context
         wx.BeginBusyCursor()
         self.list.ClearAll()
         objects, attributes, incidence = tableservice.get_grid_data(self.frame.result_grid)
@@ -57,7 +59,7 @@ class Implications(wx.Panel):
         wx.EndBusyCursor()
 
     def display(self, implications):
-
+        # displays an implication base in the implications list
         self.list.InsertColumn(0, "Premise", width=750)
         self.list.InsertColumn(1, "Conclusion", width=750)
 

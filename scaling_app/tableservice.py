@@ -22,7 +22,7 @@ class TableService:
 
     def fill_table(self):
 
-        # Loads Table Contents from CSV
+        # Loads Table Contents from CSV in datastorage
         self.current_grid = self.frame.main_grid
 
         values = csv.reader(self.datastorage.data, delimiter=',', quotechar='"', escapechar='\\', quoting=csv.QUOTE_ALL)
@@ -76,6 +76,7 @@ class TableService:
             self.datastorage.table.attribute_levels[attribute] = level
             self.s.dye_col(col, constants.color_conv(level))
 
+            # opens the stats screen, if the attribute is not numeric and the ordinal level of measurement is selected.
             if not self.s.check_numeric_col(col) and level == constants.LEVEL_ORD:
                 self.sservice.get_add_stats(col=col, attribute=attribute)()
         return set_level
@@ -137,7 +138,7 @@ class TableService:
     def get_to_scaling(self, col=None, scaling_type=None):
         def to_scaling(evt=None):
 
-            # Load Scaling from Storage if it is Selected, in Case Result is Visible
+            # Load Scaling from Storage if it is Selected in Case Result is Visible
             if self.current_grid.GetCornerLabelValue() in self.datastorage.table.scalings:
                 self.load_from_storage(self.current_grid.GetCornerLabelValue())
                 self.datastorage.result_visible.discard(self.current_grid.GetCornerLabelValue())
@@ -301,7 +302,7 @@ class TableService:
 
     def transfer_bins(self, attribute, ranges, scaling_type):
         # Recalculates Scaling based on Bin subdivision from statistics tab.
-        # Called from stat panel
+        # Called from stats panel
 
         scaling_grid = None
         for i in range(self.frame.csvtabs.GetPageCount()):

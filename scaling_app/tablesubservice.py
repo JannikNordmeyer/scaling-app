@@ -45,7 +45,7 @@ class TableSubService:
         self.frame.main_grid.ForceRefresh()
 
     def new_tab(self, name):
-        # Created new Grid Tab
+        # Creates new Grid Tab for Scaling
         new_grid = grid.Grid(self.frame.csvtabs)
         new_grid.CreateGrid(1, 1)
         new_grid.EnableDragCell()
@@ -100,6 +100,7 @@ class TableSubService:
 
     def get_delete_row(self, row):
         def delete_row(evt=None):
+            # deletes specified row
             for i in range(self.s.current_grid.GetNumberRows() - row):
                 self.s.current_grid.SetRowLabelValue(row + i, self.s.current_grid.GetRowLabelValue(row + i + 1))
             self.s.current_grid.DeleteRows(pos=row)
@@ -110,6 +111,7 @@ class TableSubService:
 
     def get_purge_row(self, labelevent):
         def purge_row(evt):
+            # clears all values in the specified row
             if not self.is_empty():
                 self.datastorage.edited = True
             for i in range(self.s.current_grid.GetNumberCols()):
@@ -120,6 +122,7 @@ class TableSubService:
 
     def get_flood_row(self, labelevent):
         def flood_row(evt):
+            # fills in all cells in the row
             if not self.is_empty():
                 self.datastorage.edited = True
             for i in range(self.s.current_grid.GetNumberCols()):
@@ -350,7 +353,7 @@ class TableSubService:
     def value_in_data(self, value, col):
         # Checks if Specified Value is Part of the Data in the Specified Column in th Main Grid
 
-        # Always Returns False if Main Grid is Currently Selected
+        # Always Returns False if Main Grid is Currently Selected !!!
         if self.frame.csvtabs.GetSelection() == 0:
             return False
         if value == "":
@@ -372,7 +375,7 @@ class TableSubService:
             return True
 
     def current_attribute(self):
-        # Returns if the Attribute Represented by the Currently Selected Scaling Table
+        # Returns the Attribute Represented by the Currently Selected Scaling Table
         return self.frame.csvtabs.GetPage(self.frame.csvtabs.GetSelection()).GetCornerLabelValue()
 
     def drop_empty_cols(self, evt=None):

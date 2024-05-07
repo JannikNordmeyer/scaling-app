@@ -1,6 +1,6 @@
 import wx
 import wx.grid as grid
-from scaling_app import menuservice, tableservice, graphservice, datastorage, graphpanel, statservice
+from scaling_app import menuservice, tableservice, graphservice, datastorage, graphpanel, statservice, explorationservice
 from scaling_app import concepts
 from scaling_app import implications
 from scaling_app import rules
@@ -9,6 +9,7 @@ import locale
 from scaling_app.context_menu import ContextMenu
 
 def build_ui():
+    # Builds overall layout of the app
 
     """if locale.getlocale()[0] == 'de_DE':
 
@@ -56,6 +57,11 @@ def build_ui():
     connect = connect_menu.Append(wx.ID_ANY, _('Connect to API'), _('Connect to API'))
     frame.Bind(wx.EVT_MENU, mservice.connect, connect)
     menu_bar.Append(connect_menu, _('Connect to API'))
+
+    explore_menu = wx.Menu()
+    explore_attributes = explore_menu.Append(wx.ID_ANY, _('Explore Attributes'), _('Explore Attributes'))
+    frame.Bind(wx.EVT_MENU, eservice.explore, explore_attributes)
+    menu_bar.Append(explore_menu, _('Explore Attributes'))
 
     quit_menu = wx.Menu()
     quit_quit_scaling = quit_menu.Append(wx.ID_EXIT, _('Quit Scaling'), _('Quit Scaling'))
@@ -145,7 +151,7 @@ def build_ui():
     frame.graphbox.Add(frame.graph, wx.ID_ANY, wx.EXPAND)
     frame.panelLeft.SetSizer(frame.graphbox)
 
-
+# Initialize frame and initializes and connects all service classes
 app = wx.App()
 frame = wx.Frame(None, title='FCA', size=(1200, 750))
 frame.Center()
@@ -155,6 +161,7 @@ tservice = tableservice.TableService(frame, storage)
 gservice = graphservice.GraphService(frame, storage)
 sservice = statservice.Statservice(frame, tservice, storage)
 mservice = menuservice.MenuService(frame, storage, tservice, gservice, sservice)
+eservice = explorationservice.ExplorationService(frame, storage, mservice)
 sservice.menuservice = mservice
 tservice.mservice = mservice
 tservice.sservice = sservice

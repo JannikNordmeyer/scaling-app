@@ -12,6 +12,7 @@ _ = gettext.gettext
 
 
 def connection_error_dialog(address=None):
+    # Displays dialog window
     if address:
         errortext = _("Connection to API (" + address + ") could not be established")
     else:
