@@ -1,5 +1,6 @@
 import wx
 
+from scaling_app import constants
 from scaling_app.api import request_exploration_step
 
 
@@ -30,6 +31,13 @@ def counterexample_dialog(self, implication):
     dialog.Destroy()
 
     dialog = wx.TextEntryDialog(None, "Enter all attributes of " + name + ":", "Attribute Exploration")
+    premise = implication[0]['premise']
+    default_value = ""
+    for a in premise:
+        print(a)
+        default_value += a
+        default_value += ", "
+    dialog.SetValue(default_value)
     dialog.ShowModal()
     attributes_string = dialog.GetValue()
     dialog.Destroy()
@@ -41,10 +49,11 @@ def counterexample_dialog(self, implication):
 
 class ExplorationService:
 
-    def __init__(self, frame, datastorage, menuservice):
+    def __init__(self, frame, datastorage, menuservice, tableservice):
         self.frame = frame
         self.datastorage = datastorage
         self.mservice = menuservice
+        self.tservice = tableservice
 
     def explore(self, evt):
 
@@ -55,14 +64,18 @@ class ExplorationService:
 
         while True:
             result = request_exploration_step(self.mservice.api_address, objects, attributes, incidence, implications)
-            print(implications)
-            print(result)
             implication = result['step']['result']['implications']
-            if implication == []:
-                print("Done")
+            if not implication:
+                self.datastorage.set_edited()
+                self.datastorage.clear_table()
+                self.datastorage.table.row_labels = result['step']['result']['context']['objects']
+                self.datastorage.table.col_labels = result['step']['result']['context']['attributes']
+                for i in result['step']['result']['context']['incidence']:
+                    x_coord = self.datastorage.table.row_labels.index(i[0])
+                    y_coord = self.datastorage.table.col_labels.index(i[1])
+                    self.datastorage.table.original[x_coord, y_coord] = "X"
+                self.tservice.load_from_storage(constants.ORIGINAL)
                 break
-            print(implication)
-            print(type(implication))
 
             answer = ask_implication_holds(self, implication)
 
