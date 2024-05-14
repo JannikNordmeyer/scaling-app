@@ -140,6 +140,7 @@ def build_ui():
 
     frame.csvbox.Add(frame.csvtabs, wx.ID_ANY, wx.EXPAND)
     frame.panelTop.SetSizer(frame.csvbox)
+    frame.panelTop.Layout()
 
     frame.tabpane.Add(frame.tabs, wx.ID_ANY, wx.EXPAND)
     frame.panelBottom.SetSizer(frame.tabpane)
