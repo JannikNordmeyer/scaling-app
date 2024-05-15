@@ -2,10 +2,11 @@ import wx
 
 
 class CounterExampleDialog(wx.Dialog):
-    def __init__(self, parent, id, title, implications, attributes, size=wx.Size(500, 10000), pos=wx.DefaultPosition, style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER, name='dialog'):
+    def __init__(self, parent, id, title, asked_implication, implications, attributes, size=wx.Size(500, 10000), pos=wx.DefaultPosition, style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER, name='dialog'):
         wx.Dialog.__init__(self)
         self.Create(parent, id, title, pos, size, style, name)
 
+        self.asked_implication = asked_implication
         self.implications = implications
         self.confirmed_attributes = attributes
 
@@ -42,13 +43,15 @@ class CounterExampleDialog(wx.Dialog):
         self.SetSizer(self.sizer)
         self.sizer.Fit(self)
 
+        self.SetRequiredAttributes(self.asked_implication)
+
         self.Center()
         self.error_text.Hide()
         self.Layout()
 
-    def SetRequiredAttributes(self, implication):
+    def SetRequiredAttributes(self, asked_implication):
         # Enters the attributes required to contradict the implication into the respective TextCtrl.
-        premise = implication[0]['premise']
+        premise = asked_implication[0]['premise']
         default_value = ""
         for a in premise:
             default_value += a
@@ -70,21 +73,49 @@ class CounterExampleDialog(wx.Dialog):
         self.error_text.SetLabel(message)
         self.error_text.Show()
         self.ok_button.Disable()
+        self.Fit()
         self.Layout()
+
+    def ClearError(self):
+        # Removes displayed error message.
+        self.error_text.Hide()
+        self.ok_button.Enable()
+        self.Fit()
+        self.Layout()
+
+    def NoContradiction(self):
+        # Computes whether the currently entered set of attributes contradicts the asked implication.
+        name, attributes = self.GetValues()
+        premise = self.asked_implication[0]['premise']
+        conclusion = self.asked_implication[0]['conclusion']
+        if not set(premise).issubset(attributes) or (set(premise).issubset(attributes) and set(conclusion).issubset(attributes)):
+            return True
+        else:
+            return False
+
+    def ContradictsKnownImplication(self):
+        # Computes whether the currently entered set of attributes contradicts a previously confirmed implication.
+        # Returns the contradicted implication if it exists.
+        name, attributes = self.GetValues()
+        for i in self.implications:
+            premise = i['premise']
+            conclusion = i['conclusion']
+            if set(premise).issubset(attributes) and not set(conclusion).issubset(attributes):
+                return i
+        return False
 
 
     def AttributesEntered(self, evt=None):
         # Checks whether any errors are present in the entered attributes and displays corresponding error text.
-
-        if self.attribute_text_entry.GetLineText(0) == "":
-            self.DisplayError("You need to at least enter one attribute.")
+        name, attributes = self.GetValues()
+        contradicted_impl = self.ContradictsKnownImplication()
+        if set(attributes).difference(set(self.confirmed_attributes)) != set():
+            self.DisplayError("Your entry contains unknown attributes.")
+        elif self.NoContradiction():
+            self.DisplayError("Your entry does not contradict the implication\n " + str(self.asked_implication[0]['premise']) + " -> " + str(self.asked_implication[0]['conclusion']) + ".")
+        elif contradicted_impl:
+            self.DisplayError("Your entry contradicts the previously confirmed implication\n " + str(contradicted_impl['premise']) + " -> " + str(contradicted_impl['conclusion']) + ".")
         else:
-            name, attributes = self.GetValues()
-            if set(attributes).difference(set(self.confirmed_attributes)) != set():
-                self.DisplayError("Your entry contains unknown attributes.")
-            else:
-                self.error_text.Hide()
-                self.ok_button.Enable()
-                self.Layout()
+            self.ClearError()
 
 

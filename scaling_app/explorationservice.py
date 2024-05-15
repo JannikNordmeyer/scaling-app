@@ -30,8 +30,7 @@ def ask_implication_holds(self, implication):
 
 def ask_counterexample(self, asked_implication, implications, attributes):
     # Displays a dialog for entering a new object that contradicts the asked_implication.
-    dialog = CounterExampleDialog(None, wx.ID_ANY, title="Attribute Exploration", implications=implications, attributes=attributes)
-    dialog.SetRequiredAttributes(asked_implication)
+    dialog = CounterExampleDialog(None, wx.ID_ANY, title="Attribute Exploration", asked_implication=asked_implication, implications=implications, attributes=attributes)
     dialog.ShowModal()
     new_object = dialog.GetValues()
     dialog.Destroy()
