@@ -22,7 +22,7 @@ def ask_implication_holds(self, implication):
     conclusion = implication[0]['conclusion']
     implication_text = "Does the implication " + str(premise) + " -> " + str(conclusion) + " hold?"
 
-    dialog = wx.MessageDialog(None, implication_text, "Attribute Exploration", wx.YES_NO)
+    dialog = wx.MessageDialog(None, implication_text, "Attribute Exploration", wx.YES_NO | wx.CANCEL)
     answer = dialog.ShowModal()
     dialog.Destroy()
     return answer
@@ -31,10 +31,13 @@ def ask_implication_holds(self, implication):
 def ask_counterexample(self, asked_implication, implications, attributes):
     # Displays a dialog for entering a new object that contradicts the asked_implication.
     dialog = CounterExampleDialog(None, wx.ID_ANY, title="Attribute Exploration", asked_implication=asked_implication, implications=implications, attributes=attributes)
-    dialog.ShowModal()
+    answer = dialog.ShowModal()
     new_object = dialog.GetValues()
     dialog.Destroy()
-    return new_object
+    if answer == wx.ID_CANCEL:
+        return wx.ID_CANCEL, wx.ID_CANCEL
+    else:
+        return new_object
 
 
 def display_result(self, result):
@@ -77,11 +80,20 @@ class ExplorationService:
 
             answer = ask_implication_holds(self, asked_implication)
 
+            if answer == wx.ID_CANCEL:
+                display_result(self, result)
+                break
+
             if answer == wx.ID_YES:
                 implications += asked_implication
 
             if answer == wx.ID_NO:
                 name, incident_attributes = ask_counterexample(self, asked_implication, implications, attributes)
+
+                if name == wx.ID_CANCEL:
+                    display_result(self, result)
+                    break
+                    
                 objects.append(name)
                 for a in incident_attributes:
                     incidence.append([name, a])
