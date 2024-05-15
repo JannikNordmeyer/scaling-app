@@ -1,7 +1,7 @@
 import wx
 
 
-class CounterExampleDialog(wx.Dialog):
+class NewObjectDialog(wx.Dialog):
     def __init__(self, parent, id, title, asked_implication, implications, attributes, size=wx.Size(500, 10000), pos=wx.DefaultPosition, style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER, name='dialog'):
         wx.Dialog.__init__(self)
         self.Create(parent, id, title, pos, size, style, name)
@@ -43,8 +43,6 @@ class CounterExampleDialog(wx.Dialog):
         self.SetSizer(self.sizer)
         self.sizer.Fit(self)
 
-        self.SetRequiredAttributes(self.asked_implication)
-
         self.Center()
         self.error_text.Hide()
         self.Layout()
@@ -85,6 +83,9 @@ class CounterExampleDialog(wx.Dialog):
 
     def NoContradiction(self):
         # Computes whether the currently entered set of attributes contradicts the asked implication.
+        # Always returns False, if asked implication is None
+        if self.asked_implication is None:
+            return False
         name, attributes = self.GetValues()
         premise = self.asked_implication[0]['premise']
         conclusion = self.asked_implication[0]['conclusion']
