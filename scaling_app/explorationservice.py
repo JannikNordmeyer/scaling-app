@@ -6,7 +6,7 @@ from scaling_app.customdialogs import NewObjectDialog
 
 def ask_attributes(self):
     # Displays a dialog to enter the starting attributes for the exploration.
-    dialog = wx.TextEntryDialog(None, "Enter Attributes:", "Attribute Exploration")
+    dialog = wx.TextEntryDialog(None, "Enter starting attributes:", "Attribute Exploration")
     dialog.ShowModal()
     attributes_string = dialog.GetValue()
     dialog.Destroy()
@@ -39,9 +39,9 @@ def ask_implication_holds(self, implication):
     return answer
 
 
-def ask_object(self, implications, attributes, asked_implication=None):
-    # Displays a dialog for entering a new object that contradicts the asked_implication.
-    dialog = NewObjectDialog(None, wx.ID_ANY, title="Attribute Exploration", asked_implication=asked_implication, implications=implications, attributes=attributes)
+def ask_object(self, implications, objects, attributes, asked_implication=None):
+    # Displays a dialog for entering a new object.
+    dialog = NewObjectDialog(None, wx.ID_ANY, title="Attribute Exploration", asked_implication=asked_implication, implications=implications, objects=objects, attributes=attributes)
     if asked_implication:
         dialog.SetRequiredAttributes(asked_implication)
     answer = dialog.ShowModal()
@@ -85,7 +85,7 @@ class ExplorationService:
         answer = ask_starting_object(self)
         while answer == wx.ID_YES:
 
-                name, incident_attributes = ask_object(self, implications, attributes)
+                name, incident_attributes = ask_object(self, implications, objects, attributes)
                 objects.append(name)
                 for a in incident_attributes:
                     incidence.append([name, a])
@@ -114,7 +114,7 @@ class ExplorationService:
                 implications += asked_implication
 
             if answer == wx.ID_NO:
-                name, incident_attributes = ask_object(self, implications, attributes, asked_implication)
+                name, incident_attributes = ask_object(self, implications, objects, attributes, asked_implication)
 
                 if name == wx.ID_CANCEL:
                     display_result(self, result)
