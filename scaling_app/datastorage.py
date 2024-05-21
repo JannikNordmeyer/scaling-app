@@ -27,7 +27,7 @@ class DataStorage:
     rules_tab = None
 
     # Grid Tabs
-    tabs = list()
+    grid_tabs = list()
     # Stat Tabs
     stats = list()
 
@@ -50,11 +50,11 @@ class DataStorage:
         self.table.col_labels.clear()
         self.table.row_labels.clear()
         self.table.scalings.clear()
-        main_grid = self.tabs[0]
-        result_grid = self.tabs[1]
-        self.tabs.clear()
-        self.tabs.append(main_grid)
-        self.tabs.append(result_grid)
+        main_grid = self.grid_tabs[0]
+        result_grid = self.grid_tabs[1]
+        self.grid_tabs.clear()
+        self.grid_tabs.append(main_grid)
+        self.grid_tabs.append(result_grid)
         self.result_visible.clear()
 
     def status(self, evt=None):
@@ -64,7 +64,7 @@ class DataStorage:
         print("stats_visible:" + str(self.stats_visible))
         print("attribute levels" + str(self.table.attribute_levels))
         print("\n")
-        print("tabs: " + str(self.tabs))
+        print("tabs: " + str(self.grid_tabs))
         print("scalings:")
         print(self.table.scalings)
         print("Table:")

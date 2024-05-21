@@ -55,23 +55,23 @@ def ask_object(self, implications, objects, attributes, asked_implication=None):
 
 
 def display_result(self, result):
-    # Saves the context resulting from the exploration in the datastorage and displays it in the main grid.
-    self.datastorage.set_edited()
-    self.datastorage.clear_table()
-    self.datastorage.table.row_labels = result['step']['result']['context']['objects']
-    self.datastorage.table.col_labels = result['step']['result']['context']['attributes']
+    # Displays the context resulting from the exploration in the single valued grid
+    objects = result['step']['result']['context']['objects']
+    attributes = result['step']['result']['context']['attributes']
+    incidence = dict()
     for i in result['step']['result']['context']['incidence']:
-        x_coord = self.datastorage.table.row_labels.index(i[0])
-        y_coord = self.datastorage.table.col_labels.index(i[1])
-        self.datastorage.table.original[x_coord, y_coord] = "X"
-    self.tservice.load_from_storage(constants.ORIGINAL)
+        x_coord = objects.index(i[0])
+        y_coord = attributes.index(i[1])
+        incidence[x_coord, y_coord] = "✘"
+    self.scservice.fill_context(objects, attributes, incidence)
 
 class ExplorationService:
 
-    def __init__(self, frame, datastorage, menuservice, tableservice):
+    def __init__(self, frame, datastorage, menuservice, simplecontextservice, tableservice):
         self.frame = frame
         self.datastorage = datastorage
         self.mservice = menuservice
+        self.scservice = simplecontextservice
         self.tservice = tableservice
 
     def explore(self, evt):

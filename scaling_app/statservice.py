@@ -25,8 +25,8 @@ class Statservice:
             # Restore Old Tab if Exists
             for tab in self.datastorage.stats:
                 if tab.attribute == attribute:
-                    self.frame.tabs.AddPage(tab, "Stats: " + attribute)
-                    self.frame.tabs.SetSelection(self.frame.tabs.GetPageCount() - 1)
+                    self.frame.bottom_tabs.AddPage(tab, "Stats: " + attribute)
+                    self.frame.bottom_tabs.SetSelection(self.frame.bottom_tabs.GetPageCount() - 1)
                     return
 
             unique_values, height, uncounted_values = self.compile_stats(col)
@@ -34,32 +34,32 @@ class Statservice:
             if len(unique_values) == 0:
                 return
 
-            statistics_new = statistics.StatsPanel(self.frame.tabs, self.datastorage, self.menuservice, self.tableservice, self, attribute)
+            statistics_new = statistics.StatsPanel(self.frame.bottom_tabs, self.datastorage, self.menuservice, self.tableservice, self, attribute)
             self.datastorage.stats.append(statistics_new)
 
             statistics_new.uncounted_values = uncounted_values
             statistics_new.raw_data = uncounted_values
             statistics_new.load_histogram(unique_values, height)
-            self.frame.tabs.AddPage(statistics_new, "Stats: " + attribute)
-            self.frame.tabs.SetSelection(self.frame.tabs.GetPageCount()-1)
+            self.frame.bottom_tabs.AddPage(statistics_new, "Stats: " + attribute)
+            self.frame.bottom_tabs.SetSelection(self.frame.bottom_tabs.GetPageCount() - 1)
 
         return add_stats
 
     def close_tab(self, attribute):
         # closes the current tab
-        selection = self.frame.tabs.GetSelection()
-        self.frame.tabs.SetSelection(selection-1)
-        self.frame.tabs.RemovePage(selection)
+        selection = self.frame.bottom_tabs.GetSelection()
+        self.frame.bottom_tabs.SetSelection(selection - 1)
+        self.frame.bottom_tabs.RemovePage(selection)
         self.datastorage.stats_visible.remove(attribute)
         print(self.datastorage.stats)
 
     def compile_stats(self, col):
         # Computes Unique Values and Respective Occurrence Counts from Selected Attribute
         values = list()
-        for i in range(self.frame.main_grid.GetNumberRows()):
-            value = self.frame.main_grid.GetCellValue(i, col)
+        for i in range(self.frame.many_valued_grid.GetNumberRows()):
+            value = self.frame.many_valued_grid.GetCellValue(i, col)
             if value != "":
-                values.append(self.frame.main_grid.GetCellValue(i, col))
+                values.append(self.frame.many_valued_grid.GetCellValue(i, col))
 
         unique_values = list(set(values))
         unique_values.sort()
@@ -77,7 +77,7 @@ class Statservice:
 
         # Ascertain Affected Column
         if attribute is None:
-            attribute = self.frame.main_grid.GetColLabelValue(evt.GetCol())
+            attribute = self.frame.many_valued_grid.GetColLabelValue(evt.GetCol())
 
         affected_tab = None
         for stats_tab in self.datastorage.stats:
@@ -99,7 +99,7 @@ class Statservice:
             affected_tab.value_counts = compiled_stats[1]
             affected_tab.uncounted_values = compiled_stats[2]
 
-            new_entry = self.frame.main_grid.GetCellValue(evt.GetRow(), evt.GetCol())
+            new_entry = self.frame.many_valued_grid.GetCellValue(evt.GetRow(), evt.GetCol())
             if len(affected_tab.unique_values) == 0:
                 affected_tab.unique_values.append(str(new_entry))
             elif type(affected_tab.unique_values[0]) is str and new_entry not in affected_tab.unique_values:
@@ -127,5 +127,5 @@ class Statservice:
         self.datastorage.stats_visible.clear()
         self.datastorage.stats.clear()
 
-        while self.frame.tabs.GetPageCount() > 3:
-            self.frame.tabs.DeletePage(3)
+        while self.frame.bottom_tabs.GetPageCount() > 3:
+            self.frame.bottom_tabs.DeletePage(3)

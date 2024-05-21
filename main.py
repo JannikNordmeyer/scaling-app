@@ -1,6 +1,7 @@
 import wx
 import wx.grid as grid
-from scaling_app import menuservice, tableservice, graphservice, datastorage, graphpanel, statservice, explorationservice
+from scaling_app import menuservice, tableservice, graphservice, datastorage, graphpanel, statservice, \
+    explorationservice, simplecontextservice
 from scaling_app import concepts
 from scaling_app import implications
 from scaling_app import rules
@@ -90,60 +91,95 @@ def build_ui():
     frame.hsplitter.SetMinimumPaneSize(100)
     frame.hsplitter.SetSashPosition(400)
 
-    # Table Headers
-    frame.csvbox = wx.BoxSizer(wx.VERTICAL)
-    frame.csvtabs = wx.Notebook(frame.panelTop)
-    frame.main_grid = grid.Grid(frame.csvtabs)
-    frame.main_grid.CreateGrid(16, 8)
-    frame.main_grid.EnableDragCell()
-    frame.main_grid.EnableDragColMove()
-    frame.main_grid.Bind(grid.EVT_GRID_CELL_CHANGED, tservice.cell_changed)
-    frame.main_grid.Bind(grid.EVT_GRID_LABEL_RIGHT_CLICK, mservice.label_menu)
-    frame.main_grid.Bind(grid.EVT_GRID_CELL_RIGHT_CLICK, mservice.cell_menu)
 
-    frame.sizer = wx.BoxSizer(wx.HORIZONTAL)
-    frame.sizer.Add(frame.main_grid, 1, wx.EXPAND | wx.ALL, 5)
+    # Top Tabs
+    frame.top_tab_sizer = wx.BoxSizer()
+    frame.top_tabs = wx.Notebook(frame.panelTop)
+    frame.top_tabs.Bind(wx.EVT_NOTEBOOK_PAGE_CHANGED, mservice.scaling_tab_changed)
 
-    frame.main_grid.Bind(grid.EVT_GRID_CELL_LEFT_CLICK, tservice.check_toggle)
-    frame.csvtabs.AddPage(frame.main_grid, _("Dataset"))
-    storage.tabs.append(frame.main_grid)
-    tservice.current_grid = frame.main_grid
+    frame.basic_context_panel = wx.Panel(frame.top_tabs)
+    frame.scaling_panel = wx.Panel(frame.top_tabs)
 
-    frame.result_grid = grid.Grid(frame.csvtabs)
+    # Simple Context
+    frame.simple_context_box = wx.BoxSizer(wx.VERTICAL)
+    frame.single_valued_grid = grid.Grid(frame.basic_context_panel)
+    frame.single_valued_grid.CreateGrid(16, 8)
+    frame.single_valued_grid.EnableDragCell()
+    frame.single_valued_grid.EnableDragColMove()
+    frame.single_valued_grid.Bind(grid.EVT_GRID_LABEL_RIGHT_CLICK, mservice.simple_label_menu)
+    frame.single_valued_grid.Bind(grid.EVT_GRID_CELL_RIGHT_CLICK, mservice.simple_cell_menu)
+    frame.single_valued_grid.Bind(grid.EVT_GRID_CELL_LEFT_CLICK, scservice.toggle_cell)
+
+    frame.simple_context_box.Add(frame.single_valued_grid, 1, wx.EXPAND | wx.ALL, 5)
+    frame.basic_context_panel.SetSizer(frame.simple_context_box)
+
+    # Scale Many Valued Context
+    frame.scaling_box = wx.BoxSizer(wx.VERTICAL)
+    frame.scaling_notebook = wx.Notebook(frame.scaling_panel)
+    frame.many_valued_grid = grid.Grid(frame.scaling_notebook)
+    frame.many_valued_grid.CreateGrid(16, 8)
+    frame.many_valued_grid.EnableDragCell()
+    frame.many_valued_grid.EnableDragColMove()
+    frame.many_valued_grid.Bind(grid.EVT_GRID_CELL_CHANGED, tservice.cell_changed)
+    frame.many_valued_grid.Bind(grid.EVT_GRID_LABEL_RIGHT_CLICK, mservice.scaling_label_menu)
+    frame.many_valued_grid.Bind(grid.EVT_GRID_CELL_RIGHT_CLICK, mservice.scaling_cell_menu)
+
+    frame.many_valued_grid_sizer = wx.BoxSizer(wx.HORIZONTAL)
+    frame.many_valued_grid_sizer.Add(frame.many_valued_grid, 1, wx.EXPAND | wx.ALL, 5)
+
+    frame.many_valued_grid.Bind(grid.EVT_GRID_CELL_LEFT_CLICK, tservice.check_toggle)
+    frame.scaling_notebook.AddPage(frame.many_valued_grid, _("Dataset"))
+    storage.grid_tabs.append(frame.many_valued_grid)
+    tservice.current_grid = frame.many_valued_grid
+
+    frame.result_grid = grid.Grid(frame.scaling_notebook)
     frame.result_grid.CreateGrid(16, 8)
     frame.result_grid.EnableEditing(False)
-    frame.result_grid.Bind(grid.EVT_GRID_CELL_RIGHT_CLICK, mservice.cell_menu)
+    frame.result_grid.Bind(grid.EVT_GRID_CELL_RIGHT_CLICK, mservice.scaling_cell_menu)
 
-    frame.csvtabs.AddPage(frame.result_grid, _("Scaled Context"))
-    storage.tabs.append(frame.result_grid)
+    frame.scaling_notebook.AddPage(frame.result_grid, _("Scaled Context"))
+    storage.grid_tabs.append(frame.result_grid)
 
-    frame.csvtabs.Bind(wx.EVT_NOTEBOOK_PAGE_CHANGED, mservice.csv_tab_changed)
+    frame.scaling_notebook.Bind(wx.EVT_NOTEBOOK_PAGE_CHANGED, mservice.scaling_tab_changed)
+
+    frame.scaling_box.Add(frame.scaling_notebook, wx.ID_ANY, wx.EXPAND)
+    frame.scaling_panel.SetSizer(frame.scaling_box)
+
+
+    frame.top_tabs.AddPage(frame.basic_context_panel, _("Simple Context"))
+    frame.top_tabs.AddPage(frame.scaling_panel, _("Scale Many Valued Context"))
+
 
     # Bottom Tabs
-    frame.tabpane = wx.BoxSizer()
-    frame.tabs = wx.Notebook(frame.panelBottom)
-    concepts_tab = concepts.Concepts(frame.tabs, frame, mservice)
-    implications_tab = implications.Implications(frame.tabs, frame, mservice)
-    rules_tab = rules.Rules(frame.tabs, frame, mservice)
+    frame.bottom_tab_sizer = wx.BoxSizer()
+    frame.bottom_tabs = wx.Notebook(frame.panelBottom)
+    concepts_tab = concepts.Concepts(frame.bottom_tabs, frame, mservice)
+    implications_tab = implications.Implications(frame.bottom_tabs, frame, mservice)
+    rules_tab = rules.Rules(frame.bottom_tabs, frame, mservice)
 
     frame.Bind(wx.EVT_MENU, concepts_tab.compute, comp_concepts)
     frame.Bind(wx.EVT_MENU, implications_tab.compute_canon, comp_implications)
     frame.Bind(wx.EVT_MENU, rules_tab.compute, comp_rules)
 
-    frame.tabs.AddPage(concepts_tab, _("Concepts"))
-    frame.tabs.AddPage(implications_tab, _("Implications"))
-    frame.tabs.AddPage(rules_tab, _("Rules"))
+    frame.bottom_tabs.AddPage(concepts_tab, _("Concepts"))
+    frame.bottom_tabs.AddPage(implications_tab, _("Implications"))
+    frame.bottom_tabs.AddPage(rules_tab, _("Rules"))
 
     storage.concepts_tab = concepts_tab
     storage.implications_tab = implications_tab
     storage.rules_tab = rules_tab
 
-    frame.csvbox.Add(frame.csvtabs, wx.ID_ANY, wx.EXPAND)
-    frame.panelTop.SetSizer(frame.csvbox)
+
+
+    frame.bottom_tab_sizer.Add(frame.bottom_tabs, wx.ID_ANY, wx.EXPAND)
+    frame.panelBottom.SetSizer(frame.bottom_tab_sizer)
+
+    frame.top_tab_sizer.Add(frame.top_tabs, wx.ID_ANY, wx.EXPAND)
+    frame.panelTop.SetSizer(frame.top_tab_sizer)
     frame.panelTop.Layout()
 
-    frame.tabpane.Add(frame.tabs, wx.ID_ANY, wx.EXPAND)
-    frame.panelBottom.SetSizer(frame.tabpane)
+
+
 
     # Graph Box
     frame.graphbox = wx.BoxSizer(wx.VERTICAL)
@@ -159,11 +195,14 @@ frame.Center()
 frame.Maximize(True)
 storage = datastorage.DataStorage()
 tservice = tableservice.TableService(frame, storage)
+scservice = simplecontextservice.SimpleContextService(frame, storage)
 gservice = graphservice.GraphService(frame, storage)
 sservice = statservice.Statservice(frame, tservice, storage)
-mservice = menuservice.MenuService(frame, storage, tservice, gservice, sservice)
-eservice = explorationservice.ExplorationService(frame, storage, mservice, tservice)
+mservice = menuservice.MenuService(frame, storage, scservice, tservice, gservice, sservice)
+eservice = explorationservice.ExplorationService(frame, storage, mservice, scservice, tservice)
 sservice.menuservice = mservice
+scservice.menuservice = mservice
+scservice.graphservice = gservice
 tservice.mservice = mservice
 tservice.sservice = sservice
 tservice.gservice = gservice

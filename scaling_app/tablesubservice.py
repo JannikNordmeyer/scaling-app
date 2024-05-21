@@ -40,31 +40,31 @@ class TableSubService:
 
     def dye_col(self, col, color):
         # Sets background color of all cells in specified column
-        for i in range(self.frame.main_grid.GetNumberRows()):
-            self.frame.main_grid.SetCellBackgroundColour(i, col, color)
-        self.frame.main_grid.ForceRefresh()
+        for i in range(self.frame.many_valued_grid.GetNumberRows()):
+            self.frame.many_valued_grid.SetCellBackgroundColour(i, col, color)
+        self.frame.many_valued_grid.ForceRefresh()
 
     def new_tab(self, name):
         # Creates new Grid Tab for Scaling
-        new_grid = grid.Grid(self.frame.csvtabs)
+        new_grid = grid.Grid(self.frame.scaling_notebook)
         new_grid.CreateGrid(1, 1)
         new_grid.EnableDragCell()
         new_grid.EnableDragColMove()
         new_grid.Bind(grid.EVT_GRID_CELL_CHANGED, self.datastorage.set_edited)
-        new_grid.Bind(grid.EVT_GRID_LABEL_RIGHT_CLICK, self.s.mservice.label_menu)
-        new_grid.Bind(grid.EVT_GRID_CELL_RIGHT_CLICK, self.s.mservice.cell_menu)
+        new_grid.Bind(grid.EVT_GRID_LABEL_RIGHT_CLICK, self.s.mservice.scaling_label_menu)
+        new_grid.Bind(grid.EVT_GRID_CELL_RIGHT_CLICK, self.s.mservice.scaling_cell_menu)
         new_grid.Bind(grid.EVT_GRID_CELL_LEFT_CLICK, self.s.check_toggle)
-        self.frame.csvtabs.AddPage(new_grid, "Scaling:"+name)
+        self.frame.scaling_notebook.AddPage(new_grid, "Scaling:" + name)
         self.s.current_grid = new_grid
-        self.datastorage.tabs.append(new_grid)
+        self.datastorage.grid_tabs.append(new_grid)
 
     def check_numeric_col(self, col):
         # Return the Minimum and Maximum Values, if all Entries are Numbers, otherwise False.
 
         maxvalue = 0
         minvalue = 0
-        for i in range(self.frame.main_grid.GetNumberRows()):
-            value = self.frame.main_grid.GetCellValue(i, col)
+        for i in range(self.frame.many_valued_grid.GetNumberRows()):
+            value = self.frame.many_valued_grid.GetCellValue(i, col)
 
             try:
                 maxvalue = max(maxvalue, float(value))
@@ -79,8 +79,8 @@ class TableSubService:
         # Returns all unique values from specified attribute in main grid
         # and sorts them based on order specified in statistics tab
         entries = set()
-        for i in range(self.frame.main_grid.GetNumberRows()):
-            value = self.frame.main_grid.GetCellValue(i, col)
+        for i in range(self.frame.many_valued_grid.GetNumberRows()):
+            value = self.frame.many_valued_grid.GetCellValue(i, col)
             if value != "":
                 entries.add(value)
         entries = list(entries)
@@ -163,8 +163,8 @@ class TableSubService:
 
     def get_delete_col(self, col):
         def delete_col(evt=None):
-            if self.frame.csvtabs.GetSelection() == 0:
-                attribute = self.frame.main_grid.GetColLabelValue(col)
+            if self.frame.scaling_notebook.GetSelection() == 0:
+                attribute = self.frame.many_valued_grid.GetColLabelValue(col)
                 self.s.get_delete_selected_scaling(attribute)()
 
             self.s.current_grid.DeleteCols(pos=self.s.current_grid.GetColPos(col), updateLabels=False)
@@ -214,7 +214,7 @@ class TableSubService:
                 self.datastorage.set_edited()
 
                 # Replace All Occurrences of the Original Name with the New One
-                if self.frame.csvtabs.GetSelection() == 0:
+                if self.frame.scaling_notebook.GetSelection() == 0:
                     level = self.datastorage.table.attribute_levels.pop(old_name)
                     self.datastorage.table.attribute_levels[name] = level
 
@@ -222,27 +222,27 @@ class TableSubService:
                         scaling = self.datastorage.table.scalings[old_name]
                         self.datastorage.table.scalings[name] = scaling
 
-                        for i in range(self.frame.csvtabs.GetPageCount()):
+                        for i in range(self.frame.scaling_notebook.GetPageCount()):
 
-                            if self.frame.csvtabs.GetPageText(i) == "Scaling:" + old_name:
-                                self.frame.csvtabs.SetPageText(i, "Scaling:" + name)
-                                self.datastorage.tabs[i].SetCornerLabelValue(name)
+                            if self.frame.scaling_notebook.GetPageText(i) == "Scaling:" + old_name:
+                                self.frame.scaling_notebook.SetPageText(i, "Scaling:" + name)
+                                self.datastorage.grid_tabs[i].SetCornerLabelValue(name)
                                 break
-                            if self.frame.csvtabs.GetPageText(i) == "Result:" + old_name:
-                                self.frame.csvtabs.SetPageText(i, "Result:" + name)
-                                self.datastorage.tabs[i].SetCornerLabelValue(name)
+                            if self.frame.scaling_notebook.GetPageText(i) == "Result:" + old_name:
+                                self.frame.scaling_notebook.SetPageText(i, "Result:" + name)
+                                self.datastorage.grid_tabs[i].SetCornerLabelValue(name)
                                 break
 
                     if old_name in self.datastorage.stats_visible:
-                        for i in range(self.frame.tabs.GetPageCount()):
-                            if self.frame.tabs.GetPageText(i) == "Stats: " + old_name:
-                                self.frame.tabs.SetPageText(i, "Stats: " + name)
+                        for i in range(self.frame.grid_tabs.GetPageCount()):
+                            if self.frame.grid_tabs.GetPageText(i) == "Stats: " + old_name:
+                                self.frame.grid_tabs.SetPageText(i, "Stats: " + name)
                                 numberspecialtabs = 3
                                 self.datastorage.stats[i - numberspecialtabs].attribute = name
                                 break
 
-            self.frame.csvtabs.Layout()
-            self.frame.csvtabs.Update()
+            self.frame.scaling_notebook.Layout()
+            self.frame.scaling_notebook.Update()
             self.s.table_edited()
 
         return edit_col_label
@@ -270,7 +270,7 @@ class TableSubService:
         return add_col
 
     def col_name_taken(self, string):
-        for i in range(self.frame.main_grid.GetNumberCols()):
+        for i in range(self.frame.many_valued_grid.GetNumberCols()):
             if self.s.current_grid.GetColLabelValue(i) == string:
                 return True
         return False
@@ -321,32 +321,32 @@ class TableSubService:
 
     def reset_table(self, evt=None):
         # Deletes All Data Relating to the Loaded Table and Resets it to it's Default State
-        self.frame.main_grid.DeleteRows(0, self.frame.main_grid.GetNumberRows())
-        delete_cols(self.frame.main_grid)
-        self.frame.main_grid.AppendRows(16)
-        self.frame.main_grid.AppendCols(8)
-        for i in range(self.frame.main_grid.GetNumberRows()):
-            self.frame.main_grid.SetRowLabelValue(i, str(i + 1))
+        self.frame.many_valued_grid.DeleteRows(0, self.frame.many_valued_grid.GetNumberRows())
+        delete_cols(self.frame.many_valued_grid)
+        self.frame.many_valued_grid.AppendRows(16)
+        self.frame.many_valued_grid.AppendCols(8)
+        for i in range(self.frame.many_valued_grid.GetNumberRows()):
+            self.frame.many_valued_grid.SetRowLabelValue(i, str(i + 1))
         self.s.sservice.clear_stats()
         self.s.clear_scalings()
 
     def is_empty(self):
         # Checks if Main Grid is Fully Empty
-        for i in range(self.frame.main_grid.GetNumberRows()):
-            for j in range(self.frame.main_grid.GetNumberCols()):
-                if self.frame.main_grid.GetCellValue(i, j) != "":
+        for i in range(self.frame.many_valued_grid.GetNumberRows()):
+            for j in range(self.frame.many_valued_grid.GetNumberCols()):
+                if self.frame.many_valued_grid.GetCellValue(i, j) != "":
                     return False
         return True
 
     def col_empty(self, col):
-        for i in range(self.frame.main_grid.GetNumberRows()):
-            if self.frame.main_grid.GetCellValue(i, col) != "":
+        for i in range(self.frame.many_valued_grid.GetNumberRows()):
+            if self.frame.many_valued_grid.GetCellValue(i, col) != "":
                 return False
         return True
 
     def row_empty(self, row):
-        for i in range(self.frame.main_grid.GetNumberCols()):
-            if self.frame.main_grid.GetCellValue(row, i) != "":
+        for i in range(self.frame.many_valued_grid.GetNumberCols()):
+            if self.frame.many_valued_grid.GetCellValue(row, i) != "":
                 return False
         return True
 
@@ -354,13 +354,13 @@ class TableSubService:
         # Checks if Specified Value is Part of the Data in the Specified Column in th Main Grid
 
         # Always Returns False if Main Grid is Currently Selected !!!
-        if self.frame.csvtabs.GetSelection() == 0:
+        if self.frame.scaling_notebook.GetSelection() == 0:
             return False
         if value == "":
             return False
 
-        for i in range(self.frame.main_grid.GetNumberRows()):
-            if self.frame.main_grid.GetCellValue(i, col) == value:
+        for i in range(self.frame.many_valued_grid.GetNumberRows()):
+            if self.frame.many_valued_grid.GetCellValue(i, col) == value:
                 return True
         return False
 
@@ -376,11 +376,11 @@ class TableSubService:
 
     def current_attribute(self):
         # Returns the Attribute Represented by the Currently Selected Scaling Table
-        return self.frame.csvtabs.GetPage(self.frame.csvtabs.GetSelection()).GetCornerLabelValue()
+        return self.frame.scaling_notebook.GetPage(self.frame.scaling_notebook.GetSelection()).GetCornerLabelValue()
 
     def drop_empty_cols(self, evt=None):
         i = 0
-        while i < self.frame.main_grid.GetNumberCols():
+        while i < self.frame.many_valued_grid.GetNumberCols():
             if self.col_empty(i):
                 self.s.get_delete_col(i)()
                 i -= 1
@@ -388,7 +388,7 @@ class TableSubService:
 
     def drop_empty_rows(self, evt=None):
         i = 0
-        while i < self.frame.main_grid.GetNumberRows():
+        while i < self.frame.many_valued_grid.GetNumberRows():
             if self.row_empty(i):
                 self.s.get_delete_row(i)()
                 i -= 1
