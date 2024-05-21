@@ -2,14 +2,14 @@ import wx
 
 
 class NewObjectDialog(wx.Dialog):
-    def __init__(self, parent, id, title, asked_implication, implications, objects, attributes, size=wx.Size(500, 10000), pos=wx.DefaultPosition, style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER, name='dialog'):
+    def __init__(self, parent, id, title, asked_implication, implications, objects, attributes, size=wx.Size(500, 10000), pos=wx.DefaultPosition, style=wx.DEFAULT_DIALOG_STYLE, name='dialog'):
         wx.Dialog.__init__(self)
         self.Create(parent, id, title, pos, size, style, name)
 
         self.asked_implication = asked_implication
         self.implications = implications
         self.objects = objects
-        self.confirmed_attributes = attributes
+        self.attributes = attributes
 
         self.sizer = wx.BoxSizer(wx.VERTICAL)
         self.name_text = wx.StaticText(self, label="Enter the name of the new object:")
@@ -20,15 +20,19 @@ class NewObjectDialog(wx.Dialog):
         self.attribute_text = wx.StaticText(self, label="Enter all attributes of the new object:")
         self.attribute_error_text = wx.StaticText(self, label="Error:")
         self.attribute_error_text.SetForegroundColour((255, 0, 0))
-        self.attribute_text_entry = wx.TextCtrl(self, -1, "", size=(300, -1))
-        self.attribute_text_entry.Bind(wx.EVT_TEXT, self.AttributesEntered)
+
+        self.attribute_selector = wx.ScrolledWindow(self, size=(300, 100))
+        self.attribute_selector.SetScrollbars(1, 10, 1, 10)
+        self.attribute_checkbox_dict = dict()
+        self.attribute_sizer = self.generate_attribute_sizer()
+        self.attribute_selector.SetSizer(self.attribute_sizer)
 
         self.sizer.Add(self.name_text, 0, wx.ALIGN_LEFT | wx.ALL, 5)
         self.sizer.Add(self.name_error_text, 0, wx.ALIGN_LEFT | wx.ALL, 5)
         self.sizer.Add(self.name_text_entry, 0, wx.ALIGN_LEFT | wx.EXPAND | wx.ALL, 5)
         self.sizer.Add(self.attribute_text, 0, wx.ALIGN_LEFT | wx.ALL, 5)
         self.sizer.Add(self.attribute_error_text, 0, wx.ALIGN_LEFT | wx.ALL, 5)
-        self.sizer.Add(self.attribute_text_entry, 0, wx.ALIGN_LEFT | wx.EXPAND | wx.ALL, 5)
+        self.sizer.Add(self.attribute_selector, 0, wx.ALIGN_LEFT | wx.EXPAND | wx.ALL, 5)
 
         self.line = wx.StaticLine(self, -1, size=(20, -1), style=wx.LI_HORIZONTAL)
         self.sizer.Add(self.line, 0, wx.EXPAND | wx.RIGHT | wx.TOP, 5)
@@ -54,23 +58,31 @@ class NewObjectDialog(wx.Dialog):
         self.NameEntered()
         self.Layout()
 
+    def generate_attribute_sizer(self):
+        # Generates a boxsizer containing checkboxes for each attribute
+        attribute_sizer = wx.BoxSizer(wx.VERTICAL)
+
+        for a in self.attributes:
+            checkbox = wx.CheckBox(self.attribute_selector, label=a)
+            checkbox.Bind(wx.EVT_CHECKBOX, self.AttributesEntered)
+            self.attribute_checkbox_dict[a] = checkbox
+            attribute_sizer.Add(checkbox)
+        return attribute_sizer
+
     def SetRequiredAttributes(self, asked_implication):
-        # Enters the attributes required to contradict the implication into the respective TextCtrl.
+        # Checks the checkboxes for each attribute required to contradict the implication.
         premise = asked_implication[0]['premise']
-        default_value = ""
         for a in premise:
-            default_value += a
-            default_value += ", "
-        self.attribute_text_entry.write(default_value)
+            self.attribute_checkbox_dict[a].SetValue(True)
+            self.attribute_checkbox_dict[a].Disable()
 
     def GetValues(self):
         # Returns the name and attributes entered by the user.
         name = self.name_text_entry.GetLineText(0).lstrip().rstrip()
         attributes = []
-        attributes_string = self.attribute_text_entry.GetLineText(0)
-        for a in attributes_string.split(','):
-            if not (str.isspace(a) or a == ""):
-                attributes.append(a.lstrip().rstrip())
+        for attribute, checkbox in self.attribute_checkbox_dict.items():
+            if checkbox.GetValue():
+                attributes.append(attribute)
         return [name, attributes]
 
     def DisplayNameError(self, message):
@@ -128,6 +140,7 @@ class NewObjectDialog(wx.Dialog):
         return False
 
     def NameEntered(self, evt=None):
+        # Checks whether any errors are present in the entered object name and displays corresponding error text.
         name, attributes = self.GetValues()
         if name == "":
             self.DisplayNameError("Object name must not be empty.")
@@ -140,7 +153,7 @@ class NewObjectDialog(wx.Dialog):
         # Checks whether any errors are present in the entered attributes and displays corresponding error text.
         name, attributes = self.GetValues()
         contradicted_impl = self.ContradictsKnownImplication()
-        if set(attributes).difference(set(self.confirmed_attributes)) != set():
+        if set(attributes).difference(set(self.attributes)) != set():
             self.DisplayAttributeError("Your entry contains unknown attributes.")
         elif self.NoContradiction():
             self.DisplayAttributeError("Your entry does not contradict the implication\n " + str(self.asked_implication[0]['premise']) + " -> " + str(self.asked_implication[0]['conclusion']) + ".")

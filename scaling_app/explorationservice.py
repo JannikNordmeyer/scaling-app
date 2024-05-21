@@ -13,7 +13,7 @@ def ask_attributes(self):
     attributes = []
     for a in attributes_string.split(","):
         attributes.append(a.lstrip().rstrip())
-    return attributes
+    return list(set(attributes))
 
 def ask_starting_object(self, additional=False):
     # Displays a dialog asking if starting objects should be added
@@ -44,6 +44,7 @@ def ask_object(self, implications, objects, attributes, asked_implication=None):
     dialog = NewObjectDialog(None, wx.ID_ANY, title="Attribute Exploration", asked_implication=asked_implication, implications=implications, objects=objects, attributes=attributes)
     if asked_implication:
         dialog.SetRequiredAttributes(asked_implication)
+        pass
     answer = dialog.ShowModal()
     new_object = dialog.GetValues()
     dialog.Destroy()
