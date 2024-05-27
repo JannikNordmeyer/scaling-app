@@ -1,7 +1,6 @@
 import wx
-from scaling_app import constants
 from scaling_app.api import request_exploration_step
-from scaling_app.customdialogs import NewObjectDialog
+from scaling_app.customdialogs import NewObjectDialog, make_implication_string
 
 
 def ask_attributes(self):
@@ -15,6 +14,7 @@ def ask_attributes(self):
         attributes.append(a.lstrip().rstrip())
     return list(set(attributes))
 
+
 def ask_starting_object(self, additional=False):
     # Displays a dialog asking if starting objects should be added
     if additional:
@@ -27,11 +27,10 @@ def ask_starting_object(self, additional=False):
     dialog.Destroy()
     return answer
 
+
 def ask_implication_holds(self, implication):
-    # Displays a dialog asking wwether the specified implication holds
-    premise = implication[0]['premise']
-    conclusion = implication[0]['conclusion']
-    implication_text = "Does the implication " + str(premise) + " -> " + str(conclusion) + " hold?"
+    # Displays a dialog asking whether the specified implication holds
+    implication_text = "Does the implication " + make_implication_string(implication[0]) + " hold?"
 
     dialog = wx.MessageDialog(None, implication_text, "Attribute Exploration", wx.YES_NO | wx.CANCEL)
     answer = dialog.ShowModal()
@@ -64,6 +63,7 @@ def display_result(self, result):
         y_coord = attributes.index(i[1])
         incidence[x_coord, y_coord] = "✘"
     self.scservice.fill_context(objects, attributes, incidence)
+
 
 class ExplorationService:
 

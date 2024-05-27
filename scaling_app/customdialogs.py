@@ -1,6 +1,19 @@
 import wx
 
 
+def make_implication_string(implication):
+    # Returs a string representing the specified implication for use in dialogs
+    premise_string = str(implication['premise']).replace("[", "").replace("]", "").replace("'", "")
+    if premise_string == "":
+        premise_string = "∅"
+    else:
+        premise_string = "{" + premise_string + "}"
+    conclusion_string = "{" + str(implication['conclusion']).replace("[", "").replace("]", "").replace("'", "") + "}"
+
+    implication_string = premise_string + "-> " + conclusion_string
+    return implication_string
+
+
 class NewObjectDialog(wx.Dialog):
     def __init__(self, parent, id, title, asked_implication, implications, objects, attributes, size=wx.Size(500, 10000), pos=wx.DefaultPosition, style=wx.DEFAULT_DIALOG_STYLE, name='dialog'):
         wx.Dialog.__init__(self)
@@ -156,9 +169,9 @@ class NewObjectDialog(wx.Dialog):
         if set(attributes).difference(set(self.attributes)) != set():
             self.DisplayAttributeError("Your entry contains unknown attributes.")
         elif self.NoContradiction():
-            self.DisplayAttributeError("Your entry does not contradict the implication\n " + str(self.asked_implication[0]['premise']) + " -> " + str(self.asked_implication[0]['conclusion']) + ".")
+            self.DisplayAttributeError("Your entry does not contradict the implication\n " + make_implication_string(self.asked_implication) + ".")
         elif contradicted_impl:
-            self.DisplayAttributeError("Your entry contradicts the previously confirmed implication\n " + str(contradicted_impl['premise']) + " -> " + str(contradicted_impl['conclusion']) + ".")
+            self.DisplayAttributeError("Your entry contradicts the previously confirmed implication\n " + make_implication_string(contradicted_impl) + ".")
         else:
             self.ClearAttributeError()
 
