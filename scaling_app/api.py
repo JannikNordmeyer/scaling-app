@@ -1,3 +1,5 @@
+import traceback
+
 import requests
 import json
 
@@ -156,7 +158,6 @@ def check_connection(address):
     try:
         response = requests.post(address, data=json.dumps(data, indent=4), headers=headers)
         return response.json()["version"]["result"] == constants.api_version
-
     except:
         return False
 

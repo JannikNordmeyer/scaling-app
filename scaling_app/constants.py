@@ -35,7 +35,7 @@ standard = "standard-layout"
 inf = "inf-additive-layout"
 
 # API
-api_version = "2.3.0-SNAPSHOT"
+api_version = "2.4.1-SNAPSHOT"
 
 
 def color_conv(level):

@@ -1,6 +1,7 @@
 import wx
-from scaling_app.api import request_exploration_step
+from scaling_app.api import request_exploration_step, check_connection
 from scaling_app.customdialogs import NewObjectDialog, make_implication_string
+from scaling_app.menuservice import connection_error_dialog
 
 
 def ask_attributes(self):
@@ -76,6 +77,13 @@ class ExplorationService:
 
     def explore(self, evt):
         # Performs attribute exploration algorithm.
+
+        wx.BeginBusyCursor()
+        if not check_connection(self.mservice.api_address):
+            connection_error_dialog()
+            wx.EndBusyCursor()
+            return
+        wx.EndBusyCursor()
 
         objects = []
         attributes = ask_attributes(self)
