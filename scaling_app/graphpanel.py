@@ -27,7 +27,7 @@ class GraphPanel(wx.Panel):
         mplstyle.use('fast')
 
         self.graph = nx.Graph()
-        nx.draw(self.graph)
+        nx.draw_networkx(self.graph)
         self.node_positions = []
         self.color_map = []
         self.labels = []
@@ -85,7 +85,7 @@ class GraphPanel(wx.Panel):
                 self.graph.nodes[self.selectednode]["pos"] = (x, y)
                 self.node_positions[self.selectednode] = (x, y)
                 plt.clf()
-                nx.draw(self.graph, pos=self.node_positions, node_color=self.color_map, with_labels=False, alpha=None)
+                nx.draw_networkx(self.graph, pos=self.node_positions, node_color=self.color_map, with_labels=False, alpha=None)
                 nx.draw_networkx_labels(self.graph, pos=self.node_positions, labels=self.labels)
                 self.figure.canvas.draw()
 
@@ -119,7 +119,7 @@ class GraphPanel(wx.Panel):
                 self.color_map.append("none")
             else:
                 self.color_map.append("red")
-        nx.draw(graph, pos=self.node_positions, node_color=self.color_map,  with_labels=False, alpha=None)
+        nx.draw_networkx(graph, pos=self.node_positions, node_color=self.color_map,  with_labels=False, alpha=None)
         nx.draw_networkx_labels(graph, pos=self.node_positions, labels=self.labels, font_size=10)
         self.figure.canvas.draw()
 
