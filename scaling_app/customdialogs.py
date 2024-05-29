@@ -168,7 +168,7 @@ class NewObjectDialog(wx.Dialog):
         if set(attributes).difference(set(self.attributes)) != set():
             self.DisplayAttributeError("Your entry contains unknown attributes.")
         elif self.NoContradiction():
-            self.DisplayAttributeError("Your entry does not contradict the implication\n " + make_implication_string(self.asked_implication) + ".")
+            self.DisplayAttributeError("Your entry does not contradict the implication\n " + make_implication_string(self.asked_implication[0]) + ".")
         elif contradicted_impl:
             self.DisplayAttributeError("Your entry contradicts the previously confirmed implication\n " + make_implication_string(contradicted_impl) + ".")
         else:
