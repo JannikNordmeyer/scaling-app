@@ -6,9 +6,8 @@ def make_implication_string(implication):
     premise_string = str(implication['premise']).replace("[", "").replace("]", "").replace("'", "")
     if premise_string == "":
         premise_string = "∅"
-    else:
-        premise_string = "{" + premise_string + "}"
-    conclusion_string = "{" + str(implication['conclusion']).replace("[", "").replace("]", "").replace("'", "") + "}"
+
+    conclusion_string = str(implication['conclusion']).replace("[", "").replace("]", "").replace("'", "")
 
     implication_string = premise_string + "-> " + conclusion_string
     return implication_string

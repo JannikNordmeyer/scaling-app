@@ -30,7 +30,7 @@ def ask_starting_object(self, additional=False):
 
 def ask_implication_holds(self, implication):
     # Displays a dialog asking whether the specified implication holds
-    implication_text = "Does the implication " + make_implication_string(implication[0]) + " hold?"
+    implication_text = "Does the following implication hold? " + "\n" + make_implication_string(implication[0])
 
     dialog = wx.MessageDialog(None, implication_text, "Attribute Exploration", wx.YES_NO | wx.CANCEL)
     answer = dialog.ShowModal()
@@ -54,7 +54,7 @@ def ask_object(self, implications, objects, attributes, asked_implication=None):
 
 
 def display_result(self, result):
-    # Displays the context resulting from the exploration in the single valued grid
+    # Displays the context resulting from the exploration step in the single valued grid
     objects = result['step']['result']['context']['objects']
     attributes = result['step']['result']['context']['attributes']
     incidence = dict()
@@ -100,9 +100,10 @@ class ExplorationService:
             result = request_exploration_step(self.mservice.api_address, objects, attributes, incidence, implications)
             asked_implication = result['step']['result']['implications']
 
+            display_result(self, result)
+
             # No further implications, Exploration over:
             if not asked_implication:
-                display_result(self, result)
                 break
 
             answer = ask_implication_holds(self, asked_implication)

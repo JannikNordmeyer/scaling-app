@@ -13,7 +13,8 @@ class SimpleContextService:
 
     def fill_context(self, objects, attributes, incidence):
         # Inputs context into the many valued grid
-        self.frame.single_valued_grid.DeleteRows(0, self.frame.single_valued_grid.GetNumberRows())
+        if self.frame.single_valued_grid.GetNumberRows() > 0:
+            self.frame.single_valued_grid.DeleteRows(0, self.frame.single_valued_grid.GetNumberRows())
         tablesubservice.delete_cols(self.frame.single_valued_grid)
 
         self.frame.single_valued_grid.AppendCols(len(attributes))
