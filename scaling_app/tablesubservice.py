@@ -46,7 +46,7 @@ class TableSubService:
 
     def new_tab(self, name):
         # Creates new Grid Tab for Scaling
-        new_grid = grid.Grid(self.frame.scaling_notebook)
+        new_grid = grid.Grid(self.frame.scaling_tabs)
         new_grid.CreateGrid(1, 1)
         new_grid.EnableDragCell()
         new_grid.EnableDragColMove()
@@ -54,7 +54,7 @@ class TableSubService:
         new_grid.Bind(grid.EVT_GRID_LABEL_RIGHT_CLICK, self.s.mservice.scaling_label_menu)
         new_grid.Bind(grid.EVT_GRID_CELL_RIGHT_CLICK, self.s.mservice.scaling_cell_menu)
         new_grid.Bind(grid.EVT_GRID_CELL_LEFT_CLICK, self.s.check_toggle)
-        self.frame.scaling_notebook.AddPage(new_grid, "Scaling:" + name)
+        self.frame.scaling_tabs.AddPage(new_grid, "Scale:" + name)
         self.s.current_grid = new_grid
         self.datastorage.grid_tabs.append(new_grid)
 
@@ -163,7 +163,7 @@ class TableSubService:
 
     def get_delete_col(self, col):
         def delete_col(evt=None):
-            if self.frame.scaling_notebook.GetSelection() == 0:
+            if self.frame.scaling_tabs.GetSelection() == 0:
                 attribute = self.frame.many_valued_grid.GetColLabelValue(col)
                 self.s.get_delete_selected_scaling(attribute)()
 
@@ -214,7 +214,7 @@ class TableSubService:
                 self.datastorage.set_edited()
 
                 # Replace All Occurrences of the Original Name with the New One
-                if self.frame.scaling_notebook.GetSelection() == 0:
+                if self.frame.scaling_tabs.GetSelection() == 0:
                     level = self.datastorage.table.attribute_levels.pop(old_name)
                     self.datastorage.table.attribute_levels[name] = level
 
@@ -222,14 +222,14 @@ class TableSubService:
                         scaling = self.datastorage.table.scalings[old_name]
                         self.datastorage.table.scalings[name] = scaling
 
-                        for i in range(self.frame.scaling_notebook.GetPageCount()):
+                        for i in range(self.frame.scaling_tabs.GetPageCount()):
 
-                            if self.frame.scaling_notebook.GetPageText(i) == "Scaling:" + old_name:
-                                self.frame.scaling_notebook.SetPageText(i, "Scaling:" + name)
+                            if self.frame.scaling_tabs.GetPageText(i) == "Scale:" + old_name:
+                                self.frame.scaling_tabs.SetPageText(i, "Scale:" + name)
                                 self.datastorage.grid_tabs[i].SetCornerLabelValue(name)
                                 break
-                            if self.frame.scaling_notebook.GetPageText(i) == "Result:" + old_name:
-                                self.frame.scaling_notebook.SetPageText(i, "Result:" + name)
+                            if self.frame.scaling_tabs.GetPageText(i) == "Result:" + old_name:
+                                self.frame.scaling_tabs.SetPageText(i, "Result:" + name)
                                 self.datastorage.grid_tabs[i].SetCornerLabelValue(name)
                                 break
 
@@ -241,8 +241,8 @@ class TableSubService:
                                 self.datastorage.stats[i - numberspecialtabs].attribute = name
                                 break
 
-            self.frame.scaling_notebook.Layout()
-            self.frame.scaling_notebook.Update()
+            self.frame.scaling_tabs.Layout()
+            self.frame.scaling_tabs.Update()
             self.s.table_edited()
 
         return edit_col_label
@@ -354,7 +354,7 @@ class TableSubService:
         # Checks if Specified Value is Part of the Data in the Specified Column in th Main Grid
 
         # Always Returns False if Main Grid is Currently Selected !!!
-        if self.frame.scaling_notebook.GetSelection() == 0:
+        if self.frame.scaling_tabs.GetSelection() == 0:
             return False
         if value == "":
             return False
@@ -376,7 +376,7 @@ class TableSubService:
 
     def current_attribute(self):
         # Returns the Attribute Represented by the Currently Selected Scaling Table
-        return self.frame.scaling_notebook.GetPage(self.frame.scaling_notebook.GetSelection()).GetCornerLabelValue()
+        return self.frame.scaling_tabs.GetPage(self.frame.scaling_tabs.GetSelection()).GetCornerLabelValue()
 
     def drop_empty_cols(self, evt=None):
         i = 0

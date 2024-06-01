@@ -101,18 +101,16 @@ class MenuService:
 
     # Many Valued Context Scaling
     def scaling_tab_changed(self, evt=None):
-
         self.tableservice.get_save_to_storage()()
-        self.frame.menupanel.page_changed(self.frame.scaling_notebook.GetSelection())
-        evt.Skip()
+        self.frame.menupanel.scaling_tabs_changed()
 
     def scaling_show_row_menu(self, evt):
 
         menu = wx.Menu()
         row_label = self.tableservice.current_grid.GetRowLabelValue(evt.GetRow())
         col = None
-        if self.frame.scaling_notebook.GetSelection() > 0:
-            selected_scaling = self.datastorage.grid_tabs[self.frame.scaling_notebook.GetSelection()].GetCornerLabelValue()
+        if self.frame.scaling_tabs.GetSelection() > 0:
+            selected_scaling = self.datastorage.grid_tabs[self.frame.scaling_tabs.GetSelection()].GetCornerLabelValue()
             col = self.datastorage.table.col_labels.index(selected_scaling)
 
         if not self.tableservice.s.value_in_data(row_label, col):
@@ -138,7 +136,7 @@ class MenuService:
         self.frame.Bind(wx.EVT_MENU, self.tableservice.s.get_delete_col(evt.GetCol()), delcol)
         purgecol = menu.Append(wx.ID_ANY, _("Purge Attribute"))
         self.frame.Bind(wx.EVT_MENU, self.tableservice.s.get_purge_col(evt), purgecol)
-        if self.frame.scaling_notebook.GetSelection() > 0:
+        if self.frame.scaling_tabs.GetSelection() > 0:
             floodcol = menu.Append(wx.ID_ANY, _("Fill Attribute"))
             self.frame.Bind(wx.EVT_MENU, self.tableservice.s.get_flood_col(evt), floodcol)
         edit = menu.Append(wx.ID_ANY, _("Edit Label"))
@@ -148,7 +146,7 @@ class MenuService:
 
         attribute = self.frame.many_valued_grid.GetColLabelValue(evt.GetCol())
 
-        if self.frame.scaling_notebook.GetSelection() == 0:
+        if self.frame.scaling_tabs.GetSelection() == 0:
             if attribute not in self.datastorage.table.scalings and attribute in self.datastorage.table.attribute_levels:
                 if not self.tableservice.s.col_empty(evt.GetCol()):
                     menu.AppendSeparator()
@@ -206,30 +204,30 @@ class MenuService:
     def scaling_cell_menu(self, evt):
 
         menu = wx.Menu()
-        if self.frame.scaling_notebook.GetSelection() != 1:
+        if self.frame.scaling_tabs.GetSelection() != 1:
             purge = menu.Append(wx.ID_ANY, _("Purge Table"))
             reset = menu.Append(wx.ID_ANY, _("Reset Table"))
             self.frame.Bind(wx.EVT_MENU, self.tableservice.s.purge_table, purge)
             self.frame.Bind(wx.EVT_MENU, self.tableservice.s.reset_table, reset)
-        if self.frame.scaling_notebook.GetSelection() == 0:
+        if self.frame.scaling_tabs.GetSelection() == 0:
             dropcols = menu.Append(wx.ID_ANY, _("Drop Empty Columns"))
             droprows = menu.Append(wx.ID_ANY, _("Drop Empty Rows"))
             self.frame.Bind(wx.EVT_MENU, self.tableservice.s.drop_empty_cols, dropcols)
             self.frame.Bind(wx.EVT_MENU, self.tableservice.s.drop_empty_rows, droprows)
-        if self.frame.scaling_notebook.GetSelection() == 1:
+        if self.frame.scaling_tabs.GetSelection() == 1:
             self.add_draw_types(menu)
 
-        if self.frame.scaling_notebook.GetSelection() > 0 and _("Scaling:") in self.frame.scaling_notebook.GetPageText(self.frame.scaling_notebook.GetSelection()):
+        if self.frame.scaling_tabs.GetSelection() > 0 and _("Scale:") in self.frame.scaling_tabs.GetPageText(self.frame.scaling_tabs.GetSelection()):
             menu.AppendSeparator()
             result = menu.Append(wx.ID_ANY, _("View Result"))
             self.frame.Bind(wx.EVT_MENU, self.tableservice.view_result, result)
             self.add_draw_types(menu)
 
-        if self.frame.scaling_notebook.GetSelection() > 0 and self.tableservice.s.current_attribute() in self.datastorage.result_visible:
+        if self.frame.scaling_tabs.GetSelection() > 0 and self.tableservice.s.current_attribute() in self.datastorage.result_visible:
             menu.AppendSeparator()
             to_scaling = menu.Append(wx.ID_ANY, _("Go to Scaling"))
             self.frame.Bind(wx.EVT_MENU, self.tableservice.get_to_scaling(evt.GetCol(), None), to_scaling)
-        if self.frame.scaling_notebook.GetSelection() > 0:
+        if self.frame.scaling_tabs.GetSelection() > 0:
             menu.AppendSeparator()
             attribute = self.tableservice.s.current_attribute()
             if attribute in self.datastorage.stats_visible:
@@ -248,7 +246,7 @@ class MenuService:
 
                 menu.Append(wx.ID_ANY, _("Rescale"), rescale)
 
-            if self.frame.scaling_notebook.GetSelection() != 1:
+            if self.frame.scaling_tabs.GetSelection() != 1:
                 delete = menu.Append(wx.ID_ANY, _("Delete Scaling"))
                 self.frame.Bind(wx.EVT_MENU, self.tableservice.get_delete_selected_scaling(self.tableservice.current_grid.GetCornerLabelValue()), delete)
 
@@ -309,6 +307,7 @@ class MenuService:
             for i in range(self.frame.many_valued_grid.GetNumberRows()):
                 self.frame.result_grid.AppendRows(1)
                 self.frame.result_grid.SetRowLabelValue(i, self.frame.many_valued_grid.GetRowLabelValue(i))
+            self.frame.top_tabs.ChangeSelection(1)
         except:
             traceback.print_exc()
 

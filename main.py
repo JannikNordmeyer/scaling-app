@@ -79,7 +79,7 @@ def build_ui():
     frame.panelLeft = wx.Panel(frame.hsplitter, wx.ID_ANY, style=wx.BORDER_SUNKEN)
     frame.panelTop = wx.Panel(frame.gridsplitter, wx.ID_ANY, style=wx.BORDER_SUNKEN)
     frame.panelBottom = wx.Panel(frame.vsplitter, wx.ID_ANY, style=wx.BORDER_SUNKEN)
-    frame.menupanel = ContextMenu(frame.gridsplitter, frame, mservice, tservice)
+    frame.menupanel = ContextMenu(frame.gridsplitter, frame, mservice, tservice, scservice)
 
     frame.gridsplitter.SplitVertically(frame.panelTop, frame.menupanel)
     frame.gridsplitter.SetMinimumPaneSize(100)
@@ -95,14 +95,14 @@ def build_ui():
     # Top Tabs
     frame.top_tab_sizer = wx.BoxSizer()
     frame.top_tabs = wx.Notebook(frame.panelTop)
-    frame.top_tabs.Bind(wx.EVT_NOTEBOOK_PAGE_CHANGED, mservice.scaling_tab_changed)
+    frame.top_tabs.Bind(wx.EVT_NOTEBOOK_PAGE_CHANGED, frame.menupanel.top_tabs_changed)
 
-    frame.basic_context_panel = wx.Panel(frame.top_tabs)
+    frame.formal_context_panel = wx.Panel(frame.top_tabs)
     frame.scaling_panel = wx.Panel(frame.top_tabs)
 
     # Simple Context
-    frame.simple_context_box = wx.BoxSizer(wx.VERTICAL)
-    frame.single_valued_grid = grid.Grid(frame.basic_context_panel)
+    frame.formal_context_box = wx.BoxSizer(wx.VERTICAL)
+    frame.single_valued_grid = grid.Grid(frame.formal_context_panel)
     frame.single_valued_grid.CreateGrid(16, 8)
     frame.single_valued_grid.EnableDragCell()
     frame.single_valued_grid.EnableDragColMove()
@@ -110,13 +110,13 @@ def build_ui():
     frame.single_valued_grid.Bind(grid.EVT_GRID_CELL_RIGHT_CLICK, mservice.simple_cell_menu)
     frame.single_valued_grid.Bind(grid.EVT_GRID_CELL_LEFT_CLICK, scservice.toggle_cell)
 
-    frame.simple_context_box.Add(frame.single_valued_grid, 1, wx.EXPAND | wx.ALL, 5)
-    frame.basic_context_panel.SetSizer(frame.simple_context_box)
+    frame.formal_context_box.Add(frame.single_valued_grid, 1, wx.EXPAND | wx.ALL, 5)
+    frame.formal_context_panel.SetSizer(frame.formal_context_box)
 
     # Scale Many Valued Context
     frame.scaling_box = wx.BoxSizer(wx.VERTICAL)
-    frame.scaling_notebook = wx.Notebook(frame.scaling_panel)
-    frame.many_valued_grid = grid.Grid(frame.scaling_notebook)
+    frame.scaling_tabs = wx.Notebook(frame.scaling_panel)
+    frame.many_valued_grid = grid.Grid(frame.scaling_tabs)
     frame.many_valued_grid.CreateGrid(16, 8)
     frame.many_valued_grid.EnableDragCell()
     frame.many_valued_grid.EnableDragColMove()
@@ -128,26 +128,26 @@ def build_ui():
     frame.many_valued_grid_sizer.Add(frame.many_valued_grid, 1, wx.EXPAND | wx.ALL, 5)
 
     frame.many_valued_grid.Bind(grid.EVT_GRID_CELL_LEFT_CLICK, tservice.check_toggle)
-    frame.scaling_notebook.AddPage(frame.many_valued_grid, _("Dataset"))
+    frame.scaling_tabs.AddPage(frame.many_valued_grid, _("Many Valued Context"))
     storage.grid_tabs.append(frame.many_valued_grid)
     tservice.current_grid = frame.many_valued_grid
 
-    frame.result_grid = grid.Grid(frame.scaling_notebook)
+    frame.result_grid = grid.Grid(frame.scaling_tabs)
     frame.result_grid.CreateGrid(16, 8)
     frame.result_grid.EnableEditing(False)
     frame.result_grid.Bind(grid.EVT_GRID_CELL_RIGHT_CLICK, mservice.scaling_cell_menu)
 
-    frame.scaling_notebook.AddPage(frame.result_grid, _("Scaled Context"))
+    frame.scaling_tabs.AddPage(frame.result_grid, _("Scaled Context"))
     storage.grid_tabs.append(frame.result_grid)
 
-    frame.scaling_notebook.Bind(wx.EVT_NOTEBOOK_PAGE_CHANGED, mservice.scaling_tab_changed)
+    frame.scaling_tabs.Bind(wx.EVT_NOTEBOOK_PAGE_CHANGED, mservice.scaling_tab_changed)
 
-    frame.scaling_box.Add(frame.scaling_notebook, wx.ID_ANY, wx.EXPAND)
+    frame.scaling_box.Add(frame.scaling_tabs, wx.ID_ANY, wx.EXPAND)
     frame.scaling_panel.SetSizer(frame.scaling_box)
 
 
-    frame.top_tabs.AddPage(frame.basic_context_panel, _("Simple Context"))
-    frame.top_tabs.AddPage(frame.scaling_panel, _("Scale Many Valued Context"))
+    frame.top_tabs.AddPage(frame.formal_context_panel, _("Formal Context"))
+    frame.top_tabs.AddPage(frame.scaling_panel, _("Conceptual Scaling"))
 
 
     # Bottom Tabs
