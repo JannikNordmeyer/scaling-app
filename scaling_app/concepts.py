@@ -26,7 +26,13 @@ class Concepts(wx.Panel):
     def compute(self, evt=None):
         # Computes concepts via API and displays them
         wx.BeginBusyCursor()
-        objects, attributes, incidence = tableservice.get_grid_data(self.frame.result_grid)
+
+        if self.frame.top_tabs.GetSelection() == 0:
+            grid = self.frame.single_valued_grid
+        else:
+            grid = self.frame.result_grid
+
+        objects, attributes, incidence = tableservice.get_grid_data(grid)
         implications = api.request_concepts(self.mservice.api_address, objects, attributes, incidence)
 
         if implications is None:
@@ -40,7 +46,7 @@ class Concepts(wx.Panel):
         row_counter = 0
         for i in implications["concepts"]["result"]:
 
-            self.list.InsertItem(row_counter, str(i[0]))
+            self.list.InsertItem(row_counter, str(i[0])+ " : " + str(i[1]))
             row_counter += 1
 
         self.status_text.SetLabel("Concepts:")

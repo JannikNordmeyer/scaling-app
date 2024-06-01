@@ -39,7 +39,11 @@ class Rules(wx.Panel):
 
     def compute(self, evt=None):
         # computes and displays association rules
-        objects, attributes, incidence = tableservice.get_grid_data(self.frame.result_grid)
+        if self.frame.top_tabs.GetSelection() == 0:
+            grid = self.frame.single_valued_grid
+        else:
+            grid = self.frame.result_grid
+        objects, attributes, incidence = tableservice.get_grid_data(grid)
 
         try:
             supp = float(self.supp_selector.GetLineText(0))
@@ -61,8 +65,8 @@ class Rules(wx.Panel):
 
         row_counter = 0
         for i in rules["rules"]["result"]:
-            self.list.InsertItem(row_counter, str(i[0]))
-            self.list.SetItem(row_counter, 1, "->  " + str(i[1]))
+            self.list.InsertItem(row_counter, str(i['premise']))
+            self.list.SetItem(row_counter, 1, "->  " + str(i['conclusion']))
             row_counter += 1
 
         self.status_text.SetLabel("Association Rules:")

@@ -32,7 +32,13 @@ class Implications(wx.Panel):
         # computes and displays the canonical implication base of the results context
         wx.BeginBusyCursor()
         self.list.ClearAll()
-        objects, attributes, incidence = tableservice.get_grid_data(self.frame.result_grid)
+
+        if self.frame.top_tabs.GetSelection() == 0:
+            grid = self.frame.single_valued_grid
+        else:
+            grid = self.frame.result_grid
+
+        objects, attributes, incidence = tableservice.get_grid_data(grid)
         implications = api.request_implications_canonical(self.mservice.api_address, objects, attributes, incidence)
 
         if implications is None:
@@ -47,7 +53,13 @@ class Implications(wx.Panel):
         # computes and displays the ganter implication base of the results context
         wx.BeginBusyCursor()
         self.list.ClearAll()
-        objects, attributes, incidence = tableservice.get_grid_data(self.frame.result_grid)
+
+        if self.frame.top_tabs.GetSelection() == 0:
+            grid = self.frame.single_valued_grid
+        else:
+            grid = self.frame.result_grid
+
+        objects, attributes, incidence = tableservice.get_grid_data(grid)
         implications = api.request_implications_ganter(self.mservice.api_address, objects, attributes, incidence)
 
         if implications is None:
@@ -66,8 +78,8 @@ class Implications(wx.Panel):
         row_counter = 0
         for i in implications:
 
-            self.list.InsertItem(row_counter, str(i[0]))
-            self.list.SetItem(row_counter, 1, "->  " + str(i[1]))
+            self.list.InsertItem(row_counter, str(i['premise']))
+            self.list.SetItem(row_counter, 1, "->  " + str(i['conclusion']))
             row_counter += 1
 
         self.status_text.SetLabel("Implications:")
