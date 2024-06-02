@@ -28,7 +28,8 @@ The tab labeled "Scaled Context" displays the many valued context with all scale
 in the same way as described earlier.
 
 Selecting "Display Statistics" from the attribute menu opens a tab at the bottom right that can display the distribution of the values in various modes.
-This tab allows for the definition of a custom order on the values, and can distribute the values into intervals.
+This tab allows for the definition of a custom order on the values under the "Custom Order" tab. In the "Expanded Histogram" tab,
+the values can be distributed into interval. This only works if the ordering is set to "Numeric" in the dropdown menu below.
 
 
 General Functions:
