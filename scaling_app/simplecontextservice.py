@@ -1,6 +1,7 @@
 import wx
 
 from scaling_app import tablesubservice, api, menuservice
+from scaling_app.tablesubservice import get_grid_data
 
 
 class SimpleContextService:
@@ -151,6 +152,17 @@ class SimpleContextService:
         self.frame.single_valued_grid.AppendCols(8)
         for i in range(self.frame.single_valued_grid.GetNumberRows()):
             self.frame.single_valued_grid.SetRowLabelValue(i, str(i + 1))
+
+    def transpose_table(self, evt=None):
+        # Transposes the table by swapping rows and columns
+        objects, attributes, incidencelist = get_grid_data(self.frame.single_valued_grid)
+
+        incidence = dict()
+        for i in incidencelist:
+            x_coord = attributes.index(i[1])
+            y_coord = objects.index(i[0])
+            incidence[x_coord, y_coord] = "✘"
+        self.fill_context(attributes, objects, incidence)
 
     def get_draw_lattice(self, draw_type, evt=None):
         def draw_lattice(evt=None):

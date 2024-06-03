@@ -77,9 +77,11 @@ class MenuService:
     def simple_cell_menu(self, evt):
 
         menu = wx.Menu()
+        transpose = menu.Append(wx.ID_ANY, _("Transpose Table"))
         purge = menu.Append(wx.ID_ANY, _("Purge Table"))
         reset = menu.Append(wx.ID_ANY, _("Reset Table"))
         explore = menu.Append(wx.ID_ANY, _("Explore Context"))
+        self.frame.Bind(wx.EVT_MENU, self.simplecontextservice.transpose_table, transpose)
         self.frame.Bind(wx.EVT_MENU, self.simplecontextservice.purge_table, purge)
         self.frame.Bind(wx.EVT_MENU, self.simplecontextservice.reset_table, reset)
         self.frame.Bind(wx.EVT_MENU, self.explorationservice.explore_context, explore)
