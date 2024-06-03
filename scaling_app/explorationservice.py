@@ -94,6 +94,19 @@ class ExplorationService:
         objects, attributes, incidence = get_grid_data(self.frame.single_valued_grid)
         self.explore(objects, attributes, incidence)
 
+    def prune_stored_implications(self, attributes):
+        # removes stored implications that contain attributes not present in the exploration
+        compatible_implications = []
+        for i in self.stored_implications:
+            implication_attributes = set(i['premise'] + i['conclusion'])
+            print("Comparison:")
+            print(implication_attributes)
+            print(attributes)
+            if implication_attributes.issubset(set(attributes)):
+                compatible_implications.append(i)
+
+        self.stored_implications = compatible_implications
+
     def explore(self, objects=None, attributes=None, incidence=None, evt=None):
         # Performs attribute exploration algorithm.
 
@@ -112,6 +125,9 @@ class ExplorationService:
 
         implications = []
 
+        print(attributes)
+        print(self.stored_implications)
+        self.prune_stored_implications(attributes)
         if self.stored_implications:
             answer = ask_stored_implications(self.stored_implications)
             if answer == wx.ID_YES:
