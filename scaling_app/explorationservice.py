@@ -17,7 +17,7 @@ def ask_attributes(self):
     return list(set(attributes))
 
 
-def ask_starting_object(self, additional=False):
+def ask_starting_object(additional=False):
     # Displays a dialog asking if starting objects should be added
     if additional:
         question_Str = "Do you want to add another starting object?"
@@ -29,8 +29,14 @@ def ask_starting_object(self, additional=False):
     dialog.Destroy()
     return answer
 
+def ask_additional_counterexample():
+    # Displays a dialog asking if the user wants to provide an additional counterexample
+    dialog = wx.MessageDialog(None, "Do you want to provide an additional counterexample?", "Attribute Exploration", wx.YES_NO | wx.CANCEL)
+    answer = dialog.ShowModal()
+    dialog.Destroy()
+    return answer
 
-def ask_implication_holds(self, implication):
+def ask_implication_holds(implication):
     # Displays a dialog asking whether the specified implication holds
     implication_text = "Does the following implication hold? " + "\n" + make_implication_string(implication[0])
 
@@ -40,7 +46,7 @@ def ask_implication_holds(self, implication):
     return answer
 
 
-def ask_object(self, implications, objects, attributes, asked_implication=None):
+def ask_object(implications, objects, attributes, asked_implication=None):
     # Displays a dialog for entering a new object.
     dialog = NewObjectDialog(None, wx.ID_ANY, title="Attribute Exploration", asked_implication=asked_implication, implications=implications, objects=objects, attributes=attributes)
     if asked_implication:
@@ -99,9 +105,6 @@ class ExplorationService:
         compatible_implications = []
         for i in self.stored_implications:
             implication_attributes = set(i['premise'] + i['conclusion'])
-            print("Comparison:")
-            print(implication_attributes)
-            print(attributes)
             if implication_attributes.issubset(set(attributes)):
                 compatible_implications.append(i)
 
@@ -125,8 +128,6 @@ class ExplorationService:
 
         implications = []
 
-        print(attributes)
-        print(self.stored_implications)
         self.prune_stored_implications(attributes)
         if self.stored_implications:
             answer = ask_stored_implications(self.stored_implications)
@@ -134,15 +135,15 @@ class ExplorationService:
                 implications = self.stored_implications
 
         # Add starting objects
-        answer = ask_starting_object(self)
+        answer = ask_starting_object()
         while answer == wx.ID_YES:
 
-            name, incident_attributes = ask_object(self, implications, objects, attributes)
+            name, incident_attributes = ask_object(implications, objects, attributes)
             objects.append(name)
             for a in incident_attributes:
                 incidence.append([name, a])
 
-            answer = ask_starting_object(self, True)
+            answer = ask_starting_object(True)
         if answer == wx.ID_CANCEL:
             return
 
@@ -157,7 +158,7 @@ class ExplorationService:
             if not asked_implication:
                 break
 
-            answer = ask_implication_holds(self, asked_implication)
+            answer = ask_implication_holds(asked_implication)
 
             if answer == wx.ID_CANCEL:
                 self.process_result(result, implications)
@@ -167,12 +168,21 @@ class ExplorationService:
                 implications += asked_implication
 
             if answer == wx.ID_NO:
-                name, incident_attributes = ask_object(self, implications, objects, attributes, asked_implication)
+                example_required = True
+                while example_required:
+                    name, incident_attributes = ask_object(implications, objects, attributes, asked_implication)
 
-                if name == wx.ID_CANCEL:
-                    self.process_result(result, implications)
-                    break
+                    if name == wx.ID_CANCEL:
+                        self.process_result(result, implications)
+                        break
 
-                objects.append(name)
-                for a in incident_attributes:
-                    incidence.append([name, a])
+                    answer = ask_additional_counterexample()
+                    if answer == wx.ID_CANCEL:
+                        self.process_result(result, implications)
+                        break
+                    if answer == wx.ID_NO:
+                        example_required = False
+
+                    objects.append(name)
+                    for a in incident_attributes:
+                        incidence.append([name, a])
