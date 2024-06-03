@@ -33,6 +33,7 @@ class MenuService:
         self.tableservice = tableservice
         self.graphservice = graphservice
         self.statservice = statservice
+        self.explorationservice = None
 
         self.api_address = "http://127.0.0.1:8080"
 
@@ -78,8 +79,10 @@ class MenuService:
         menu = wx.Menu()
         purge = menu.Append(wx.ID_ANY, _("Purge Table"))
         reset = menu.Append(wx.ID_ANY, _("Reset Table"))
+        explore = menu.Append(wx.ID_ANY, _("Explore Context"))
         self.frame.Bind(wx.EVT_MENU, self.simplecontextservice.purge_table, purge)
         self.frame.Bind(wx.EVT_MENU, self.simplecontextservice.reset_table, reset)
+        self.frame.Bind(wx.EVT_MENU, self.explorationservice.explore_context, explore)
         draw = wx.Menu()
         dim = draw.Append(wx.ID_ANY, _("Dim Draw"))
         self.frame.Bind(wx.EVT_MENU, self.simplecontextservice.get_draw_lattice(constants.dim), dim)

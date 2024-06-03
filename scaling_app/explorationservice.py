@@ -2,6 +2,7 @@ import wx
 from scaling_app.api import request_exploration_step, check_connection
 from scaling_app.customdialogs import NewObjectDialog, make_implication_string
 from scaling_app.menuservice import connection_error_dialog
+from scaling_app.tablesubservice import get_grid_data
 
 
 def ask_attributes(self):
@@ -53,18 +54,16 @@ def ask_object(self, implications, objects, attributes, asked_implication=None):
     else:
         return new_object
 
+def ask_stored_implications(implications):
+    # Displays a dialog asking whether the stored implications should be used for the exploration
+    implication_text = "There are stored implications from the previous exploration. Do you want to use them as background knowledge?"
+    for i in implications:
+        implication_text += str("\n" + make_implication_string(i))
 
-def display_result(self, result):
-    # Displays the context resulting from the exploration step in the single valued grid
-    objects = result['step']['result']['context']['objects']
-    attributes = result['step']['result']['context']['attributes']
-    incidence = dict()
-    for i in result['step']['result']['context']['incidence']:
-        x_coord = objects.index(i[0])
-        y_coord = attributes.index(i[1])
-        incidence[x_coord, y_coord] = "✘"
-    self.scservice.fill_context(objects, attributes, incidence)
-
+    dialog = wx.MessageDialog(None, implication_text, "Attribute Exploration", wx.YES_NO | wx.CANCEL)
+    answer = dialog.ShowModal()
+    dialog.Destroy()
+    return answer
 
 class ExplorationService:
 
@@ -75,7 +74,27 @@ class ExplorationService:
         self.scservice = simplecontextservice
         self.tservice = tableservice
 
-    def explore(self, evt):
+        self.stored_implications = []
+
+    def process_result(self, result, implications):
+        # Displays the context resulting from the exploration step in the single valued grid and stores implications
+        objects = result['step']['result']['context']['objects']
+        attributes = result['step']['result']['context']['attributes']
+        incidence = dict()
+        for i in result['step']['result']['context']['incidence']:
+            x_coord = objects.index(i[0])
+            y_coord = attributes.index(i[1])
+            incidence[x_coord, y_coord] = "✘"
+        self.scservice.fill_context(objects, attributes, incidence)
+
+        self.stored_implications = implications
+
+    def explore_context(self, evt=None):
+        # starts exploration algorithm with starting context
+        objects, attributes, incidence = get_grid_data(self.frame.single_valued_grid)
+        self.explore(objects, attributes, incidence)
+
+    def explore(self, objects=None, attributes=None, incidence=None, evt=None):
         # Performs attribute exploration algorithm.
 
         wx.BeginBusyCursor()
@@ -85,21 +104,29 @@ class ExplorationService:
             return
         wx.EndBusyCursor()
 
-        objects = []
-        attributes = ask_attributes(self)
-        incidence = []
+        # if function is called without starting context
+        if incidence is None:
+            objects = []
+            attributes = ask_attributes(self)
+            incidence = []
+
         implications = []
+
+        if self.stored_implications:
+            answer = ask_stored_implications(self.stored_implications)
+            if answer == wx.ID_YES:
+                implications = self.stored_implications
 
         # Add starting objects
         answer = ask_starting_object(self)
         while answer == wx.ID_YES:
 
-                name, incident_attributes = ask_object(self, implications, objects, attributes)
-                objects.append(name)
-                for a in incident_attributes:
-                    incidence.append([name, a])
+            name, incident_attributes = ask_object(self, implications, objects, attributes)
+            objects.append(name)
+            for a in incident_attributes:
+                incidence.append([name, a])
 
-                answer = ask_starting_object(self, True)
+            answer = ask_starting_object(self, True)
         if answer == wx.ID_CANCEL:
             return
 
@@ -108,7 +135,7 @@ class ExplorationService:
             result = request_exploration_step(self.mservice.api_address, objects, attributes, incidence, implications)
             asked_implication = result['step']['result']['implications']
 
-            display_result(self, result)
+            self.process_result(result, implications)
 
             # No further implications, Exploration over:
             if not asked_implication:
@@ -117,7 +144,7 @@ class ExplorationService:
             answer = ask_implication_holds(self, asked_implication)
 
             if answer == wx.ID_CANCEL:
-                display_result(self, result)
+                self.process_result(result, implications)
                 break
 
             if answer == wx.ID_YES:
@@ -127,7 +154,7 @@ class ExplorationService:
                 name, incident_attributes = ask_object(self, implications, objects, attributes, asked_implication)
 
                 if name == wx.ID_CANCEL:
-                    display_result(self, result)
+                    self.process_result(result, implications)
                     break
 
                 objects.append(name)

@@ -100,7 +100,7 @@ def build_ui():
     frame.formal_context_panel = wx.Panel(frame.top_tabs)
     frame.scaling_panel = wx.Panel(frame.top_tabs)
 
-    # Simple Context
+    # Formal Context
     frame.formal_context_box = wx.BoxSizer(wx.VERTICAL)
     frame.single_valued_grid = grid.Grid(frame.formal_context_panel)
     frame.single_valued_grid.CreateGrid(16, 8)
@@ -200,6 +200,7 @@ gservice = graphservice.GraphService(frame, storage)
 sservice = statservice.Statservice(frame, tservice, storage)
 mservice = menuservice.MenuService(frame, storage, scservice, tservice, gservice, sservice)
 eservice = explorationservice.ExplorationService(frame, storage, mservice, scservice, tservice)
+mservice.explorationservice = eservice
 sservice.menuservice = mservice
 scservice.menuservice = mservice
 scservice.graphservice = gservice
