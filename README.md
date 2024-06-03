@@ -4,10 +4,19 @@ The Scaling App provides functionality for manipulating formal contexts and perf
 The application supports drawing concept lattices, computing concepts, implications and implication rules, as well as attribute exploration.
 
 Installation:
-This app requires Python 3.12 and all packages listed in requirements.txt .
+This app requires Python 3.12:
+https://www.python.org/downloads/release/python-3120/
+To install all necessary packages run "pip3 install -r requirements.txt". 
+You can then start the app by running "py main.py".
+(Depending on your python installations and platform Python 3.12 may have to be called using "python" or "python3" instead of "py".)
+
 In order to access all functions of the app, "conexp-clj" needs to be run. 
 https://github.com/tomhanika/conexp-clj
+In order to execute conexp-clj you need to install Leiningen:
+https://leiningen.org/
 The conexp-clj API can be accessed from any address, but the apps tries to find the API at localhost by default.
+To host the API under localhost, navigate to the repository and execute "lein run -a".
+
 
 
 Formal Contexts:
@@ -15,8 +24,11 @@ The formal context can be edited under the "Formal Context" tab, which is select
 The incidence of the formal contex can be directly manipulated by clicking the cells. Objects and attributes can be edited by right-clicking their labels.
 The concept lattice can be drawn via right-clicking the cells of the context, or by using the button on the top left panel.
 
-Attribute exploration can be accessed via the menu bar at the top of the window. It requires you to enter a set of starting attributes (comma separated),
-adn then consecutively either confirm implications or provide counterexamples.
+Attribute Exploration:
+Attribute Exploration builds a context based on expert knowledge about a subject.
+Attribute exploration can be accessed via the menu bar at the top of the window. You will be prompted to enter a set of starting attributes (comma separated).
+The algorithm will they identify possible implications between the object. You will be asked to either confirm these implications,
+or provide a counterexample in form of an object whose attributes contradict the implication.
 
 Conceptual Scaling:
 Switching to the "Conceptual Scaling" tab at the top of the screen.

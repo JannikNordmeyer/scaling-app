@@ -77,7 +77,6 @@ class Implications(wx.Panel):
 
         row_counter = 0
         for i in implications:
-
             self.list.InsertItem(row_counter, str(i['premise']))
             self.list.SetItem(row_counter, 1, "->  " + str(i['conclusion']))
             row_counter += 1

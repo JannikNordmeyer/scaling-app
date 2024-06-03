@@ -324,7 +324,8 @@ class MenuService:
             return
         fca = json.load(open(filepath))
 
-        self.frame.many_valued_grid.DeleteRows(0, self.frame.many_valued_grid.GetNumberRows())
+        if self.frame.many_valued_grid.GetNumberRows() > 0:
+            self.frame.many_valued_grid.DeleteRows(0, self.frame.many_valued_grid.GetNumberRows())
         tableservice.delete_cols(self.frame.many_valued_grid)
 
         attributes = fca["context"]["attributes"]
