@@ -11,6 +11,7 @@ def delete_cols(grid):
 
 def get_grid_data(grid):
     # Reads Data Necessary for API Requests from Input Grid
+    # CLARIFY METHOD
 
     objects = []
     for i in range(grid.GetNumberRows()):

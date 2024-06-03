@@ -68,6 +68,7 @@ class NewObjectDialog(wx.Dialog):
         self.name_error_text.Hide()
         self.attribute_error_text.Hide()
         self.NameEntered()
+        self.AttributesEntered()
         self.Layout()
 
     def generate_attribute_sizer(self):

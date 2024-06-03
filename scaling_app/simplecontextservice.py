@@ -146,7 +146,8 @@ class SimpleContextService:
         self.frame.single_valued_grid.ClearGrid()
 
     def reset_table(self, evt=None):
-        self.frame.single_valued_grid.DeleteRows(0, self.frame.many_valued_grid.GetNumberRows())
+        if self.frame.single_valued_grid.GetNumberRows() > 0:
+            self.frame.single_valued_grid.DeleteRows(0, self.frame.many_valued_grid.GetNumberRows())
         tablesubservice.delete_cols(self.frame.single_valued_grid)
         self.frame.single_valued_grid.AppendRows(16)
         self.frame.single_valued_grid.AppendCols(8)
