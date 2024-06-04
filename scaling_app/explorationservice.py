@@ -1,4 +1,6 @@
 import wx
+from wx import MessageDialog
+
 from scaling_app.api import request_exploration_step, check_connection
 from scaling_app.customdialogs import NewObjectDialog, make_implication_string
 from scaling_app.menuservice import connection_error_dialog
@@ -29,12 +31,14 @@ def ask_starting_object(additional=False):
     dialog.Destroy()
     return answer
 
+
 def ask_additional_counterexample():
     # Displays a dialog asking if the user wants to provide an additional counterexample
     dialog = wx.MessageDialog(None, "Do you want to provide an additional counterexample?", "Attribute Exploration", wx.YES_NO | wx.CANCEL)
     answer = dialog.ShowModal()
     dialog.Destroy()
     return answer
+
 
 def ask_implication_holds(implication):
     # Displays a dialog asking whether the specified implication holds
@@ -60,16 +64,6 @@ def ask_object(implications, objects, attributes, asked_implication=None):
     else:
         return new_object
 
-def ask_stored_implications(implications):
-    # Displays a dialog asking whether the stored implications should be used for the exploration
-    implication_text = "There are stored implications from the previous exploration. Do you want to use them as background knowledge?"
-    for i in implications:
-        implication_text += str("\n" + make_implication_string(i))
-
-    dialog = wx.MessageDialog(None, implication_text, "Attribute Exploration", wx.YES_NO | wx.CANCEL)
-    answer = dialog.ShowModal()
-    dialog.Destroy()
-    return answer
 
 class ExplorationService:
 
@@ -80,37 +74,48 @@ class ExplorationService:
         self.scservice = simplecontextservice
         self.tservice = tableservice
 
+        # saves state of the context if exploration is cancelled
+        self.stored_objects = []
+        self.stored_attributes = []
+        self.stored_incidence = []
         self.stored_implications = []
 
-    def process_result(self, result, implications):
-        # Displays the context resulting from the exploration step in the single valued grid and stores implications
-        objects = result['step']['result']['context']['objects']
-        attributes = result['step']['result']['context']['attributes']
-        incidence = dict()
-        for i in result['step']['result']['context']['incidence']:
+    def clear_state(self):
+        # removes stored state
+        self.stored_objects = []
+        self.stored_attributes = []
+        self.stored_incidence = []
+        self.stored_implications = []
+
+    def process_result(self, objects, attributes, incidence, implications):
+        # Displays the context resulting from the exploration step in the single valued grid and stores state
+        incidence_dict = dict()
+        for i in incidence:
             x_coord = objects.index(i[0])
             y_coord = attributes.index(i[1])
-            incidence[x_coord, y_coord] = "✘"
-        self.scservice.fill_context(objects, attributes, incidence)
+            incidence_dict[x_coord, y_coord] = "✘"
+        self.scservice.fill_context(objects, attributes, incidence_dict)
 
+        self.stored_objects = objects
+        self.stored_attributes = attributes
+        self.stored_incidence = incidence
         self.stored_implications = implications
 
     def explore_context(self, evt=None):
         # starts exploration algorithm with starting context
         objects, attributes, incidence = get_grid_data(self.frame.single_valued_grid)
-        self.explore(objects, attributes, incidence)
+        self.explore(objects, attributes, incidence, [])
 
-    def prune_stored_implications(self, attributes):
-        # removes stored implications that contain attributes not present in the exploration
-        compatible_implications = []
-        for i in self.stored_implications:
-            implication_attributes = set(i['premise'] + i['conclusion'])
-            if implication_attributes.issubset(set(attributes)):
-                compatible_implications.append(i)
+    def continue_exploration(self, evt=None):
+        if not self.stored_objects:
+            dialog = MessageDialog(None, "No cancelled Exploration to continue.", "Attribute Exploration")
+            dialog.ShowModal()
+            dialog.Destroy()
+            return
+        else:
+            self.explore(self.stored_objects, self.stored_attributes, self.stored_incidence, self.stored_implications)
 
-        self.stored_implications = compatible_implications
-
-    def explore(self, objects=None, attributes=None, incidence=None, evt=None):
+    def explore(self, objects=None, attributes=None, incidence=None, implications=None, evt=None):
         # Performs attribute exploration algorithm.
 
         wx.BeginBusyCursor()
@@ -120,49 +125,45 @@ class ExplorationService:
             return
         wx.EndBusyCursor()
 
-        # if function is called without starting context
+        # if function is called without starting context or continuing from cancelled exploration
         if incidence is None:
+            self.clear_state()
             objects = []
             attributes = ask_attributes(self)
             incidence = []
+            implications = []
+            # Add starting objects
+            answer = ask_starting_object()
+            while answer == wx.ID_YES:
 
-        implications = []
+                name, incident_attributes = ask_object(implications, objects, attributes)
+                if answer == wx.ID_CANCEL:
+                    return
+                objects.append(name)
+                for a in incident_attributes:
+                    incidence.append([name, a])
 
-        self.prune_stored_implications(attributes)
-        if self.stored_implications:
-            answer = ask_stored_implications(self.stored_implications)
-            if answer == wx.ID_YES:
-                implications = self.stored_implications
-
-        # Add starting objects
-        answer = ask_starting_object()
-        while answer == wx.ID_YES:
-
-            name, incident_attributes = ask_object(implications, objects, attributes)
-            objects.append(name)
-            for a in incident_attributes:
-                incidence.append([name, a])
-
-            answer = ask_starting_object(True)
-        if answer == wx.ID_CANCEL:
-            return
+                answer = ask_starting_object(True)
+            if answer == wx.ID_CANCEL:
+                return
 
         # Exploration
         while True:
             result = request_exploration_step(self.mservice.api_address, objects, attributes, incidence, implications)
             asked_implication = result['step']['result']['implications']
 
-            self.process_result(result, implications)
+            self.process_result(objects, attributes, incidence, implications)
 
             # No further implications, Exploration over:
             if not asked_implication:
+                self.clear_state()
                 break
 
             answer = ask_implication_holds(asked_implication)
 
             if answer == wx.ID_CANCEL:
-                self.process_result(result, implications)
-                break
+                self.process_result(objects, attributes, incidence, implications)
+                return
 
             if answer == wx.ID_YES:
                 implications += asked_implication
@@ -173,16 +174,16 @@ class ExplorationService:
                     name, incident_attributes = ask_object(implications, objects, attributes, asked_implication)
 
                     if name == wx.ID_CANCEL:
-                        self.process_result(result, implications)
-                        break
-
-                    answer = ask_additional_counterexample()
-                    if answer == wx.ID_CANCEL:
-                        self.process_result(result, implications)
-                        break
-                    if answer == wx.ID_NO:
-                        example_required = False
+                        self.process_result(objects, attributes, incidence, implications)
+                        return
 
                     objects.append(name)
                     for a in incident_attributes:
                         incidence.append([name, a])
+
+                    answer = ask_additional_counterexample()
+                    if answer == wx.ID_CANCEL:
+                        self.process_result(objects, attributes, incidence, implications)
+                        return
+                    if answer == wx.ID_NO:
+                        example_required = False

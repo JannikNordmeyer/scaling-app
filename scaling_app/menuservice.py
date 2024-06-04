@@ -37,7 +37,6 @@ class MenuService:
 
         self.api_address = "http://127.0.0.1:8080"
 
-
     # Simple Context
 
     def simple_label_menu(self, evt):
@@ -47,6 +46,7 @@ class MenuService:
             self.simple_show_row_menu(evt)
         else:
             self.simple_show_col_menu(evt)
+
     def simple_show_row_menu(self, evt):
 
         menu = wx.Menu()
@@ -102,7 +102,6 @@ class MenuService:
 
         self.frame.PopupMenu(menu)
         menu.Destroy()
-
 
     # Many Valued Context Scaling
     def scaling_tab_changed(self, evt=None):

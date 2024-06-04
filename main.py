@@ -9,6 +9,7 @@ import gettext
 import locale
 from scaling_app.context_menu import ContextMenu
 
+
 def build_ui():
     # Builds overall layout of the app
 
@@ -62,6 +63,8 @@ def build_ui():
     explore_menu = wx.Menu()
     explore_attributes = explore_menu.Append(wx.ID_ANY, _('Explore Attributes'), _('Explore Attributes'))
     frame.Bind(wx.EVT_MENU, eservice.explore, explore_attributes)
+    continue_exploration = explore_menu.Append(wx.ID_ANY, _('Continue Exploration'), _('Continue Exploration'))
+    frame.Bind(wx.EVT_MENU, eservice.continue_exploration, continue_exploration)
     menu_bar.Append(explore_menu, _('Explore Attributes'))
 
     quit_menu = wx.Menu()
