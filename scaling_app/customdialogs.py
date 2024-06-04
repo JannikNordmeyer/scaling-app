@@ -88,6 +88,7 @@ class NewObjectDialog(wx.Dialog):
         for a in premise:
             self.attribute_checkbox_dict[a].SetValue(True)
             self.attribute_checkbox_dict[a].Disable()
+        self.AttributesEntered()
 
     def GetValues(self):
         # Returns the name and attributes entered by the user.
