@@ -65,6 +65,8 @@ def build_ui():
     frame.Bind(wx.EVT_MENU, eservice.explore, explore_attributes)
     continue_exploration = explore_menu.Append(wx.ID_ANY, _('Continue Exploration'), _('Continue Exploration'))
     frame.Bind(wx.EVT_MENU, eservice.continue_exploration, continue_exploration)
+    explore_context = explore_menu.Append(wx.ID_ANY, _('Explore Context'), _('Explore Context'))
+    frame.Bind(wx.EVT_MENU, eservice.explore_context, explore_context)
     menu_bar.Append(explore_menu, _('Explore Attributes'))
 
     quit_menu = wx.Menu()

@@ -157,6 +157,9 @@ class ExplorationService:
             # No further implications, Exploration over:
             if not asked_implication:
                 self.clear_state()
+                dialog = MessageDialog(None, "Exploration finished.", "Attribute Exploration")
+                dialog.ShowModal()
+                dialog.Destroy()
                 break
 
             answer = ask_implication_holds(asked_implication)
