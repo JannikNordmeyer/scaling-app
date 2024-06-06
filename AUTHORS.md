@@ -1,0 +1,3 @@
+Developed by
+
+* Jannik Nordmeyer
